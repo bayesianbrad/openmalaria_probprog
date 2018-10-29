@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app	
+
+# Python
+*.pyc
+*.DS_Store
+/build
+/dist/
+/*.egg-info
+*.ipynb_checkpoints
+/*.ropeproject
+*.swp
+*.swo
+.ropeproject/
+.idea/
