@@ -1,0 +1,2 @@
+openmalaria dependencies (Ubuntu):
+- apt packages: xsdcxx libxerces-c-dev libgsl-dev libboost-all-dev
