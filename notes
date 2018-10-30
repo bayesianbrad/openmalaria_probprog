@@ -4,4 +4,9 @@ openmalaria dependencies (Ubuntu):
 
 How to build Docker image:
 
-- docker build . -t openmalariapp 
+- docker build . -t openmalariapp
+- docker run --rm -it (for interactive usage, will remove the container from memory) (-it interactive attach to terminal)
+
+
+Connecting docker to the external file system:
+
