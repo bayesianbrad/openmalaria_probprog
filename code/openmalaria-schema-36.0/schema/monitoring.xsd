@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Schema for OpenMalaria input documents
+Copyright © 2005-2011 Swiss Tropical Institute and Liverpool School Of Tropical Medicine
+Licence: GNU General Public Licence version 2 or later (see COPYING) -->
+<xs:schema targetNamespace="http://openmalaria.org/schema/scenario_36"
+           xmlns:om="http://openmalaria.org/schema/scenario_36"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="util.xsd"/>
+  <xs:complexType name="Monitoring">
+    <xs:sequence>
+      <xs:element name="continuous" minOccurs="0">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="om:OptionSet">
+              <xs:attribute name="period" type="xs:string" use="required">
+                <xs:annotation>
+                  <xs:documentation>
+                    Delay between reports; typically one time step but can be
+                    greater.
+                    
+                    Can be specified in steps (e.g. 1t) or days (e.g. 5d).
+                  </xs:documentation>
+                  <xs:appinfo>units:User defined (default: steps);name:Delay between reports;</xs:appinfo>
+                </xs:annotation>
+              </xs:attribute>
+              <xs:attribute name="duringInit" type="xs:boolean" use="optional">
+                <xs:annotation>
+                  <xs:documentation>
+                    Also output during initialization. By default this is
+                    disabled (only intervention-period data is output). This
+                    should not be used for predictions, but can be useful for
+                    model validation.
+                    
+                    In this mode, 'simulation time' is output as the first
+                    column (in addition to 'timestep'), since 'timestep' is dis-
+                    continuous across the start of the intervention period.
+                  </xs:documentation>
+                  <xs:appinfo>units:Days;min:1;max:unbounded;name:During initialization;</xs:appinfo>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SurveyOptions" type="om:MonitoringOptions">
+        <xs:annotation>
+          <xs:documentation>
+            List of all active survey options. See model/mon/OutputMeasures.h for a list of
+            supported outputs. Should also be on the wiki.
+          </xs:documentation>
+          <xs:appinfo>name:Name of quantity;</xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="surveys">
+        <xs:annotation>
+          <xs:documentation>
+            List of survey times
+          </xs:documentation>
+          <xs:appinfo>name:Survey times (time steps);</xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="surveyTime" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>
+                  Time of a survey. A report will be made for those measures
+                  enabled under SurveyOptions. Reported data is either from the
+                  moment the survey is done (immediate data) or is collected 
+                  over the time since the previous survey, or in some cases
+                  over a fixed time span (usually one year).
+                  
+                  Times can be specified in time steps, starting from 0, or as
+                  a date (see monitoring/startDate), or in days (e.g. 15d) or
+                  years (e.g. 1y). Relative times mean the time since the start
+                  of the intervention period, and must be non-negative (zero is
+                  valid, but some measures, e.g. nUncomp, will be zero).
+                  
+                  The simulation ends immediately after the last survey is taken.
+                </xs:documentation>
+                <xs:appinfo>units:User defined (defaults to steps);min:0;name:Survey time;</xs:appinfo>
+              </xs:annotation>
+              <xs:complexType>
+                <!--NOTE: this is an extension of xs:int for backwards compatibility.-->
+                <xs:simpleContent>
+                  <xs:extension base="xs:string">
+                    <xs:attribute name="repeatStep" type="xs:string" use="optional">
+                      <xs:annotation>
+                        <xs:documentation>See repeatEnd's documentation.</xs:documentation>
+                        <xs:appinfo>name:Step of repetition;units:User defined;</xs:appinfo>
+                      </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="repeatEnd" type="xs:string" use="optional">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Either both repeatStep and repeatEnd should be present
+                          or neither. If present, the survey is repeated every
+                          repeatStep timesteps (i.e. if t0 is the initial time
+                          and x is repeatStep, surveys are done at times t0,
+                          t0+x, t0+2*x, ...), ending before repeatEnd
+                          (final repetition is the one before repeatEnd).
+                          
+                          Note that repeatEnd may be specified as a date but
+                          repeatStep must be a duration (days, steps or years).
+                        </xs:documentation>
+                        <xs:appinfo>name:End of repetition (exclusive);units:User defined;</xs:appinfo>
+                      </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="reported" type="xs:boolean" default="true">
+                      <xs:annotation>
+                        <xs:documentation>For normal surveys, reporting=true. If set false,
+                          quantities are measured but not reported. The reason for doing this is
+                          to update conditions set on reportable measures.
+                          
+                          Multiple surveys may be given here for the same date, e.g. if using
+                          "repeatStep" for both reporting and non-reporting surveys. These are
+                          combined such that a maximum of one survey is carried out per time-step,
+                          and the survey is reported if any of the listed surveys for this date is
+                          configured as "reporting".
+                          
+                          Note that adding non-reporting surveys will not affect value output by
+                          reported surveys, with the exception that generated psuedo-random numbers
+                          may be altered (specifically, when any stochastic diagnostics are used in
+                          surveys).
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:attribute>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="detectionLimit" type="xs:double" use="optional">
+            <xs:annotation>
+              <xs:documentation>
+                Deprecated: limit above which a human's infection is reported
+                as patent.
+                
+                Alternative: do not specify this; instead specify "diagnostic".
+              </xs:documentation>
+              <xs:appinfo>units:parasites/microlitre;min:0;name:Detection limit for parasitaemia;</xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="diagnostic" type="xs:string" use="optional">
+            <xs:annotation>
+              <xs:documentation>
+                Name of a parameterised diagnostic to use in surveys (see
+                scenario/diagnostics).
+              </xs:documentation>
+              <xs:appinfo>name:Name of monitoring diagnostic;</xs:appinfo>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ageGroup" type="om:MonAgeGroup">
+        <xs:annotation>
+          <xs:documentation>
+            List of age groups included in demography or surveys
+          </xs:documentation>
+          <xs:appinfo>name:Age groups;</xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="cohorts" minOccurs="0" type="om:Cohorts">
+        <xs:annotation>
+          <xs:documentation>
+            Allows the configuration of multiple cohorts (output segregated
+            according to membership within specific sub-populations).
+            
+            If this element is omitted, monitoring surveys cover the entire
+            simulated human population.
+            
+            It does not affect the "continuous" outputs (these never take
+            cohorts into account).
+          </xs:documentation>
+          <xs:appinfo>name:Cohorts;</xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Name of monitoring settings
+        </xs:documentation>
+        <xs:appinfo>name:Name of monitoring settings;</xs:appinfo>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="startDate" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          An optional date for the start of monitoring. If given, dates may be
+          used to specify when other events (surveys, intervention deployments)
+          occur; alternately times relative to the start of the intervention
+          period may be used to specify event times.
+          
+          Setting this to 1st January of some year might simplify usage of
+          dates, and putting the start a couple of years before the start of
+          intervention deployment (along with some extra surveys) may be useful
+          to check transmission stabilises to the expected pre-intervention
+          levels.
+          
+          As an example, if this date is set to 2000-01-01, then the following
+          event times are equivalent (assuming 1t=5d):
+          15t, 75d, 0.2y, 2000-03-16.
+          
+          Must be in the form YYYY-MM-DD, e.g. 2003-01-01.
+        </xs:documentation>
+        <xs:appinfo>name:Start of monitoring;</xs:appinfo>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="MonAgeGroup">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="group" type="om:MonGroupBounds" />
+    </xs:sequence>
+    <xs:attribute name="lowerbound" type="xs:double" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Lower bound of age group
+        </xs:documentation>
+        <xs:appinfo>units:Years;min:0;max:100;name:lower bound of age group</xs:appinfo>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="MonGroupBounds">
+    <xs:attribute name="upperbound" type="xs:double" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Upper bound of age group
+        </xs:documentation>
+        <xs:appinfo>units:Years;min:0;max:100;name:upper bound of age group</xs:appinfo>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="Cohorts">
+    <xs:sequence>
+      <xs:element name="subPop" maxOccurs="unbounded" type="om:CohortSubPop">
+        <xs:annotation>
+          <xs:documentation>
+            Consider a certain sup-population a cohort, and segregate outputs
+            according to membership. Where multiple sub-populations are listed,
+            segregate output according to all combinations of membership: e.g.
+            if sub-populations A and B are listed, there will be outputs for
+            "member of A and B", "member of A but not B", "B but not A" and
+            "not a member of A or B". Listing n sub-populations implies 2^n
+            sets of outputs (each is further segregated by age groups, survey
+            times and enabled output measures, which could lead to excessive
+            program memory usage and output file size).
+            
+            To identify outputs, each sub-population has a power of two number
+            as identifier (see "number" attribute). Each of the 2^n output sets
+            is identified by a number: the output set is the output from humans
+            who are members in some set of sub-populations (S1, S2, ...) and
+            not members in some others (T1, T2, ...); the number identifying
+            the set is the sum of the numbers identifying the sets S1, S2, etc.
+            
+            In the output file, the output set is identified by multiplying
+            this number by 1000 then adding it to the age group column.
+          </xs:documentation>
+          <xs:appinfo>name:Sub-population;</xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CohortSubPop">
+    <xs:attribute name="id" use="required" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>
+          Textual identifier for the sub-population (i.e. for an intervention
+          component, since sub-populations are defined as the hosts an
+          intervention component is deployed to).
+        </xs:documentation>
+        <xs:appinfo>name:Sub-population identifier;</xs:appinfo>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="number" type="xs:integer" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Number identifying a sub-population; used to define identifiers of
+          output sets. This number must be a power of 2 (i.e. 1, 2, 4, 8, ...).
+          See documentation of subPop element.
+        </xs:documentation>
+        <xs:appinfo>name:Sub-population number;units:dimensionless;min:1;max:2097152;</xs:appinfo>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="MonitoringOptions">
+    <xs:sequence>
+      <xs:element name="option" type="om:MonitoringOption" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="onlyNewEpisode" type="xs:boolean" default="false">
+      <xs:annotation>
+        <xs:documentation>
+          If set, some statistics exclude humans who have been treated in the
+          recent past (precisely, when the time of last treatment was before
+          the current step and no more than health-system-memory days/steps
+          ago).
+          
+          This is a rough replacement for the REPORT_ONLY_AT_RISK option,
+          with one difference: the maximum age of treatment for
+          REPORT_ONLY_AT_RISK was fixed at 20 days.
+          
+          Affected measures include (as of version 35):
+          nHost (0),
+          nInfect(1),
+          nExpectd (2),
+          nPatent (3),
+          sumLogPyrogenThres (4),
+          sumlogDens (5),
+          totalInfs (6),
+          totalPatentInf (8),
+          sumPyrogenThresh (10),
+          nSubPopRemovalFirstEvent (62),
+          sumAge (68),
+          nInfectByGenotype (69),
+          nPatentByGenotype (70),
+          logDensByGenotype (71),
+          nHostDrugConcNonZero (72),
+          sumLogDrugConcNonZero (73).
+        </xs:documentation>
+        <xs:appinfo>name:Report only for new cases;</xs:appinfo>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="MonitoringOption">
+    <xs:complexContent>
+      <xs:extension base="om:Option">
+        <xs:attribute name="outputNumber" type="xs:int" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              Number identifying this monitoring measure in the output
+              file (3rd column). Normally this is determined from the
+              measure, but it can be set manually, e.g. for when the same
+              measure is recorded twice (to accumulate across different
+              categories).
+            </xs:documentation>
+            <xs:appinfo>name:Number identifying measure in output;</xs:appinfo>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="byAge" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              If true, the measure is reported for each age category. If
+              false, values are summed across all age categories and only
+              the sum reported. If not specified, separate categories
+              will be reported if the measure supports this.
+            </xs:documentation>
+            <xs:appinfo>name:Report by age category;</xs:appinfo>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="byCohort" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              If true, the measure is reported for each cohort separately.
+              If false, values are summed across all cohorts and only
+              the sum reported. If not specified, separate categories
+              will be reported if the measure supports this.
+            </xs:documentation>
+            <xs:appinfo>name:Report by cohort;</xs:appinfo>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="bySpecies" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              If true, the measure is reported for each mosquito species
+              separately. If false, values are summed across all species
+              and only the sum reported. If not specified, separate
+              categories will be reported if the measure supports this.
+            </xs:documentation>
+            <xs:appinfo>name:Report by mosquito species;</xs:appinfo>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="byGenotype" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              If true, the measure is reported for each parasite genotype
+              separately. If false, values are summed across all genotypes
+              and only the sum reported. If not specified, separate
+              categories will be reported if the measure supports this.
+            </xs:documentation>
+            <xs:appinfo>name:Report by parasite genotype;</xs:appinfo>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="byDrugType" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              If true, the measure is reported for each drug type
+              separately. If false, values are summed across all drug types
+              and only the sum reported. If not specified, separate
+              categories will be reported if the measure supports this.
+            </xs:documentation>
+            <xs:appinfo>name:Report by drug type;</xs:appinfo>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
