@@ -26,7 +26,7 @@
 \newcommand{\y}{\textbf{y}} 
 \newcommand{\x}{\textbf{x}} 
 \newcommand{\asto}{\overset{a.s.}{\to}}
-
+\renewcommand{\labelitemii}{$\star$}
 \newcommand{\om}{\textit{OpenMalaria}}
 \DeclareMathOperator*{\argmax}{arg\,\!max}
 
@@ -64,7 +64,101 @@ would have to  design a fully \textit{factorial} experiment.
 	\end{itemize}
 \end{quote}
 
-\end{document}
 
 Since OpenMalaria simulations are stochastic, they use a number of random seeds (say 2-50) 
 to provide estimates of the contributions of random variation to the results.
+
+\section{XML files}
+
+Within the open malaria simulator \textit{XML} files should be seen as the program, specifying a model over all parameters. Well kind of, it should actually be treated as a prior to the simulator, providing knowledge regarding how a model is specified in terms of the initial parameters. This then interacts directly with the simulator. 
+
+
+\section{Key features of the simulator}
+
+\begin{itemize}
+\item Seasonality of transmission
+\item Access to treatment an inherent part of model
+\item Addressing uncertainty: ensemble of 14 model variants
+
+\end{itemize}
+\section{How to Use Open Malaria}
+
+\paragraph*{Objectives}
+\begin{itemize}
+	\item Understand OpenMalaria workflow to design an experiment
+	\item Understand the important features of OpenMalaria
+	\item Understand, the topic of choice, the model assumptions and how interventions interact 
+	\item Understand what information is needed to parameterize OpenMalaria and where to find it
+\end{itemize}
+
+
+\subsection{Seasonality of transmissions}
+The Plasmodium falciparum entomological inoculation rate (Pf EIR) is a measure of exposure to infectious mosquitoes. 
+When describing transmissions, the simulator is driven by the input value of annual average EIR, the average number of infectious bites a person receives each year.
+The seasonality is specifically specified by 12 monthly values for each vector species. Abs values or proportion for each month.
+
+In epidemiology, a \textbf{disease vector} is any agent that carries and transmits an infectious pathogen into another living organism; most agents regarded as vectors are organisms, such as intermediate parasites or microbes, but it could be an inanimate medium of infection such as dust particles.
+
+\section{How does Malaria spread?}
+\begin{itemize}
+\item Deterministic model of malaria transmission based on the mosquito feeding cycle
+\item Linked to models of interventions
+\item Driven by EIR
+\item For input EIR values, you may need to work backwards to determine pre-experiment level
+\end{itemize}
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{images/malariacycle.png}
+\caption{The mosquito feeding cycle. Malaria is spread through this cycle.}
+\end{figure}
+
+\section{Modelling different treatments}
+
+Stochastic simulation models of malaria based on the simulation of infections in humans. Tracks health status of individuals at discrete time points
+
+\begin{figure}
+\includegraphics[width=\textwidth]{images/malariatreatment.png}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{images/accesstotreatment.png}
+\end{figure}
+\section{Scenario transmission}
+
+
+OpenMalaria simulations of malaria transmissions require a specification of:
+\begin{itemize}
+	\item The level and seasonality of exposure (measured by the Entomological Inoculation Rate, EIR) to malaria at the start of the simulation
+	\item The model for transmission from mosquitoes to humans and the dynamics of malaria parasite cycle within humans.
+	\item The model for malaria transmission from humans to 
+	\item The entomological model. There are two different variants of the entomological model:
+	\begin{itemize}
+    \item The "Non-vector" variant does not consider mosquito dynamics and hence uses fixed or periodically (seasonally) varying vectorial capacity. It is appropriate for modeling situations with only interventions such as chemotherapy or vaccines that only act on humans.
+	\item The "Vector" variant comprises discrete-time population models that simulate how many mosquitoes belong in each of several categories at each time. The models assume that the infectious (sporozoite positive) mosquitoes act to distribute infections at random to the human population (with human exposure proportionate to availability). Entomological interventions modify the vectorial capacity and require the "vector" transmission model variant. The simulations that include non-periodic changes in the vectorial capacity use a seasonally forced version of the difference equation model for vector dynamics.
+\end{itemize}
+\end{itemize}
+\end{document}
+
+
+Tom notes
+
+Always write down an abstract and introduction when you are starting a new project. 
+
+Write down ideas as formally as possible. 
+
+Things that happen first - the less applied part: 
+
+
+As you mathematically formulate in code, you write down the mathematics that describes that and the problem formulation. 
+Try and write down a joint of the model. That way you can determine if the problem is doable. Must deal with these things first. 
+
+
+Things to look into:
+
+Are there Multi-modes?
+Is the problem high-dimensional?
+What is the dimensionality of problems?
+
+
+
