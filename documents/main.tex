@@ -138,27 +138,37 @@ OpenMalaria simulations of malaria transmissions require a specification of:
 	\item The "Vector" variant comprises discrete-time population models that simulate how many mosquitoes belong in each of several categories at each time. The models assume that the infectious (sporozoite positive) mosquitoes act to distribute infections at random to the human population (with human exposure proportionate to availability). Entomological interventions modify the vectorial capacity and require the "vector" transmission model variant. The simulations that include non-periodic changes in the vectorial capacity use a seasonally forced version of the difference equation model for vector dynamics.
 \end{itemize}
 \end{itemize}
-\end{document}
 
+\section{Tom stuff}
 
-Tom notes
+\paragraph*{Tom notes}
 
-Always write down an abstract and introduction when you are starting a new project. 
-
-Write down ideas as formally as possible. 
-
-Things that happen first - the less applied part: 
-
-
-As you mathematically formulate in code, you write down the mathematics that describes that and the problem formulation. 
-Try and write down a joint of the model. That way you can determine if the problem is doable. Must deal with these things first. 
-
+\begin{itemize}
+	\item Always write down an abstract and introduction when you are starting a new project. 
+	\item Write down ideas as formally as possible. 
+	\item Things that happen first - the less applied part: 
+	\begin{itemize}
+		\item As you mathematically formulate in code, you write down the mathematics that describes that and the problem formulation. 
+         \item Try and write down a joint of the model. That way you can determine if the problem is doable. Must deal with these things first. 
+\end{itemize}
+\end{itemize}
 
 Things to look into:
 
-Are there Multi-modes?
-Is the problem high-dimensional?
-What is the dimensionality of problems?
+\begin{itemize}
+\item Are there Multi-modes?
+\item Is the problem high-dimensional?
+\item What is the dimensionality of problems?
+\end{itemize}
 
+\section{Gunes Notes}
+\begin{itemize}
+	\item ABC - talk about this in the context to MCMMC
+	\item The forward simulator represents some likelihood function that can be tractable or intractable. 
+	\item Within forward simulators the randomness comes from rejection sampling statements , but conditioning within the simulators is hard
+this is why we need to use the prob prog system . 
+\end{itemize}
+
+\end{document}
 
 

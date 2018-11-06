@@ -7,6 +7,8 @@ How to build Docker image:
 - docker build . -t openmalariapp
 - docker run --rm -it (for interactive usage, will remove the container from memory) (-it interactive attach to terminal)
 
-
+To attach a local drive / folder use
+<host file system>:<inside docker>
+- docker run --rm -it -v $PWD:/home bradleygh/openmalariapp
 Connecting docker to the external file system:
 
