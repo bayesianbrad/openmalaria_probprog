@@ -167,6 +167,10 @@ Things to look into:
 When dealing with a constrained set of distributions we can perform exact Bayesian inference, that is we can use statistically correct inference algorithms to find the true posterior $p(x | D) = \frac{p(D|x)p(x)}{p(D)}$, not just heuristic results. If we choose the a conjugate-pair of prior $p(x)$ and likelihood function $p(x|D)$ then we can also analytically exactly calculate the true posterior. However, in general most real world problems, i.e. physically simulations, cannot necessarily be constrained to this family of problems, as the likelihood is typically intractable, or computationally expensive to compute. This occurs because the \textit{forward simulator} emulates the likelihood function
 due to the ingrained stochasticity with the model, which makes it impossible to write down a likelihood function. Nonetheless, we can still apply a series of approximation techniques, such as variational inference that enable one to approximate the true posterior. Although such algorithms typically have no guarantees, they are typically lower bounded.   
 
+
+\subsection{Applied Interpretable Inference}
+
+
 \section{Gunes Notes}
 \begin{itemize}
 	\item ABC - talk about this in the context to MCMMC
