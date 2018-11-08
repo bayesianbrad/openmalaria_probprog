@@ -1,7 +1,0 @@
-{ "179855016" : { "build" : "https://github.com/SwissTPH/openmalaria/builds/179855013", 
- "branch" : "schema-36.1.1", 
- "commit" : "https://github.com/SwissTPH/openmalaria/commits//0e05462b084383a9bf2af72c55e9dbe1e6ec597f", 
- "job" : "https://github.com/SwissTPH/openmalaria/jobs/179855016",
- "os" : "osx",
- "tag" : "schema-36.1.1"
- }}
