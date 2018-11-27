@@ -142,6 +142,11 @@ Stochastic simulation models of malaria based on the simulation of infections in
 \begin{figure}
 \includegraphics[width=\textwidth]{images/accesstotreatment.png}
 \end{figure}
+
+
+\section{Running a simulation}
+
+\text{Run ./openMalaria --scenario MyScenario.xml}
 \section{Scenario transmission}
 
 
@@ -157,6 +162,22 @@ OpenMalaria simulations of malaria transmissions require a specification of:
 \end{itemize}
 \end{itemize}
 
+\section{The phases of the simulator}
+\begin{itemize}
+\item the XML document is read, model constants are set and some variables initialised
+\item an initial human population is created
+\item a warm-up period of one human life span is run
+\item there may be some extra simulations to adjust the mosquito population to the pre-specified Transmission situation.
+\item the intervention phase starts.
+\end{itemize}
+During these different phases the feedback from infections in humans to those in mosquitoes is handled in different ways
+
+\section{Gathering Data}
+
+The next step is to gather the necessary data to include in the scenario file to describe the situation in your study area as closely as possible to reality. There are more or less 90 separate pieces of data that need to go into the model. As many inputs as possible should come from studies in your particular study area, but realistically the overall percentage of inputs that come from site-specific data will be rather modest (about 30\%). A sizeable number of inputs will come from previously published literature at the district, national or regional level through a literature review. There will be a number of inputs that will remain the same as the initial model parameterization, depending on which model(s) you choose, particularly data on the vector life cycle and drug action. It is helpful to document the source of the data you choose for each parameter and if there are multiple sources why you chose the value that will go into the model.
+
+\section{Outputs}
+The simulation results of the outputs you have chosen from Step #2 are produced in the form of two separate .txt files (ctsout.txt and output.txt) that can be imported into your program of choice for analysis (i.e. Excel, R, STATA, etc)
 \section{Tom stuff}
 
 \paragraph*{Tom notes}
