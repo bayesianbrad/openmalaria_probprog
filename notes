@@ -12,3 +12,6 @@ To attach a local drive / folder use
 - docker run --rm -it -v $PWD:/home bradleygh/openmalariapp
 Connecting docker to the external file system:
 
+
+How to run Jupyter inside Docker:
+- docker run --rm -it -v $PWD:/home --net=host bradleygh/openmalariapp jupyter notebook --allow-root
