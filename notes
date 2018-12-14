@@ -63,3 +63,7 @@ within the folder add the following files:
 - cp build/openMalaria examples/openMalaria
 
 - <add_any_input_csv_or_txt_files>
+
+Once this is completed, in the command line type:
+
+- ./openMalaria -s <name_of_the_scenario_you_want_to_run>.xml
