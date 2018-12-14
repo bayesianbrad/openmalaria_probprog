@@ -44,7 +44,7 @@
 % \input{mognotes/mixofgauss}
 
 \section{What is Open Malria?}
-Open malaria is for simulating malaria epidemology and the impacts on that epidemiology of interventions against malaria. 
+Open malaria is for simulating malaria epidemiology and the impacts on that epidemiology of interventions against malaria. 
  It is based on microsimulations of Plasmodium falciparum malaria in humans, originally developed for simulating malaria vaccines.
  These models simulate the dynamics of malaria parasitaemia in the course of an infection, of transmission, of immunity, and of the processes leading to illness and death. The system is set up to simulate malaria in village, or district size human populations
 
@@ -57,7 +57,25 @@ The original models were designed for simulating the impact of interventions act
 \item 90\% in Africa
 \item Mortality rates fell by 26\% around the world in the past decade
 \end{itemize}
+
+\subsection{How does Malaria spread?}
+\begin{itemize}
+\item Deterministic model of malaria transmission based on the mosquito feeding cycle
+\item Linked to models of interventions
+\item Driven by EIR
+\item For input EIR values, you may need to work backwards to determine pre-experiment level
+\end{itemize}
+
+
+\begin{figure}[ht!]
+\includegraphics[width=\textwidth]{images/malariacycle.png}
+\caption{The mosquito feeding cycle. Malaria is spread through this cycle.}
+\end{figure}
+
 \section{How can Open malaria help in the real world?}
+
+It helps by enabling researchers to propose experiments, based on a number of observations that are collected on the field. 
+
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{images/research_process.png}
 \caption{Where OM fits into the real world}
@@ -99,39 +117,8 @@ Within the open malaria simulator \textit{XML} files should be seen as the progr
 \item Addressing uncertainty: ensemble of 14 model variants
 
 \end{itemize}
-\section{How to Use Open Malaria}
 
-\paragraph*{Objectives}
-\begin{itemize}
-	\item Understand OpenMalaria workflow to design an experiment
-	\item Understand the important features of OpenMalaria
-	\item Understand, the topic of choice, the model assumptions and how interventions interact 
-	\item Understand what information is needed to parameterize OpenMalaria and where to find it
-\end{itemize}
-
-
-\subsection{Seasonality of transmissions}
-The Plasmodium falciparum entomological inoculation rate (Pf EIR) is a measure of exposure to infectious mosquitoes. 
-When describing transmissions, the simulator is driven by the input value of annual average EIR, the average number of infectious bites a person receives each year.
-The seasonality is specifically specified by 12 monthly values for each vector species. Abs values or proportion for each month.
-
-In epidemiology, a \textbf{disease vector} is any agent that carries and transmits an infectious pathogen into another living organism; most agents regarded as vectors are organisms, such as intermediate parasites or microbes, but it could be an inanimate medium of infection such as dust particles.
-
-\section{How does Malaria spread?}
-\begin{itemize}
-\item Deterministic model of malaria transmission based on the mosquito feeding cycle
-\item Linked to models of interventions
-\item Driven by EIR
-\item For input EIR values, you may need to work backwards to determine pre-experiment level
-\end{itemize}
-
-
-\begin{figure}
-\includegraphics[width=\textwidth]{images/malariacycle.png}
-\caption{The mosquito feeding cycle. Malaria is spread through this cycle.}
-\end{figure}
-
-\section{Modelling different treatments}
+\subsection{Modelling different treatments}
 
 Stochastic simulation models of malaria based on the simulation of infections in humans. Tracks health status of individuals at discrete time points
 
@@ -143,11 +130,25 @@ Stochastic simulation models of malaria based on the simulation of infections in
 \includegraphics[width=\textwidth]{images/accesstotreatment.png}
 \end{figure}
 
+\section{How to Use Open Malaria}
 
-\section{Running a simulation}
+\paragraph*{Objectives}
+\begin{itemize}
+	\item Understand OpenMalaria workflow to design an experiment
+	\item Understand the important features of OpenMalaria
+	\item Understand, the topic of choice, the model assumptions and how interventions interact 
+	\item Understand what information is needed to parameterize OpenMalaria and where to find it
+\end{itemize}
+ 
 
-\text{Run ./openMalaria --scenario MyScenario.xml}
-\section{Scenario transmission}
+\subsection{Seasonality of transmissions}
+The Plasmodium falciparum entomological inoculation rate (Pf EIR) is a measure of exposure to infectious mosquitoes. 
+When describing transmissions, the simulator is driven by the input value of annual average EIR, the average number of infectious bites a person receives each year.
+The seasonality is specifically specified by 12 monthly values for each vector species. Abs values or proportion for each month.
+
+In epidemiology, a \textbf{disease vector} is any agent that carries and transmits an infectious pathogen into another living organism; most agents regarded as vectors are organisms, such as intermediate parasites or microbes, but it could be an inanimate medium of infection such as dust particles.
+
+\subsection{Scenario transmission}
 
 
 OpenMalaria simulations of malaria transmissions require a specification of:
@@ -162,9 +163,26 @@ OpenMalaria simulations of malaria transmissions require a specification of:
 \end{itemize}
 \end{itemize}
 
-\section{The phases of the simulator}
+
+
+\subsection{Running a simulation}
+Within the same directory structure we add the following files: 
+
 \begin{itemize}
-\item the XML document is read, model constants are set and some variables initialised
+\item densities.csv
+\item scenario\_xx.xsd
+\end{itemize}
+Then there must exist at least on file <MyScenario.xml>
+
+Then to run we use the following command:
+\text{./openMalaria --scenario MyScenario.xml}
+
+To ensure that it is possible to execute the openMalaria object, it must be within 
+the execution path. 
+
+\subsection{The phases of the simulator}
+\begin{itemize}
+\item the XML document is read, model constants are set and some variables initialized
 \item an initial human population is created
 \item a warm-up period of one human life span is run
 \item there may be some extra simulations to adjust the mosquito population to the pre-specified Transmission situation.
@@ -177,7 +195,7 @@ During these different phases the feedback from infections in humans to those in
 The next step is to gather the necessary data to include in the scenario file to describe the situation in your study area as closely as possible to reality. There are more or less 90 separate pieces of data that need to go into the model. As many inputs as possible should come from studies in your particular study area, but realistically the overall percentage of inputs that come from site-specific data will be rather modest (about 30\%). A sizeable number of inputs will come from previously published literature at the district, national or regional level through a literature review. There will be a number of inputs that will remain the same as the initial model parameterization, depending on which model(s) you choose, particularly data on the vector life cycle and drug action. It is helpful to document the source of the data you choose for each parameter and if there are multiple sources why you chose the value that will go into the model.
 
 \section{Outputs}
-The simulation results of the outputs you have chosen from Step #2 are produced in the form of two separate .txt files (ctsout.txt and output.txt) that can be imported into your program of choice for analysis (i.e. Excel, R, STATA, etc)
+The simulation results of the outputs you have chosen from Step 2 are produced in the form of two separate .txt files (ctsout.txt and output.txt) that can be imported into your program of choice for analysis (i.e. Excel, R, STATA, etc)
 \section{Tom stuff}
 
 \paragraph*{Tom notes}
@@ -211,7 +229,7 @@ due to the ingrained stochasticity with the model, which makes it impossible to 
 
 \section{Gunes Notes}
 \begin{itemize}
-	\item ABC - talk about this in the context to MCMMC
+	\item ABC - talk about this in the context to MCMC
 	\item The forward simulator represents some likelihood function that can be tractable or intractable. 
 	\item Within forward simulators the randomness comes from rejection sampling statements , but conditioning within the simulators is hard
 this is why we need to use the prob prog system . 
