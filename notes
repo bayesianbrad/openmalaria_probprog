@@ -10,6 +10,23 @@ On mac:
 
 - sudo gem install gollum
 
+Input/Outputs to the model
+==========================
+
+What can we designate as input/output:
+  - Inputs
+     - Mosquito nets
+     - Vaccination, type of vaccination
+     - Prophylactic
+  - Outputs
+     - "Survey measures"
+       - nHost
+       - nPatent
+     - Mortality rate
+     - Probability of seeking medical help
+
+
+
 How to build Docker image:
 
 - docker build . -t openmalariapp
