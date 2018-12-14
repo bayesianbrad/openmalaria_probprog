@@ -52,10 +52,12 @@ docker run --rm -it -p 127.0.0.1:8889:8889 -v $PWD:/home gbaydin/openmalariapp j
 
 
 Running the simulator
+======================
 
-Within the build directory create a folder, for example called examples
+Create a  directory in your local machine, for example called examples
 - mkdir examples
 - cd examples
+
 within the folder add the following files:
 - scenario_current.xsd
 - <name_of_the_scenario_you_want_to_run>.xml
@@ -65,5 +67,8 @@ within the folder add the following files:
 - <add_any_input_csv_or_txt_files>
 
 Once this is completed, in the command line type:
-
+- cd ..
+- docker run --rm -it -v $PWD:/home bradleygh/openmalariapp
+- cd /home/examples/
 - ./openMalaria -s <name_of_the_scenario_you_want_to_run>.xml
+
