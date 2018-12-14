@@ -1,0 +1,2 @@
+##	##
+timestep	input EIR	simulated EIR	human infectiousness	immunity h	immunity Y	recent births
