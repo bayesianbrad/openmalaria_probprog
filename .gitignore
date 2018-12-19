@@ -43,3 +43,13 @@
 *.swo
 .ropeproject/
 .idea/
+
+
+# Latex
+*.aux
+*.fdb_*
+*.fls
+*.log
+*.out
+*.synctex.*
+
