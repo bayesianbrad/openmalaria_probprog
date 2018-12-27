@@ -28,6 +28,7 @@ What can we designate as input/output:
 
 
 How to build Docker image:
+==========================
 
 - docker build . -t openmalariapp
 - docker run --rm -it (for interactive usage, will remove the container from memory) (-it interactive attach to terminal)
@@ -75,3 +76,11 @@ Running the simulator once an experiment has been created
 - cd /home/examples/
 - ./openMalaria -s <name_of_the_scenario_you_want_to_run>.xml
 
+When building the prob prog version
+===================================
+
+When openMalaria is being built it is actively looking for the current version of schema, in this case the schema
+version is 39.0, If the main directory name is not called "openmalaria_schema_<version_number> then the code will fail to build. 
+In addition to this, as specified by the openMalaria readme, you will have to change 
+all  the relevant places in the script where schema number appears before a build. 
+Seems very inefficient, but that is the way in whcih the simulator is set up. 
