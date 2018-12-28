@@ -1,0 +1,49 @@
+\documentclass[]{scrartcl}
+\usepackage[round]{natbib}
+\usepackage{proof}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{pgf}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\usetikzlibrary{fit,positioning}
+%opening
+\title{Interpretable Inference: Probabilistic Programming for Policy Making}
+\author{Bradley Gram-hansen}
+
+\begin{document}
+	
+	\maketitle
+	
+	\begin{abstract}
+		
+		Machine learning has stated many successes in the realms of computer vision, data analysis and automation, however, it has not had the same successes in the
+		social, or the physical sciences. This, in part, is due to the lack of interpretability that is provided by present day models. Interpretability here represents the ability to understand the decision making process, not to simply understand how uncertain we are in an outcome. 
+		In the presented work, we demonstrate an interpretable machine learning framework for generic-stochastic-forward-simulator and demonstrate how we can arrive optimal decisions that can be \emph{scrutinized}. In particular, in expending the work of [Gunes et al.], we show how we can hijack a Malaria epidemiology simulator, and interlace both inference and interpretability, to understand how Malaria will spread given a series of field observations. In addition to this, we combine together 
+	\end{abstract}
+	
+	\section{Outline}
+	
+	The goal is to combine the work of \citet{2017vanden} on neural discrete representation, Generalized Hamiltonian Monte Carlo ( and look at the two pre-requisites \citep{hoffman2017learning} and \citep{sohl2014hamiltonian}) and VAE-s to construct the most advance MCMC sampler of all time. Look at Deep NN as Gaussian Processes \citet{lee2017deep}
+	
+	Look into Deep Generative models see \href{http://www.cs.toronto.edu/~slwang/generative_model.pdf}{here}, \href{http://www.mit.edu/~9.520/spring10/Classes/class19_DBN_2010.pdf}{here}, \href{https://www.slideshare.net/mlreview/tutorial-on-deep-generative-models}{here} and \href{https://www.cs.cmu.edu/~rsalakhu/papers/annrev.pdf}{here} for tutorials. 
+	
+	\section{Variational Autoencoders}
+	\input{vae.tex}
+	
+	\section{Transformations of Constrained Variables}
+	\input{trans.tex}
+
+	\newpage
+	\bibliographystyle{apalike}
+	\bibliography{refs}
+\end{document}
+
+
