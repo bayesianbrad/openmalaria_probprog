@@ -131,6 +131,8 @@ target_link_libraries (unittest
   model
   schema
   contrib
+  pyprob_cpp
+  zmq
   ${OM_CXXTEST_GUI_LIB}
   ${GSL_LIBRARIES}
   ${XERCESC_LIBRARIES}
