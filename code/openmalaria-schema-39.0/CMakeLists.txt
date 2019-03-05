@@ -203,12 +203,15 @@ target_link_libraries (openMalaria
   model
   schema
   contrib
+  pyprob_cpp
+  zmq
   ${GSL_LIBRARIES}
   ${XERCESC_LIBRARIES}
   ${Z_LIBRARIES}
   ${PTHREAD_LIBRARIES}
   ${BOINC_LIBRARIES}
   ${OM_STD_LIBS}
+
 )
 
 if (MSVC)
