@@ -42,7 +42,7 @@ if( ${CMAKE_COMPILER_IS_GNUCXX} )
 
   option (OM_STATICALLY_LINK "Attempt to link libraries, including stdc++, statically.")
   if (OM_STATICALLY_LINK)
-    link_directories (${CMAKE_SOURCE_DIR}/lib)
+    link_directories (${CMAKE_SOURCE_DIR}/lib /usr/local/lib/)
     # Note: -static-libstdc++ is only available since GCC 4.5
     # See: http://www.trilithium.com/johan/2005/06/static-libstdc/
     add_definitions(-static-libgcc -static-libstdc++)
@@ -196,6 +196,8 @@ include_directories (SYSTEM
 include_directories (
   ${CMAKE_SOURCE_DIR}/model ${CMAKE_BINARY_DIR}
 )
+
+link_directories(/usr/local/lib/)
 
 add_executable (openMalaria model/openMalaria.cpp)
 
