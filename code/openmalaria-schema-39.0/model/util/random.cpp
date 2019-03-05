@@ -1,18 +1,18 @@
 /* This file is part of OpenMalaria.
- * 
+ *
  * Copyright (C) 2005-2015 Swiss Tropical and Public Health Institute
  * Copyright (C) 2005-2015 Liverpool School Of Tropical Medicine
- * 
+ *
  * OpenMalaria is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
@@ -22,11 +22,11 @@
  *
  * Currently both the GSL and boost generators are implemented. The
  * distributions all come from the GSL library so far.
- * 
+ *
  * Using the boost generator appears (in rough tests) to be slightly
  * slower, which is understandable since the GSL distributions must then use a
  * wrapper around the boost generator.
- * 
+ *
  * Note: using boost distributions elsewhere could ideally be implemented a
  * little differently, since the distribution objects could in many cases last
  * the length of the program rather than be created on each use.
@@ -39,7 +39,6 @@
 #include "util/errors.h"
 #include "util/StreamValidator.h"
 #include "Global.h"
-
 #ifdef OM_RANDOM_USE_BOOST
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_01.hpp>
@@ -54,6 +53,8 @@
 #include <cmath>
 #include <sstream>
 
+#include <pyprob_cpp.h>
+#include "xtensor/xadapt.hpp"
 // Note: since we're using both gsl and boost files, we should be careful to
 // avoid name conflicts. So probably don't use "using namespace boost;".
 
@@ -63,7 +64,7 @@ namespace OM { namespace util {
 # ifdef OM_RANDOM_USE_BOOST
     static boost::mt19937 boost_generator;
     static boost::uniform_01<boost::mt19937&> rng_uniform01 (boost_generator);
-    
+
     long unsigned int boost_rng_get (void*) {
 	BOOST_STATIC_ASSERT (sizeof(uint32_t) <= sizeof(long unsigned int));
 	long unsigned int val = static_cast<long unsigned int> (boost_generator ());
@@ -73,7 +74,7 @@ namespace OM { namespace util {
     double boost_rng_get_double_01 (void*) {
 	return rng_uniform01 ();
     }
-    
+
     static const gsl_rng_type boost_mt_type = {
 	"boost_mt19937",		// name
 	boost_generator.max(),	// max value
@@ -89,7 +90,7 @@ namespace OM { namespace util {
 // allocating and freeing the generator.
 struct generator_factory {
     gsl_rng * gsl_generator;
-    
+
     generator_factory () {
 #	ifdef OM_RANDOM_USE_BOOST
 	// In this case, I construct a wrapper around boost's generator. The reason for this is
@@ -114,6 +115,8 @@ struct generator_factory {
 // -----  set-up, tear-down and checkpointing  -----
 
 void random::seed (uint32_t seed) {
+    printf("random::seed\n");
+
 //     util::streamValidate(seed);
 # ifdef OM_RANDOM_USE_BOOST
     if (seed == 0) seed = 4357;	// gsl compatibility − ugh
@@ -124,6 +127,8 @@ void random::seed (uint32_t seed) {
 }
 
 void random::checkpoint (istream& stream, int seedFileNumber) {
+    printf("random::checkpoint\n");
+
 # ifdef OM_RANDOM_USE_BOOST
     // Don't use OM::util::checkpoint function for loading a stream; checkpoint::validateListSize uses too small a number.
     string str;
@@ -136,7 +141,7 @@ void random::checkpoint (istream& stream, int seedFileNumber) {
     istringstream ss (str);
     ss >> boost_generator;
 # else
-    
+
     ostringstream seedN;
     seedN << string("seed") << seedFileNumber;
     FILE * f = fopen(seedN.str().c_str(), "rb");
@@ -149,12 +154,14 @@ void random::checkpoint (istream& stream, int seedFileNumber) {
 }
 
 void random::checkpoint (ostream& stream, int seedFileNumber) {
+    printf("random::checkpoint\n");
+
 # ifdef OM_RANDOM_USE_BOOST
     ostringstream ss;
     ss << boost_generator;
     ss.str() & stream;
 # else
-    
+
     ostringstream seedN;
     seedN << string("seed") << seedFileNumber;
     FILE * f = fopen(seedN.str().c_str(), "wb");
@@ -168,35 +175,46 @@ void random::checkpoint (ostream& stream, int seedFileNumber) {
 // -----  random number generation  -----
 
 double random::uniform_01 () {
-    double result =
-    // GSL and boost versions both do the same (when using boost as the underlying generator):
-# ifdef OM_RANDOM_USE_BOOST
-        rng_uniform01 ();
-# else
-        gsl_rng_uniform (rng.gsl_generator);
-# endif
-//     util::streamValidate(result);
-    return result;
+    printf("Pyprob uniform 0 1\n");
+    auto uniform = pyprob_cpp::distributions::Uniform(0,1);
+    return pyprob_cpp::sample(uniform)(0); // this returns a tensor which is a single element
+
+// double result =
+//     // GSL and boost versions both do the same (when using boost as the underlying generator):
+// # ifdef OM_RANDOM_USE_BOOST
+//         rng_uniform01 ();
+// # else
+//         gsl_rng_uniform (rng.gsl_generator);
+// # endif
+// //     util::streamValidate(result);
+//     return result;
 }
 
 double random::gauss (double mean, double std){
+    printf("random::gauss\n");
     double result = gsl_ran_gaussian(rng.gsl_generator,std)+mean;
 //     util::streamValidate(result);
     return result;
 }
 double random::gauss (double std){
+    printf("random::gauss\n");
+
     double result = gsl_ran_gaussian(rng.gsl_generator,std);
 //     util::streamValidate(result);
     return result;
 }
 
 double random::gamma (double a, double b){
+    printf("random::gamma\n");
+
     double result = gsl_ran_gamma(rng.gsl_generator, a, b);
 //     util::streamValidate(result);
     return result;
 }
 
 double random::log_normal (double mu, double sigma){
+    printf("random::log_normal\n");
+
 /*# ifdef OM_RANDOM_USE_BOOST
     // This doesn't work: boost version takes mean and sigma while gsl version takes mu and sigma.
     boost::lognormal_distribution<> dist (mean, std);
@@ -210,7 +228,8 @@ double random::log_normal (double mu, double sigma){
 
 double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
     // Used for performance reasons. Calling GSL's log_normal 5 times is 50% slower.
-    
+    printf("random::sampleFromLogNormal\n");
+
     double zval = gsl_cdf_ugaussian_Pinv (normp);
 //     util::streamValidate(zval);
     // Where normp is distributed uniformly over [0,1], this acts like a sample
@@ -224,11 +243,15 @@ double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
 }
 
 double random::beta (double a, double b){
+    printf("random::beta\n");
+
     double result = gsl_ran_beta (rng.gsl_generator,a,b);
 //     util::streamValidate(result);
     return result;
 }
 double random::betaWithMean (double m, double b){
+    printf("random::betaWithMean\n");
+
     //TODO(performance): could do this calculation externally, and feed in a,b instead of mean,b
     double a = m * b / (1.0 - m);
 //     util::streamValidate(a);
@@ -236,6 +259,8 @@ double random::betaWithMean (double m, double b){
 }
 
 int random::poisson(double lambda){
+  printf("random::poisson\n");
+
     if( !(boost::math::isfinite)(lambda) ){
 	//This would lead to an inifinite loop in gsl_ran_poisson
 	throw TRACED_EXCEPTION( "lambda is inf", Error::InfLambda );
@@ -246,6 +271,8 @@ int random::poisson(double lambda){
 }
 
 bool random::bernoulli(double prob){
+    printf("random::bernoulli\n");
+
     assert( (boost::math::isfinite)(prob) );
     // return true iff our variate is less than the probability
     bool result =random::uniform_01() < prob;
@@ -254,11 +281,13 @@ bool random::bernoulli(double prob){
 }
 
 int random::uniform(int n){
+    printf("random::uniform\n");
     assert( (boost::math::isfinite)(n) );
     return static_cast<int>( random::uniform_01() * n );
 }
 
 double random::exponential(double mean){
+    printf("random::exponential\n");
     return gsl_ran_exponential(rng.gsl_generator, mean);
 }
 

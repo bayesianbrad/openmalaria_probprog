@@ -41,7 +41,7 @@ Connecting docker to the external file system:
 
 How to run Jupyter inside Docker:
 
-For linux 
+For linux
 
 - docker run --rm -it -v $PWD:/home --net=host bradleygh/openmalariapp jupyter notebook --allow-root
 
@@ -51,10 +51,11 @@ For Mac
 docker run --rm -it -p 127.0.0.1:8889:8889 -v $PWD:/home gbaydin/openmalariapp jupyter notebook --port 8889 --allow-root --ip=0.0.0.0
 
 
-Creating an experiment 
+Creating an experiment
 ======================
 
 Create a  directory in your local machine, for example called examples
+- cd /home
 - mkdir examples
 - cd examples
 
@@ -63,7 +64,7 @@ within the folder add the following files:
 - <name_of_the_scenario_you_want_to_run>.xml
 
 Add the openmalaria executable to the folder to, i.e
-- cp build/openMalaria examples/openMalaria
+- cp /code/openmalaria/build/openMalaria examples/openMalaria
 
 - <add_any_input_csv_or_txt_files>
 
@@ -71,16 +72,22 @@ Add the openmalaria executable to the folder to, i.e
 Running the simulator once an experiment has been created
 =========================================================
 
-- cd ..
-- docker run --rm -it -v $PWD:/home bradleygh/openmalariapp
+- cd ./examples
+- docker run --rm -it -v $PWD:/home/examples bradleygh/openmalariapp
 - cd /home/examples/
 - ./openMalaria -s <name_of_the_scenario_you_want_to_run>.xml
+
+
+Debugging by modifying code outside Docker, but running inside
+==============================================================
+docker run --rm -it -v $PWD/examples:/home/examples -v $PWD/code/openmalaria-schema-39.0/:/code/openmalaria bradleygh/openmalariapp
+
 
 When building the prob prog version
 ===================================
 
 When openMalaria is being built it is actively looking for the current version of schema, in this case the schema
-version is 39.0, If the main directory name is not called "openmalaria_schema_<version_number> then the code will fail to build. 
-In addition to this, as specified by the openMalaria readme, you will have to change 
-all  the relevant places in the script where schema number appears before a build. 
-Seems very inefficient, but that is the way in whcih the simulator is set up. 
+version is 39.0, If the main directory name is not called "openmalaria_schema_<version_number> then the code will fail to build.
+In addition to this, as specified by the openMalaria readme, you will have to change
+all  the relevant places in the script where schema number appears before a build.
+Seems very inefficient, but that is the way in whcih the simulator is set up.

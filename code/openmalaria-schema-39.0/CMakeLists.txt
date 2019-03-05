@@ -21,9 +21,9 @@ set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 if (NOT MSVC)
   # Enable builds on Raspberry pi (although without optimizations)
   if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   else (${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -msse2 -mfpmath=sse")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -msse2 -mfpmath=sse")
   endif (${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
 endif (NOT MSVC)
 
@@ -39,7 +39,7 @@ if( ${CMAKE_COMPILER_IS_GNUCXX} )
     # Add coverage
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
   endif (OM_COVERAGE)
-  
+
   option (OM_STATICALLY_LINK "Attempt to link libraries, including stdc++, statically.")
   if (OM_STATICALLY_LINK)
     link_directories (${CMAKE_SOURCE_DIR}/lib)
@@ -69,7 +69,7 @@ if (MSVC)
         string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
       endif(${flag_var} MATCHES "/MD")
     endforeach(flag_var)
-    
+
     set (OM_LINK_FLAGS "/NODEFAULTLIB:MSVCRT /NODEFAULTLIB:MSVCRTD /NODEFAULTLIB:library")
     set (OM_COMPILE_FLAGS "/DXERCES_STATIC_LIBRARY")
   else (OM_USE_LIBCMT)
@@ -119,15 +119,15 @@ Required: Spirit 2.1 or later. (You can either upgrade boost to version
 See: http://boost-spirit.com/home/articles/spirit2-1-release/using-spirit-v2-1-with-older-versions-of-boost-pre-v1-41/ )"
 	)
     endif (NOT SPIRIT_INCLUDE_DIRS)
-    
+
     # Extract SPIRIT_VERSION macro (code taken from FindBoost.cmake)
     # Read the whole file:
     SET(SPIRIT_VERSION 0)
     FILE(READ "${SPIRIT_INCLUDE_DIRS}/boost/spirit/include/version.hpp" _spirit_VERSION_HPP_CONTENTS)
-    
+
     STRING(REGEX REPLACE ".*#define SPIRIT_VERSION 0x([0-9A-Fa-f]+).*" "\\1" SPIRIT_VERSION "${_spirit_VERSION_HPP_CONTENTS}")
     SET(SPIRIT_VERSION ${SPIRIT_VERSION} CACHE INTERNAL "The version number for boost/spirit (base 16)")
-    
+
     # Warning: this is a hex number. The test will probably fail if any digits are A-F.
     # The logic I want is !(SPIRIT_VERSION >= 2010) which is _not_ the same as
     # (SPIRIT_VERSION LESS 2010) (because this is false when SPIRIT_VERSION is not a number).
