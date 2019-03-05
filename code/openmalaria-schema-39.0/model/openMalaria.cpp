@@ -29,26 +29,23 @@
 #include <cstdio>
 #include <cerrno>
 
+#include <pyprob_cpp.h>
+
 using namespace OM;
+
 
 /** main() — initializes and shuts down BOINC, loads scenario XML and
  * runs simulation. */
 
-// int main(int argc, char* argv[]){
 
-    // printf("Hello world");
-    //
-    // }
-
-
-int main(int argc, char* argv[]) {
+xt::xarray<double> forward() {
     int exitStatus = EXIT_SUCCESS;
-    string scenarioFile;
+    string scenarioFile = "test_scenario.xml";
 
     try {
         util::set_gsl_handler();        // init
 
-        scenarioFile = util::CommandLine::parse (argc, argv);   // parse arguments
+        // scenarioFile = util::CommandLine::parse (argc, argv);   // parse arguments
 
         util::BoincWrapper::init();     // BOINC init
 
@@ -125,4 +122,13 @@ int main(int argc, char* argv[]) {
     // In a few cases (e.g. stopping due to the --checkpoint option), we exit
     // here. In this case we shouldn't call boinc_finish (it breaks tests).
     return exitStatus;
+}
+
+
+int main(int argc, char *argv[])
+{
+  auto serverAddress = (argc > 1) ? argv[1] : "ipc://@openmalaria_probprog";
+  pyprob_cpp::Model model = pyprob_cpp::Model(forward, "OpenMalaria probprog");
+  model.startServer(serverAddress);
+  return 0;
 }
