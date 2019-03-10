@@ -14,7 +14,7 @@ RUN cd /code && git clone --branch master https://github.com/probprog/pyprob_cpp
 ADD openmalaria-schema-39.0 /code/openmalaria
 RUN cd /code/openmalaria && mkdir build && cd build && cmake ..
 RUN cd /code/openmalaria/build && make -j4
-RUN cd /code/openmalaria/build && ctest -j4
+#RUN cd /code/openmalaria/build && ctest -j4
 
 RUN pip3 install https://download.pytorch.org/whl/cpu/torch-1.0.1.post2-cp36-cp36m-linux_x86_64.whl
 RUN pip3 install torchvision jupyter
