@@ -191,18 +191,22 @@ double random::uniform_01 () {
 }
 
 double random::gauss (double mean, double std){
-    printf("random::gauss\n");
-    double result = gsl_ran_gaussian(rng.gsl_generator,std)+mean;
-//     util::streamValidate(result);
-    return result;
-}
-double random::gauss (double std){
-    printf("random::gauss\n");
+    printf("Pyprob normal 0 1 \n");
+    printf("Pyprob normal mean std \n");
+    auto normal = pyprob_cpp::distributions::Normal(mean, std);
 
-    double result = gsl_ran_gaussian(rng.gsl_generator,std);
-//     util::streamValidate(result);
-    return result;
+    // double result = gsl_ran_gaussian(rng.gsl_generator,std)+mean;
+    // util::streamValidate(result);
+    // return result;
+    return pyprob_cpp::sample(normal)(0);
 }
+// double random::gauss (double std){
+//     printf("random::gauss\n");
+
+//     double result = gsl_ran_gaussian(rng.gsl_generator,std);
+// //     util::streamValidate(result);
+//     return result;
+// }
 
 double random::gamma (double a, double b){
     printf("random::gamma\n");
@@ -259,15 +263,17 @@ double random::betaWithMean (double m, double b){
 }
 
 int random::poisson(double lambda){
-  printf("random::poisson\n");
-
+  
     if( !(boost::math::isfinite)(lambda) ){
 	//This would lead to an inifinite loop in gsl_ran_poisson
 	throw TRACED_EXCEPTION( "lambda is inf", Error::InfLambda );
     }
-    int result = gsl_ran_poisson (rng.gsl_generator, lambda);
+    printf("Pyprob possion 1\n");
+    auto poisson = pyprob_cpp::distributions::Poisson(lambda);
+    return pyprob_cpp::sample(poisson)(0);
+    // int result = gsl_ran_poisson (rng.gsl_generator, lambda);
 //     util::streamValidate(result);
-    return result;
+    // return result;
 }
 
 bool random::bernoulli(double prob){
@@ -292,6 +298,7 @@ double random::exponential(double mean){
 }
 
 double random::weibull(double lambda, double k){
+    printf("random::weibull\n");
     return gsl_ran_weibull( rng.gsl_generator, lambda, k );
 }
 
