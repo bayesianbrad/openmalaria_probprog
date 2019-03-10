@@ -1,3 +1,11 @@
+todo
+====
+
+Add notes to all the .cpp files that we modify, to state exactly
+what we modified. 
+
+
+
 openmalaria dependencies (Ubuntu):
 - apt packages: xsdcxx libxerces-c-dev libgsl-dev libboost-all-dev
 
