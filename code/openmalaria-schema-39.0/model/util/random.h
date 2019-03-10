@@ -46,7 +46,7 @@ namespace random {
     double gauss (double mean, double std);
     
     /** As above, but with mean 0 (may be slightly faster). */
-    double gauss (double std);
+    // double gauss (double std);
     
     /** This function returns a random variate from the gamma distribution. */
     double gamma (double a, double b);
