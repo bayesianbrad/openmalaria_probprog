@@ -1,0 +1,161 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2018
+
+% ready for submission
+% \usepackage{neurips_2018}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2018}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+     \usepackage[final]{neurips_2019}
+
+% to avoid loading the natbib package, add option nonatbib:
+%     \usepackage[nonatbib]{neurips_2018}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\title{Applied Interpretable Inference: Connecting Probabilistic Programming with Epidemology Simulators}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{%
+  David S.~Hippocampus\thanks{Use footnote for providing further information
+    about author (webpage, alternative address)---\emph{not} for acknowledging
+    funding agencies.} \\
+  Department of Computer Science\\
+  Cranberry-Lemon University\\
+  Pittsburgh, PA 15213 \\
+  \texttt{hippo@cs.cranberry-lemon.edu} \\
+  % examples of more authors
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \AND
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+}
+
+\begin{document}
+% \nipsfinalcopy is no longer used
+
+\maketitle
+
+\begin{abstract}
+
+A goal of probabilistic programming is to couple simulators, with inference. This is 
+because stochastic simulators are used prominently in many industrial settings,
+do not require one to construct hand-crafted joint distributions as they implicitly 
+define a joint distribution of the program and encode learnt structures 
+directly. This makes simulators powerful tools and much of machine learning (ML) and 
+Artificial Intelligence (AI)
+can be seen as trying to emulate such simulators from a purely data-driven approach.
+However, in the 
+ML/AI setting, although we can often infer outcomes, we have little understanding about what 
+in the data led to the outputted inferences. 
+This makes it challenging to deploy ML/AI systems into the wild, especially in health-related and safety-critical domains, such
+as epidemiology, as we lose \emph{interpretability}. 
+In this work, we explain how to design ML/AI systems that combine
+probabilistic programming systems (PPSs) and epidemiology simulators, to extract
+fully interpretable posterior structures, enabling policy makers 
+and practitioners to make interpretable inferences. 
+In particular, we demonstrate this for the Malaria disease and show how we can 
+perform interpretable inference in such settings.
+\end{abstract}
+
+\section{Introduction}
+
+To do. 
+
+\begin{itemize}
+
+\item Outline the objectives
+\item State the importance of interpretability in the inference of the simulator
+\item Our system enables one to understand and interpret the most common paths in a program (simulation).
+\item In highlighting this a practitioner can then go back to the field and explore that parameter/s in more depth.
+\item This facilitates understanding and the construction of more detailed models and data collection strategies
+
+\end{itemize}
+
+
+\section{Related Work}
+\label{sec:related}
+
+
+
+\section{Epidemiology Simulators and Probabilistic Programming}
+\label{sec:background}
+This will kind of be like a background section. 
+
+
+
+\section{Methodology}
+ TODO
+
+\section{Results}
+
+TO ADD
+
+
+% \subsubsection*{Acknowledgments}
+
+% Use unnumbered third level headings for the acknowledgments. All acknowledgments
+% go at the end of the paper. Do not include acknowledgments in the anonymized
+% submission, only in the final paper.
+
+\section*{References}
+
+References follow the acknowledgments. Use unnumbered first-level heading for
+the references. Any choice of citation style is acceptable as long as you are
+consistent. It is permissible to reduce the font size to \verb+small+ (9 point)
+when listing the references. {\bf Remember that you can use more than eight
+  pages as long as the additional pages contain \emph{only} cited references.}
+\medskip
+
+\small
+
+[1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms for
+connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
+(eds.), {\it Advances in Neural Information Processing Systems 7},
+pp.\ 609--616. Cambridge, MA: MIT Press.
+
+[2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
+  Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
+TELOS/Springer--Verlag.
+
+[3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of learning and
+recall at excitatory recurrent synapses and cholinergic modulation in rat
+hippocampal region CA3. {\it Journal of Neuroscience} {\bf 15}(7):5249-5262.
+
+\end{document}
