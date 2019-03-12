@@ -52,7 +52,6 @@
 
 #include <cmath>
 #include <sstream>
-
 #include <pyprob_cpp.h>
 #include "xtensor/xadapt.hpp"
 // Note: since we're using both gsl and boost files, we should be careful to
@@ -60,7 +59,6 @@
 
 
 namespace OM { namespace util {
-
 # ifdef OM_RANDOM_USE_BOOST
     static boost::mt19937 boost_generator;
     static boost::uniform_01<boost::mt19937&> rng_uniform01 (boost_generator);
@@ -191,7 +189,6 @@ double random::uniform_01 () {
 }
 
 double random::gauss (double mean, double std){
-    printf("Pyprob normal 0 1 \n");
     printf("Pyprob normal mean std \n");
     auto normal = pyprob_cpp::distributions::Normal(mean, std);
 
@@ -303,3 +300,5 @@ double random::weibull(double lambda, double k){
 }
 
 } }
+
+
