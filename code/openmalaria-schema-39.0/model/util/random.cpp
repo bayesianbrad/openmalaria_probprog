@@ -173,7 +173,7 @@ void random::checkpoint (ostream& stream, int seedFileNumber) {
 // -----  random number generation  -----
 
 double random::uniform_01 () {
-    printf("Pyprob uniform 0 1\n");
+    // printf("Pyprob uniform 0 1\n");
     auto uniform = pyprob_cpp::distributions::Uniform(0,1);
     return pyprob_cpp::sample(uniform)(0); // this returns a tensor which is a single element
 
@@ -189,7 +189,7 @@ double random::uniform_01 () {
 }
 
 double random::gauss (double mean, double std){
-    printf("Pyprob normal mean std \n");
+    // printf("Pyprob normal mean std \n");
     auto normal = pyprob_cpp::distributions::Normal(mean, std);
 
     // double result = gsl_ran_gaussian(rng.gsl_generator,std)+mean;
@@ -206,7 +206,7 @@ double random::gauss (double mean, double std){
 // }
 
 double random::gamma (double a, double b){
-    printf("random::gamma\n");
+    // printf("random::gamma\n");
 
     double result = gsl_ran_gamma(rng.gsl_generator, a, b);
 //     util::streamValidate(result);
@@ -214,7 +214,7 @@ double random::gamma (double a, double b){
 }
 
 double random::log_normal (double mu, double sigma){
-    printf("random::log_normal\n");
+    // printf("random::log_normal\n");
 
 /*# ifdef OM_RANDOM_USE_BOOST
     // This doesn't work: boost version takes mean and sigma while gsl version takes mu and sigma.
@@ -229,7 +229,7 @@ double random::log_normal (double mu, double sigma){
 
 double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
     // Used for performance reasons. Calling GSL's log_normal 5 times is 50% slower.
-    printf("random::sampleFromLogNormal\n");
+    // printf("random::sampleFromLogNormal\n");
 
     double zval = gsl_cdf_ugaussian_Pinv (normp);
 //     util::streamValidate(zval);
@@ -244,14 +244,14 @@ double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
 }
 
 double random::beta (double a, double b){
-    printf("random::beta\n");
+    // printf("random::beta\n");
 
     double result = gsl_ran_beta (rng.gsl_generator,a,b);
 //     util::streamValidate(result);
     return result;
 }
 double random::betaWithMean (double m, double b){
-    printf("random::betaWithMean\n");
+    // printf("random::betaWithMean\n");
 
     //TODO(performance): could do this calculation externally, and feed in a,b instead of mean,b
     double a = m * b / (1.0 - m);
@@ -265,7 +265,7 @@ int random::poisson(double lambda){
 	//This would lead to an inifinite loop in gsl_ran_poisson
 	throw TRACED_EXCEPTION( "lambda is inf", Error::InfLambda );
     }
-    printf("Pyprob possion 1\n");
+    // printf("Pyprob possion 1\n");
     auto poisson = pyprob_cpp::distributions::Poisson(lambda);
     return pyprob_cpp::sample(poisson)(0);
     // int result = gsl_ran_poisson (rng.gsl_generator, lambda);
@@ -274,7 +274,7 @@ int random::poisson(double lambda){
 }
 
 bool random::bernoulli(double prob){
-    printf("random::bernoulli\n");
+    // printf("random::bernoulli\n");
 
     assert( (boost::math::isfinite)(prob) );
     // return true iff our variate is less than the probability
@@ -284,18 +284,18 @@ bool random::bernoulli(double prob){
 }
 
 int random::uniform(int n){
-    printf("random::uniform\n");
+    // printf("random::uniform\n");
     assert( (boost::math::isfinite)(n) );
     return static_cast<int>( random::uniform_01() * n );
 }
 
 double random::exponential(double mean){
-    printf("random::exponential\n");
+    // printf("random::exponential\n");
     return gsl_ran_exponential(rng.gsl_generator, mean);
 }
 
 double random::weibull(double lambda, double k){
-    printf("random::weibull\n");
+    // printf("random::weibull\n");
     return gsl_ran_weibull( rng.gsl_generator, lambda, k );
 }
 
