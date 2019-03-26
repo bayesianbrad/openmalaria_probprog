@@ -45,7 +45,7 @@
 #include <boost/random/lognormal_distribution.hpp>
 #include <boost/static_assert.hpp>
 #endif
-
+#include <iostream>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
@@ -64,23 +64,23 @@ namespace OM { namespace util {
     static boost::uniform_01<boost::mt19937&> rng_uniform01 (boost_generator);
 
     long unsigned int boost_rng_get (void*) {
-	BOOST_STATIC_ASSERT (sizeof(uint32_t) <= sizeof(long unsigned int));
-	long unsigned int val = static_cast<long unsigned int> (boost_generator ());
-	streamValidate( val );
-	return val;
+    BOOST_STATIC_ASSERT (sizeof(uint32_t) <= sizeof(long unsigned int));
+    long unsigned int val = static_cast<long unsigned int> (boost_generator ());
+    streamValidate( val );
+    return val;
     }
     double boost_rng_get_double_01 (void*) {
-	return rng_uniform01 ();
+    return rng_uniform01 ();
     }
 
     static const gsl_rng_type boost_mt_type = {
-	"boost_mt19937",		// name
-	boost_generator.max(),	// max value
-	boost_generator.min(),	// min value
-	0,					// size of state; not used here
-	NULL,				// re-seed function; don't use
-	&boost_rng_get,
-	&boost_rng_get_double_01
+    "boost_mt19937",        // name
+    boost_generator.max(),  // max value
+    boost_generator.min(),  // min value
+    0,                  // size of state; not used here
+    NULL,               // re-seed function; don't use
+    &boost_rng_get,
+    &boost_rng_get_double_01
     };
 # endif
 
@@ -90,23 +90,23 @@ struct generator_factory {
     gsl_rng * gsl_generator;
 
     generator_factory () {
-#	ifdef OM_RANDOM_USE_BOOST
-	// In this case, I construct a wrapper around boost's generator. The reason for this is
-	// that it allows use of distributions from both boost and GSL.
-	gsl_generator = new gsl_rng;
-	gsl_generator->type = &boost_mt_type;
-	gsl_generator->state = NULL;	// state is stored as static variables
-#	else
-	//use the mersenne twister generator
-	gsl_generator = gsl_rng_alloc(gsl_rng_mt19937);
-#	endif
+#   ifdef OM_RANDOM_USE_BOOST
+    // In this case, I construct a wrapper around boost's generator. The reason for this is
+    // that it allows use of distributions from both boost and GSL.
+    gsl_generator = new gsl_rng;
+    gsl_generator->type = &boost_mt_type;
+    gsl_generator->state = NULL;    // state is stored as static variables
+#   else
+    //use the mersenne twister generator
+    gsl_generator = gsl_rng_alloc(gsl_rng_mt19937);
+#   endif
     }
     ~generator_factory () {
-#	ifdef OM_RANDOM_USE_BOOST
-	delete gsl_generator;
-#	else
-	gsl_rng_free (gsl_generator);
-#	endif
+#   ifdef OM_RANDOM_USE_BOOST
+    delete gsl_generator;
+#   else
+    gsl_rng_free (gsl_generator);
+#   endif
     }
 } rng;
 
@@ -117,7 +117,7 @@ void random::seed (uint32_t seed) {
 
 //     util::streamValidate(seed);
 # ifdef OM_RANDOM_USE_BOOST
-    if (seed == 0) seed = 4357;	// gsl compatibility − ugh
+    if (seed == 0) seed = 4357; // gsl compatibility − ugh
     boost_generator.seed (seed);
 # else
     gsl_rng_set (rng.gsl_generator, seed);
@@ -135,7 +135,7 @@ void random::checkpoint (istream& stream, int seedFileNumber) {
     str.resize (len);
     stream.read (&str[0], str.length());
     if (!stream || stream.gcount() != streamsize(len))
-	throw checkpoint_error ("stream read error string");
+    throw checkpoint_error ("stream read error string");
     istringstream ss (str);
     ss >> boost_generator;
 # else
@@ -144,9 +144,9 @@ void random::checkpoint (istream& stream, int seedFileNumber) {
     seedN << string("seed") << seedFileNumber;
     FILE * f = fopen(seedN.str().c_str(), "rb");
     if (f == NULL)
-	throw checkpoint_error (string("load_rng_state: file not found: ").append(seedN.str()));
+    throw checkpoint_error (string("load_rng_state: file not found: ").append(seedN.str()));
     if (gsl_rng_fread(f, rng.gsl_generator) != 0)
-	throw checkpoint_error ("gsl_rng_fread failed");
+    throw checkpoint_error ("gsl_rng_fread failed");
     fclose (f);
 # endif
 }
@@ -164,7 +164,7 @@ void random::checkpoint (ostream& stream, int seedFileNumber) {
     seedN << string("seed") << seedFileNumber;
     FILE * f = fopen(seedN.str().c_str(), "wb");
     if (gsl_rng_fwrite(f, rng.gsl_generator) != 0)
-	throw checkpoint_error ("gsl_rng_fwrite failed");
+    throw checkpoint_error ("gsl_rng_fwrite failed");
     fclose (f);
 # endif
 }
@@ -175,7 +175,10 @@ void random::checkpoint (ostream& stream, int seedFileNumber) {
 double random::uniform_01 () {
     // printf("Pyprob uniform 0 1\n");
     auto uniform = pyprob_cpp::distributions::Uniform(0,1);
-    return pyprob_cpp::sample(uniform)(0); // this returns a tensor which is a single element
+    auto sample = pyprob_cpp::sample(uniform)(0);
+    cout<<" Unifrom 0 1 sample "<<sample<<endl;
+    return sample;
+    // return pyprob_cpp::sample(uniform)(0); // this returns a tensor which is a single element
 
 // double result =
 //     // GSL and boost versions both do the same (when using boost as the underlying generator):
@@ -206,7 +209,7 @@ double random::gauss (double mean, double std){
 // }
 
 double random::gamma (double a, double b){
-    // printf("random::gamma\n");
+    printf("random::gamma\n");
 
     double result = gsl_ran_gamma(rng.gsl_generator, a, b);
 //     util::streamValidate(result);
@@ -214,7 +217,7 @@ double random::gamma (double a, double b){
 }
 
 double random::log_normal (double mu, double sigma){
-    // printf("random::log_normal\n");
+    printf("random::log_normal\n");
 
 /*# ifdef OM_RANDOM_USE_BOOST
     // This doesn't work: boost version takes mean and sigma while gsl version takes mu and sigma.
@@ -262,12 +265,16 @@ double random::betaWithMean (double m, double b){
 int random::poisson(double lambda){
   
     if( !(boost::math::isfinite)(lambda) ){
-	//This would lead to an inifinite loop in gsl_ran_poisson
-	throw TRACED_EXCEPTION( "lambda is inf", Error::InfLambda );
+    //This would lead to an inifinite loop in gsl_ran_poisson
+    throw TRACED_EXCEPTION( "lambda is inf", Error::InfLambda );
     }
     // printf("Pyprob possion 1\n");
     auto poisson = pyprob_cpp::distributions::Poisson(lambda);
-    return pyprob_cpp::sample(poisson)(0);
+
+    // for debugging 
+    auto sample = pyprob_cpp::sample(poisson)(0);
+    cout<< "poisson sample: "<<sample<<endl;
+    return sample;
     // int result = gsl_ran_poisson (rng.gsl_generator, lambda);
 //     util::streamValidate(result);
     // return result;

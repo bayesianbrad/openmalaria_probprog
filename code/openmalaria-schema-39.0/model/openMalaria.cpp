@@ -24,21 +24,14 @@
 #include "Simulator.h"
 #include "util/CommandLine.h"
 #include "util/errors.h"
-
-// bradley gram-hansen: Including random.cpp
-// to avoid compilation linking issues with pyprob. 
 #include "util/random.cpp"
-
 #include <cstdio>
 #include <cerrno>
 
 
 // #include <xtensor/xadapt.hpp>
 // #include <pyprob_cpp.h>
-/*
 
-
-*/
 using namespace OM;
 
 
@@ -47,7 +40,7 @@ using namespace OM;
 
 xt::xarray<double> forward() {
     int exitStatus = EXIT_SUCCESS;
-    string scenarioFile ;
+    string scenarioFile = "test_scenario.xml";
     printf("running simulator \n");
 
     try {
@@ -55,6 +48,9 @@ xt::xarray<double> forward() {
         int argc = 3;
         char *argv[] = {"openMalaria","-s", "test_scenario.xml"};
         scenarioFile = util::CommandLine::parse (argc, argv);   // parse arguments
+
+
+        // scenarioFile = util::CommandLine::parse (argc, argv);   // parse arguments
 
         util::BoincWrapper::init();     // BOINC init
 
@@ -134,20 +130,13 @@ xt::xarray<double> forward() {
 }
 
 int main(int argc, char *argv[])
-{ 
- for (int i = 0; i < argc; ++i) 
-        cout << argv[i] << "\t" << i << "\n"; 
+{
   auto serverAddress = (argc > 1) ? argv[1] : "ipc://@openmalaria_probprog";
-  printf("argc\n");
   pyprob_cpp::Model model = pyprob_cpp::Model(forward, "OpenMalaria probprog");
   model.startServer(serverAddress);
   return 0;
 }
 
-// bradley: why can't we have command line argument to take 
-// advatage of pyprob. I.e it calls the above functions
-// and takes a port number and IP as input. 
-// i.e edit util.commandline.cpp
 // int main(int argc, char* argv[]) {
 //     int exitStatus = EXIT_SUCCESS;
 //     string scenarioFile;
