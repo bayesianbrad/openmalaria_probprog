@@ -1,2 +1,4 @@
 ##	##
 timestep	input EIR	simulated EIR	human infectiousness	immunity h	immunity Y	recent births
+0	0.00385527	-nan	0	1	31.8321	0
+1	0.00515328	-nan	0	1	31.8321	0
