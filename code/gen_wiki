@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /openmalaria_wiki/
+gollum

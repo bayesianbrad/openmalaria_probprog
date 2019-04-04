@@ -1,0 +1,38 @@
+digraph G {
+rankdir=LR;
+START [color=black, fillcolor="#ffffff", fontcolor=black, penwidth=1.0002287360589768, style=filled];
+A1 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.0002287360589768, style=filled];
+START -> A1  [color="#000000", fontcolor=black, label="1.000", weight=1.0];
+A2 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.2514294625724809, style=filled];
+A1 -> A2  [color="#000000", fontcolor=black, label="1.000", weight=1.0];
+A3 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=2.300448153525811, style=filled];
+A2 -> A3  [color="#000000", fontcolor=black, label="1.000", weight=1.0];
+A4 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=2.3001160108580123, style=filled];
+A3 -> A4  [color="#000000", fontcolor=black, label="1.000", weight=0.9996989765201686];
+A5 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.0011435700579847, style=filled];
+A4 -> A5  [color="#bfbfbf", fontcolor=black, label="0.001", weight=0.001];
+A6 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=2.300448153525811, style=filled];
+A5 -> A6  [color="#000000", fontcolor=black, label="1.000", weight=1.0];
+A6 -> A3  [color="#010101", fontcolor=black, label="0.983", weight=0.9834437086092715];
+A4 -> A6  [color="#060606", fontcolor=black, label="0.944", weight=0.9444444444444444];
+A7 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.3565402493449126, style=filled];
+A4 -> A7  [color="#afafaf", fontcolor=black, label="0.055", weight=0.05480277024992472];
+A7 -> A6  [color="#030303", fontcolor=black, label="0.968", weight=0.9680851063829787];
+A8 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.023957193423561, style=filled];
+A6 -> A8  [color="#bababa", fontcolor=black, label="0.016", weight=0.01580373269114991];
+A9 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.023957193423561, style=filled];
+A8 -> A9  [color="#000000", fontcolor=black, label="1.000", weight=1.0];
+A10 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.023957193423561, style=filled];
+A9 -> A10  [color="#000000", fontcolor=black, label="1.000", weight=1.0];
+A11 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.023957193423561, style=filled];
+A10 -> A11  [color="#000000", fontcolor=black, label="1.000", weight=1.0];
+A11 -> A3  [color="#090909", fontcolor=black, label="0.914", weight=0.9142857142857143];
+A6 -> A2  [color="#bfbfbf", fontcolor=black, label="0.001", weight=0.001];
+A12 [color=black, fillcolor="#fa8072", fontcolor=black, penwidth=1.0020582277034502, style=filled];
+A11 -> A12  [color="#a6a6a6", fontcolor=black, label="0.086", weight=0.08571428571428572];
+A12 -> A3  [color="#000000", fontcolor=black, label="1.000", weight=1.0];
+A7 -> A7  [color="#b5b5b5", fontcolor=black, label="0.032", weight=0.031914893617021274];
+A3 -> A6  [color="#bfbfbf", fontcolor=black, label="0.000", weight=0.001];
+END [color=black, fillcolor="#ffffff", fontcolor=black, penwidth=1.250285920073721, style=filled];
+A6 -> END  [color="#bfbfbf", fontcolor=black, label="0.000", weight=0.001];
+}
