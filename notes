@@ -104,5 +104,7 @@ Seems very inefficient, but that is the way in whcih the simulator is set up.
 Running OM simulator with Pyprob
 ================================
 
-docker run --rm -it -p 127.0.0.1:8889:8889 -v $PWD/examples:/home/examples -v $PWD/code/openmalaria-schema-39.0/:/code/openmalaria bradleygh/openmalariapp bin bash "cd home/examples ; ./openMalaria"
+docker run --rm -it -p 2345:2345 -v $PWD/examples:/home/examples -v $PWD/code/openmalaria-schema-39.0/:/code/openmalaria bradleygh/openmalariapp
+
+remember to add tcp://*:2345
 
