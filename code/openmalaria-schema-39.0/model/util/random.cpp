@@ -175,9 +175,8 @@ void random::checkpoint (ostream& stream, int seedFileNumber) {
 double random::uniform_01 () {
     // printf("Pyprob uniform 0 1\n");
     auto uniform = pyprob_cpp::distributions::Uniform(0,1);
-    auto sample = pyprob_cpp::sample(uniform)(0);
-    cout<<" Unifrom 0 1 sample "<<sample<<endl;
-    return sample;
+    // cout<<" Unifrom 0 1 sample "<<sample<<endl;
+    return pyprob_cpp::sample(uniform)(0);
     // return pyprob_cpp::sample(uniform)(0); // this returns a tensor which is a single element
 
 // double result =
@@ -211,9 +210,11 @@ double random::gauss (double mean, double std){
 double random::gamma (double a, double b){
     printf("random::gamma\n");
 
-    double result = gsl_ran_gamma(rng.gsl_generator, a, b);
+    // double result = gsl_ran_gamma(rng.gsl_generator, a, b);
 //     util::streamValidate(result);
-    return result;
+    // return result;
+    auto gamma = pyprob_cpp::distributions::Gamma(a, b);
+    return pyprob_cpp::sample(gamma)(0);
 }
 
 double random::log_normal (double mu, double sigma){
@@ -224,10 +225,12 @@ double random::log_normal (double mu, double sigma){
     boost::lognormal_distribution<> dist (mean, std);
     return dist (boost_generator);
 # else*/
-    double result = gsl_ran_lognormal (rng.gsl_generator, mu, sigma);
-//     util::streamValidate(result);
-    return result;
+//     double result = gsl_ran_lognormal (rng.gsl_generator, mu, sigma);
+// //     util::streamValidate(result);
+//     return result;
 //# endif
+    auto log_normal = pyprob_cpp::distributions::LogNormal(mu, sigma);
+    return pyprob_cpp::sample(log_normal)(0);
 }
 
 double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
@@ -241,9 +244,11 @@ double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
     // uniform sample to the power of 1/(T-1), zval is distributed like a
     // uniform gauss times 4* F(x,0,1)^3, where F(x,0,1) ist the cummulative
     // distr. function of a uniform gauss:
-    double result = exp(meanlog+stdlog*zval);
+    // double result = exp(meanlog+stdlog*zval);
+    auto log_normal = pyprob_cpp::distributions::LogNormal(exp(meanlog), exp(stdlog));
+    return pyprob_cpp::sample(log_normal)(0);
 //     util::streamValidate(result);
-    return result;
+    // return result;
 }
 
 double random::beta (double a, double b){
@@ -272,9 +277,9 @@ int random::poisson(double lambda){
     auto poisson = pyprob_cpp::distributions::Poisson(lambda);
 
     // for debugging 
-    auto sample = pyprob_cpp::sample(poisson)(0);
-    cout<< "poisson sample: "<<sample<<endl;
-    return sample;
+    // auto sample = pyprob_cpp::sample(poisson)(0);
+    // cout<< "poisson sample: "<<sample<<endl;
+    return pyprob_cpp::sample(poisson)(0);
     // int result = gsl_ran_poisson (rng.gsl_generator, lambda);
 //     util::streamValidate(result);
     // return result;
@@ -298,12 +303,16 @@ int random::uniform(int n){
 
 double random::exponential(double mean){
     // printf("random::exponential\n");
-    return gsl_ran_exponential(rng.gsl_generator, mean);
+    // return gsl_ran_exponential(rng.gsl_generator, mean);
+    auto exponential = pyprob_cpp::distributions::Exponential(mean);
+    return pyprob_cpp::sample(exponential)(0);
 }
 
 double random::weibull(double lambda, double k){
     // printf("random::weibull\n");
-    return gsl_ran_weibull( rng.gsl_generator, lambda, k );
+    // return gsl_ran_weibull( rng.gsl_generator, lambda, k );
+    auto weibull = pyprob_cpp::distributions::Weibull(lambda, k);
+    return pyprob_cpp::sample(weibull)(0);
 }
 
 } }
