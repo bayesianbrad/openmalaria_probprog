@@ -217,26 +217,58 @@ double random::gamma (double a, double b){
     return pyprob_cpp::sample(gamma)(0);
 }
 
-double random::log_normal (double mu, double sigma){
-    printf("random::log_normal\n");
+// double random::log_normal (double mu, double sigma){
+//     printf("random::log_normal\n");
 
+// /*# ifdef OM_RANDOM_USE_BOOST
+//     // This doesn't work: boost version takes mean and sigma while gsl version takes mu and sigma.
+//     boost::lognormal_distribution<> dist (mean, std);
+//     return dist (boost_generator);
+// # else*/
+// //     double result = gsl_ran_lognormal (rng.gsl_generator, mu, sigma);
+// // //     util::streamValidate(result);
+// //     return result;
+// //# endif
+//     auto log_normal = pyprob_cpp::distributions::LogNormal(mu, sigma);
+//      cout << "Bebug statemennt in log_normal random.cpp : \n" << pyprob_cpp::sample(log_normal)(0);
+//     return pyprob_cpp::sample(log_normal)(0);
+// }
+
+// double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
+//     printf("random::sample_log_normal\n");
+//     // Used for performance reasons. Calling GSL's log_normal 5 times is 50% slower.
+//     // printf("random::sampleFromLogNormal\n");
+
+//     double zval = gsl_cdf_ugaussian_Pinv (normp);
+// //     util::streamValidate(zval);
+//     // Where normp is distributed uniformly over [0,1], this acts like a sample
+//     // from the log normal. Where normp has been transformed by raising the
+//     // uniform sample to the power of 1/(T-1), zval is distributed like a
+//     // uniform gauss times 4* F(x,0,1)^3, where F(x,0,1) ist the cummulative
+//     // distr. function of a uniform gauss:
+//     // double result = exp(meanlog+stdlog*zval);
+//     auto log_normal = pyprob_cpp::distributions::LogNormal(exp(meanlog), exp(stdlog));
+//     cout << "Bebug statemennt in LOG_normal random.cpp : \n" << pyprob_cpp::sample(log_normal)(0) ;
+//     return pyprob_cpp::sample(log_normal)(0);
+// //     util::streamValidate(result);
+//     // return result;
+// }
+
+double random::log_normal (double mu, double sigma){
 /*# ifdef OM_RANDOM_USE_BOOST
     // This doesn't work: boost version takes mean and sigma while gsl version takes mu and sigma.
     boost::lognormal_distribution<> dist (mean, std);
     return dist (boost_generator);
 # else*/
-//     double result = gsl_ran_lognormal (rng.gsl_generator, mu, sigma);
-// //     util::streamValidate(result);
-//     return result;
+    double result = gsl_ran_lognormal (rng.gsl_generator, mu, sigma);
+//     util::streamValidate(result);
+    return result;
 //# endif
-    auto log_normal = pyprob_cpp::distributions::LogNormal(mu, sigma);
-    return pyprob_cpp::sample(log_normal)(0);
 }
 
 double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
     // Used for performance reasons. Calling GSL's log_normal 5 times is 50% slower.
-    // printf("random::sampleFromLogNormal\n");
-
+    
     double zval = gsl_cdf_ugaussian_Pinv (normp);
 //     util::streamValidate(zval);
     // Where normp is distributed uniformly over [0,1], this acts like a sample
@@ -244,13 +276,10 @@ double random::sampleFromLogNormal(double normp, double meanlog, double stdlog){
     // uniform sample to the power of 1/(T-1), zval is distributed like a
     // uniform gauss times 4* F(x,0,1)^3, where F(x,0,1) ist the cummulative
     // distr. function of a uniform gauss:
-    // double result = exp(meanlog+stdlog*zval);
-    auto log_normal = pyprob_cpp::distributions::LogNormal(exp(meanlog), exp(stdlog));
-    return pyprob_cpp::sample(log_normal)(0);
+    double result = exp(meanlog+stdlog*zval);
 //     util::streamValidate(result);
-    // return result;
+    return result;
 }
-
 double random::beta (double a, double b){
     // printf("random::beta\n");
 
