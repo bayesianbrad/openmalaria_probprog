@@ -21,12 +21,13 @@
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
+\usepackage{graphicx}
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
-
-\title{Applied Interpretable Inference: Connecting Probabilistic Programming with Epidemology Simulators}
+\usepackage{listings}
+\title{Applied Interpretable Inference: Connecting Probabilistic Programming with Epidemiology Simulators}
 
 % The \author macro works with any number of authors. There are two commands
 % used to separate the names and addresses of multiple authors: \And and \AND.
@@ -37,13 +38,7 @@
 % \AND instead of \And before the third author name.
 
 \author{%
-  David S.~Hippocampus\thanks{Use footnote for providing further information
-    about author (webpage, alternative address)---\emph{not} for acknowledging
-    funding agencies.} \\
-  Department of Computer Science\\
-  Cranberry-Lemon University\\
-  Pittsburgh, PA 15213 \\
-  \texttt{hippo@cs.cranberry-lemon.edu} \\
+Paper ID: }
   % examples of more authors
   % \And
   % Coauthor \\
@@ -65,8 +60,7 @@
   % Affiliation \\
   % Address \\
   % \texttt{email} \\
-}
-
+%}
 \begin{document}
 % \nipsfinalcopy is no longer used
 
@@ -133,6 +127,28 @@ This will kind of be like a background section.
 
 \section{Methodology}
  TODO
+
+
+
+Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Since the development happens over several decades, usually without documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular epidemiology simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}. In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. 
+
+\subsection{Connecting a Stochastic Simulator to a Probabilistic Programming System}
+
+In order to hijack the stochastic simulator we are only required to override the location of the stochastic primitives, i.e. the operations that generate the stochasticity and randomness within the simulator. We will walk through how this is done for EMOD and OpenMalaria,  you will see that it is procedurally identical, however, given the sheer number of simulators it maybe slightly different procedurally. To our knowledge it shouldn't be, but we have not been able view of all simulators. 
+
+\subsection{Extending Probabilistic Programming Protocols}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{plots/ewan_25_pop_10.pdf}
+	\caption{Add something. Population 10}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{plots/ewan_25_pop_100.pdf}
+	\caption{Add something. Population 100}
+\end{figure}
+TODO
 
 \section{Results}
 
