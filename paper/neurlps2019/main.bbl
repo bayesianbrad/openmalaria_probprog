@@ -1,0 +1,59 @@
+\begin{thebibliography}{1}
+
+\bibitem{baydin2018efficient}
+Atilim~Gunes Baydin, Lukas Heinrich, Wahid Bhimji, Bradley Gram-Hansen, Gilles
+  Louppe, Lei Shao, Kyle Cranmer, Frank Wood, et~al.
+\newblock Efficient probabilistic inference in the quest for physics beyond the
+  standard model.
+\newblock {\em arXiv preprint arXiv:1807.07706}, 2018.
+
+\bibitem{evensen1994sequential}
+Geir Evensen.
+\newblock Sequential data assimilation with a nonlinear quasi-geostrophic model
+  using monte carlo methods to forecast error statistics.
+\newblock {\em Journal of Geophysical Research: Oceans}, 99(C5):10143--10162,
+  1994.
+
+\bibitem{Goodman08church:a}
+Noah~D. Goodman, Vikash~K. Mansinghka, Daniel~M. Roy, Keith Bonawitz, and
+  Joshua~B. Tenenbaum.
+\newblock Church: A language for generative models.
+\newblock In {\em In UAI}, pages 220--229, 2008.
+
+\bibitem{gordon2014probabilistic}
+Andrew~D Gordon, Thomas~A Henzinger, Aditya~V Nori, and Sriram~K Rajamani.
+\newblock Probabilistic programming.
+\newblock In {\em Proceedings of the on Future of Software Engineering}, pages
+  167--181. ACM, 2014.
+
+\bibitem{jackel2002monte}
+P.~J{\"a}ckel.
+\newblock {\em Monte Carlo Methods in Finance}.
+\newblock The Wiley Finance Series. Wiley, 2002.
+
+\bibitem{landau_binder_2014}
+David~P. Landau and Kurt Binder.
+\newblock {\em A Guide to Monte Carlo Simulations in Statistical Physics}.
+\newblock Cambridge University Press, 4 edition, 2014.
+
+\bibitem{le-2016-inference}
+Tuan~Anh Le, Atılım~Güneş Baydin, and Frank Wood.
+\newblock Inference compilation and universal probabilistic programming.
+\newblock In {\em Proceedings of the 20th International Conference on
+  Artificial Intelligence and Statistics (AISTATS)}, volume~54 of {\em
+  Proceedings of Machine Learning Research}, pages 1338--1348, Fort Lauderdale,
+  FL, USA, 2017. PMLR.
+
+\bibitem{world2016world}
+World~Health Organization.
+\newblock {\em World malaria report 2015}.
+\newblock World Health Organization, 2016.
+
+\bibitem{smith2008towards}
+T~Smith, N~Maire, A~Ross, M~Penny, N~Chitnis, A~Schapira, A~Studer, B~Genton,
+  C~Lengeler, Fabrizio Tediosi, et~al.
+\newblock Towards a comprehensive simulation model of malaria epidemiology and
+  control.
+\newblock {\em Parasitology}, 135(13):1507--1516, 2008.
+
+\end{thebibliography}
