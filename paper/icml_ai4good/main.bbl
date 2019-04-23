@@ -1,4 +1,4 @@
-\begin{thebibliography}{9}
+\begin{thebibliography}{17}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -13,12 +13,26 @@ Baydin, A.~G., Heinrich, L., Bhimji, W., Gram-Hansen, B., Louppe, G., Shao, L.,
   standard model.
 \newblock \emph{arXiv preprint arXiv:1807.07706}, 2018.
 
+\bibitem[Bingham et~al.(2019)Bingham, Chen, Jankowiak, Obermeyer, Pradhan,
+  Karaletsos, Singh, Szerlip, Horsfall, and Goodman]{bingham2019pyro}
+Bingham, E., Chen, J.~P., Jankowiak, M., Obermeyer, F., Pradhan, N.,
+  Karaletsos, T., Singh, R., Szerlip, P., Horsfall, P., and Goodman, N.~D.
+\newblock Pyro: Deep universal probabilistic programming.
+\newblock \emph{The Journal of Machine Learning Research}, 20\penalty0
+  (1):\penalty0 973--978, 2019.
+
 \bibitem[Evensen(1994)]{evensen1994sequential}
 Evensen, G.
 \newblock Sequential data assimilation with a nonlinear quasi-geostrophic model
   using monte carlo methods to forecast error statistics.
 \newblock \emph{Journal of Geophysical Research: Oceans}, 99\penalty0
   (C5):\penalty0 10143--10162, 1994.
+
+\bibitem[Goodman et~al.(2012)Goodman, Mansinghka, Roy, Bonawitz, and
+  Tenenbaum]{goodman2012church}
+Goodman, N., Mansinghka, V., Roy, D.~M., Bonawitz, K., and Tenenbaum, J.~B.
+\newblock Church: a language for generative models.
+\newblock \emph{arXiv preprint arXiv:1206.3255}, 2012.
 
 \bibitem[Goodman et~al.(2008)Goodman, Mansinghka, Roy, Bonawitz, and
   Tenenbaum]{Goodman08church:a}
@@ -31,7 +45,7 @@ Goodman, N.~D., Mansinghka, V.~K., Roy, D.~M., Bonawitz, K., and Tenenbaum,
   Rajamani]{gordon2014probabilistic}
 Gordon, A.~D., Henzinger, T.~A., Nori, A.~V., and Rajamani, S.~K.
 \newblock Probabilistic programming.
-\newblock In \emph{Proceedings of the on Future of Software Engineering}, pp.\
+\newblock In \emph{Proceedings of the Future of Software Engineering}, pp.\
   167--181. ACM, 2014.
 
 \bibitem[J{\"a}ckel(2002)]{jackel2002monte}
@@ -40,6 +54,18 @@ J{\"a}ckel, P.
 \newblock The Wiley Finance Series. Wiley, 2002.
 \newblock ISBN 9780471497417.
 \newblock URL \url{https://books.google.co.uk/books?id=jG6BQgAACAAJ}.
+
+\bibitem[Kozen(1979)]{kozen1979semantics}
+Kozen, D.
+\newblock Semantics of probabilistic programs.
+\newblock In \emph{Foundations of Computer Science, 1979., 20th Annual
+  Symposium on}, pp.\  101--114. IEEE, 1979.
+
+\bibitem[Kurtzer et~al.(2017)Kurtzer, Sochat, and
+  Bauer]{kurtzer2017singularity}
+Kurtzer, G.~M., Sochat, V., and Bauer, M.~W.
+\newblock Singularity: Scientific containers for mobility of compute.
+\newblock \emph{PloS one}, 12\penalty0 (5):\penalty0 e0177459, 2017.
 
 \bibitem[Landau \& Binder(2014)Landau and Binder]{landau_binder_2014}
 Landau, D.~P. and Binder, K.
@@ -55,10 +81,29 @@ Le, T.~A., Baydin, A.~G., and Wood, F.
   \emph{Proceedings of Machine Learning Research}, pp.\  1338--1348, Fort
   Lauderdale, FL, USA, 2017. PMLR.
 
+\bibitem[Merkel(2014)]{merkel2014docker}
+Merkel, D.
+\newblock Docker: lightweight linux containers for consistent development and
+  deployment.
+\newblock \emph{Linux Journal}, 2014\penalty0 (239):\penalty0 2, 2014.
+
 \bibitem[Organization(2016)]{world2016world}
 Organization, W.~H.
 \newblock \emph{World malaria report 2015}.
 \newblock World Health Organization, 2016.
+
+\bibitem[Siddharth et~al.(2017)Siddharth, Paige, van~de Meent, Desmaison,
+  Goodman, Kohli, Wood, and Torr]{siddharth2017learning}
+Siddharth, N., Paige, B., van~de Meent, J.-W., Desmaison, A., Goodman, N.~D.,
+  Kohli, P., Wood, F., and Torr, P.
+\newblock Learning disentangled representations with semi-supervised deep
+  generative models.
+\newblock In Guyon, I., Luxburg, U.~V., Bengio, S., Wallach, H., Fergus, R.,
+  Vishwanathan, S., and Garnett, R. (eds.), \emph{Advances in Neural
+  Information Processing Systems 30}, pp.\  5927--5937. Curran Associates,
+  Inc., 2017.
+\newblock URL
+  \url{http://papers.nips.cc/paper/7174-learning-disentangled-representations-with-semi-supervised-deep-generative-models.pdf}.
 
 \bibitem[Smith et~al.(2008)Smith, Maire, Ross, Penny, Chitnis, Schapira,
   Studer, Genton, Lengeler, Tediosi, et~al.]{smith2008towards}
@@ -67,5 +112,19 @@ Smith, T., Maire, N., Ross, A., Penny, M., Chitnis, N., Schapira, A., Studer,
 \newblock Towards a comprehensive simulation model of malaria epidemiology and
   control.
 \newblock \emph{Parasitology}, 135\penalty0 (13):\penalty0 1507--1516, 2008.
+
+\bibitem[Staton et~al.(2016)Staton, Yang, Wood, Heunen, and
+  Kammar]{staton2016semantics}
+Staton, S., Yang, H., Wood, F., Heunen, C., and Kammar, O.
+\newblock Semantics for probabilistic programming: higher-order functions,
+  continuous distributions, and soft constraints.
+\newblock In \emph{Proceedings of the 31st Annual ACM/IEEE Symposium on Logic
+  in Computer Science}, pp.\  525--534. ACM, 2016.
+
+\bibitem[Wood et~al.(2014)Wood, Meent, and Mansinghka]{wood2014new}
+Wood, F., Meent, J.~W., and Mansinghka, V.
+\newblock A new approach to probabilistic programming inference.
+\newblock In \emph{Artificial Intelligence and Statistics}, pp.\  1024--1032,
+  2014.
 
 \end{thebibliography}

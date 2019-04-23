@@ -3,44 +3,49 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: icml2019.bst
 Database file #1: refs.bib
-You've used 9 entries,
+Repeated entry---line 140 of file refs.bib
+ : @inproceedings{gordon2014probabilistic
+ :                                       ,
+I'm skipping whatever remains of this entry
+You've used 17 entries,
             2773 wiz_defined-function locations,
-            655 strings with 6722 characters,
-and the built_in function-call counts, 5178 in all, are:
-= -- 451
-> -- 352
-< -- 8
-+ -- 120
-- -- 111
-* -- 429
-:= -- 798
-add.period$ -- 33
-call.type$ -- 9
-change.case$ -- 60
-chr.to.int$ -- 9
-cite$ -- 18
-duplicate$ -- 223
-empty$ -- 379
-format.name$ -- 122
-if$ -- 1089
+            707 strings with 8722 characters,
+and the built_in function-call counts, 10335 in all, are:
+= -- 903
+> -- 719
+< -- 14
++ -- 243
+- -- 226
+* -- 867
+:= -- 1572
+add.period$ -- 61
+call.type$ -- 17
+change.case$ -- 120
+chr.to.int$ -- 17
+cite$ -- 34
+duplicate$ -- 440
+empty$ -- 749
+format.name$ -- 245
+if$ -- 2190
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 12
-newline$ -- 56
-num.names$ -- 36
-pop$ -- 132
+missing$ -- 20
+newline$ -- 97
+num.names$ -- 70
+pop$ -- 258
 preamble$ -- 1
-purify$ -- 53
+purify$ -- 105
 quote$ -- 0
-skip$ -- 183
+skip$ -- 368
 stack$ -- 0
-substring$ -- 190
-swap$ -- 42
-text.length$ -- 4
+substring$ -- 402
+swap$ -- 94
+text.length$ -- 8
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 84
+type$ -- 172
 warning$ -- 0
-while$ -- 40
+while$ -- 81
 width$ -- 0
-write$ -- 132
+write$ -- 240
+(There was 1 error message)

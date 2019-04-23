@@ -19,7 +19,9 @@
 
 % Use the following line for the initial blind version submitted for review:
 \usepackage{icml2019}
-
+\newcommand{\bg}[1]{~{{[{\it \textcolor{red}{{\bf BG:} #1}}]}}}
+\newcommand{\cs}[1]{~{{[{\it \textcolor{red}{{\bf CS:} #1}}]}}}
+\newcommand{\ag}[1]{~{{[{\it \textcolor{red}{{\bf AG:} #1}}]}}}
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2019}
 
@@ -149,25 +151,36 @@ This will kind of be like a background section.
 
 
 \section{Methodology}
- TODO
+
+\subsection{Probabilistic Programming}
+Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the coming together of multiple disciplines; computer science, statistics and machine learning. 
+It attempts to unify the three fields by creating automated frameworks in which one can easily extrapolate their observed data and perform sophisticated statistical analysis with advance inference procedures such as 
+Markov Chain Monte Carlo (MCMC), Variational Inference~(VI) and Deep Neural Networks~(DNN) in an accessible way, i.e. without the need of expert knowledge in implementing and using such procedures.
+Users can then exploit these algorithms on an array of models
+within the probabilistic programming language~(PPL), using the language itself to create models that represent complicated distribution objects. 
+PPLs typically extend existing programming languages such as python, c++, go and so forth, which means that users do not have to learn
+a completely new set of operating semantics.  
+Our PPL PyProb~\cite{le-2016-inference,baydin2018efficient} belongs to the family of universal PPLs 
+that allow the expression of unrestricted probability models in a Turing complete fashion~\cite{wood2014new,goodman2012church,landau_binder_2014,siddharth2017learning,bingham2019pyro}.
+
+\subsection{Stochastic Simulators}
+
+Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Within the context of epidemiology simulators we can model treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made given a series of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}. However, since the development happens over several decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}. In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. We provide examples of former in next Section~\textbf{TO ADD REF} and discuss the latter in ~\bg{Link to conclusion / future work}.
 
 
-
-Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Since the development happens over several decades, usually without documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular epidemiology simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}. In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. We provide examples of both in Section~\textbf{TO ADD REF}.
-
+\section{Case Study}
 \subsection{Connecting a Stochastic Simulator to a Probabilistic Programming System}
 
-In order to hijack the stochastic simulator we are only required to override the location of the stochastic primitives, i.e. the operations that generate the stochasticity and randomness within the simulator. We will walk through how this is done for EMOD and OpenMalaria,  you will see that it is procedurally identical, however, given the sheer number of simulators it maybe slightly different procedurally. To our knowledge it shouldn't be, but we have not been able view of all stochastic simulators. 
-The first step is to build a containerized environment, such as Docker\textbf{ADD citation} and Singularity, which enables the simulators to be
-run on any device, independent of different hardware architectures removing the requirement for hardware specific machines. We provide examples of building a containerized environment in the Supplement \textbf{ADD ref}. This environment only has to be built once, which then enables the simulator to be run simultaneously on multiple machines. 
-The second step 
+In order to hijack the stochastic simulator we are only required to override the location of the stochastic primitives, i.e. the operations that generate the stochasticity and randomness within the simulator. 
+We will walk through how this is done for EMOD and OpenMalaria, you will see that it is procedurally identical.
+However, given the sheer number of simulators it maybe slightly different procedurally. 
+To our knowledge it shouldn't be, but we have not been able view of all stochastic simulators we cannot make this guarantee with certainty. 
+The first step is to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
+This greatly improves the scope of applicability of our system, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. 
+The second step requires one to 
 
 
-
-
-
-
-\subsection{Extending Probabilistic Programming Protocols}
+% \subsection{Extending Probabilistic Programming Protocols}
 
 \begin{figure*}[h!]
 	\centering
