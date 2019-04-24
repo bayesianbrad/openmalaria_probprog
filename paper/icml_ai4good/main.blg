@@ -1,51 +1,77 @@
-This is BibTeX, Version 0.99d (TeX Live 2018)
+This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: icml2019.bst
-Database file #1: refs.bib
+Database file #1: malaria.bib
+Warning--entry type for "refugees_2030_nodate" isn't style-file defined
+--line 62 of file malaria.bib
+Warning--entry type for "un_sustainable_2018" isn't style-file defined
+--line 74 of file malaria.bib
+Warning--entry type for "who_global_2015" isn't style-file defined
+--line 96 of file malaria.bib
+Database file #2: refs.bib
 Repeated entry---line 140 of file refs.bib
  : @inproceedings{gordon2014probabilistic
  :                                       ,
 I'm skipping whatever remains of this entry
-You've used 17 entries,
+Warning--I didn't find a database entry for ""
+Warning--empty journal in bershteyn_implementation_2018
+Warning--empty year in bershteyn_implementation_2018
+Warning--empty year in bershteyn_implementation_2018
+Warning--empty journal in gleisberg_event_2008
+Warning--empty year in gleisberg_event_2008
+Warning--empty year in gleisberg_event_2008
+Warning--empty publisher in gunes_baydin_efficient_2018
+Warning--empty year in gunes_baydin_efficient_2018
+Warning--empty year in gunes_baydin_efficient_2018
+Warning--empty journal in mwendera_challenges_2019
+Warning--empty year in mwendera_challenges_2019
+Warning--empty year in mwendera_challenges_2019
+Warning--empty year in refugees_2030_nodate
+Warning--empty journal in smith_ensemble_2012
+Warning--empty year in smith_ensemble_2012
+Warning--empty year in smith_ensemble_2012
+Warning--empty year in un_sustainable_2018
+Warning--empty year in who_global_2015
+You've used 20 entries,
             2773 wiz_defined-function locations,
-            707 strings with 8722 characters,
-and the built_in function-call counts, 10335 in all, are:
-= -- 903
-> -- 719
-< -- 14
-+ -- 243
-- -- 226
-* -- 867
-:= -- 1572
-add.period$ -- 61
-call.type$ -- 17
-change.case$ -- 120
-chr.to.int$ -- 17
-cite$ -- 34
-duplicate$ -- 440
-empty$ -- 749
-format.name$ -- 245
-if$ -- 2190
+            716 strings with 10098 characters,
+and the built_in function-call counts, 13078 in all, are:
+= -- 1076
+> -- 1116
+< -- 13
++ -- 375
+- -- 355
+* -- 1187
+:= -- 2047
+add.period$ -- 75
+call.type$ -- 20
+change.case$ -- 174
+chr.to.int$ -- 20
+cite$ -- 58
+duplicate$ -- 474
+empty$ -- 815
+format.name$ -- 377
+if$ -- 2684
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 20
-newline$ -- 97
-num.names$ -- 70
-pop$ -- 258
+missing$ -- 19
+newline$ -- 118
+num.names$ -- 82
+pop$ -- 395
 preamble$ -- 1
-purify$ -- 105
+purify$ -- 155
 quote$ -- 0
-skip$ -- 368
+skip$ -- 420
 stack$ -- 0
-substring$ -- 402
-swap$ -- 94
-text.length$ -- 8
+substring$ -- 341
+swap$ -- 83
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 172
-warning$ -- 0
-while$ -- 81
+type$ -- 210
+warning$ -- 18
+while$ -- 85
 width$ -- 0
-write$ -- 240
+write$ -- 276
 (There was 1 error message)
