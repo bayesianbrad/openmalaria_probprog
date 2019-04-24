@@ -26,7 +26,7 @@
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2019}
 
-% The \icmltitle you define below is probably too long as a header.
+% The \icmltitle you define below is probably too long as aer.
 % Therefore, a short form for the running title is supplied here:
 \icmltitlerunning{Understanding the Black-box Structure of Epidemiology Simulators for Policy Decision Making}
 
@@ -116,7 +116,6 @@ In particular, we demonstrate this for the Malaria disease in two commonly used 
 \section{Introduction}
 Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals \cite{refugees_2030_nodate}\cite{un_sustainable_2018}. 
 
-<<<<<<< HEAD
 Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target by the Good Health \& Well-Being section of the UN Sustainable Development Goals. 
 Despite decades of substantial international efforts, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
 Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals\cite{}. 
@@ -143,7 +142,19 @@ For example, it has been shown that mass vaccination may be largely ineffective 
 
 However, since many of these simulators are stochastic in nature and therefore act as black-boxes, understanding the structure of these complex simulators is challenging and poses several challenges for policy makers. 
 Therefore, sophisticated tools are required that enable us to not only digest the results of the simulation, but provide pathways to perform complex inferences. 
-To this end, we extend the work of \citep{baydin2018efficient} to enabling any epidemiology simulator to be transformed into probabilistic model that can be used as input to a probabilistic programming system enabling trace paths to be extracted from the simulator on both a per human level and a population level, from which we can extract trace probabilities allowing policy makers to determine what actions have the biggest impact on the final output of the simulator and thus can shape policy decisions accordingly.
+To this end, we extend the work of \citep{baydin2018efficient} to enable multiple stochastic epidemiology simulators to be transformed into a probabilistic model that can be used as input to a probabilistic programming system, enabling trace paths to be extracted from the simulator on both a per human level and a population level, from which we can extract trace probabilities allowing policy makers to determine what actions have the biggest impact on the final output of the simulator and thus can shape policy decisions accordingly.
+ We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
+
+% Recent work by \citep{Baydin} introduces a fundamental paradigm change that allows to tackle the inverse problem directly. 
+% Using a novel software tool named \textit{pyprob}, \citep{Baydin} extract program execution traces from state-of-the-art particle decay simulation engine SHERPA\cite{}.
+%  Using latest techniques from universal probabilistic programming inference, the sampled execution traces are then used in order to characterise the posterior distribution of the simulator output. 
+%  From these, regions in simulator input space can be associated with specified outcomes.
+
+% SHERPA, however, is different from leading epidemiology simulators in that it does not simulate population dynamics, but instead models individual decays with different sampling strategies. Thus, the existing work of \cite{baydin2018efficient} must be extended to encapsulate these different strategies. 
+%  In this paper, we for the first time demonstrate the applicability of \textit{pyprob}, and hence probabilistic programming inference, to population-based epidemiology simulators. 
+%  In particular, we discuss how the leading malaria epidemiology simulators EMOD\cite{} and OpenMalaria\cite{} can be interfaced with \textit{pyprob}.
+%   We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
+
 % maybe talk about this framework enables a pathway to inference etc..
 
 % All of the above limitations require contemporary malaria epidemiology simulators to employ stochastic modeling techniques, which negotiate data scarcity and model uncertainty through the use of appropriate prior distributions that can be tuned even from small samples of field data. The population dynamics of groups of typically several thousand hosts are then initialised by sampling from the initial distributions, using initial random seeds. Forward simulation then proceeds by rolling out population dynamics over time. Simulation outcomes of cherry-picked scenarios and interventions of interest are then compared to suitably designed control runs.
@@ -192,15 +203,7 @@ To this end, we extend the work of \citep{baydin2018efficient} to enabling any e
 \section{Epidemiology Simulators and Probabilistic Programming}
 \label{sec:background}
 
-Recent work by \citep{Baydin} introduces a fundamental paradigm change that allows to tackle the inverse problem directly. 
-Using a novel software tool named \textit{pyprob}, \citep{Baydin} extract program execution traces from state-of-the-art particle decay simulation engine SHERPA\cite{}.
- Using latest techniques from universal probabilistic programming inference, the sampled execution traces are then used in order to characterise the posterior distribution of the simulator output. 
- From these, regions in simulator input space can be associated with specified outcomes.
 
-SHERPA, however, is different from leading epidemiology simulators in that it does not simulate population dynamics, but instead models individual decays at a time.
- In this paper, we for the first time demonstrate the applicability of \textit{pyprob}, and hence probabilistic programming inference, to population-based epidemiology simulators. 
- In particular, we discuss how the leading malaria epidemiology simulators EMOD\cite{} and OpenMalaria\cite{} can be interfaced with \textit{pyprob}.
-  We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
 
 \subsection{Probabilistic Programming}
 Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the coming together of multiple disciplines; computer science, statistics and machine learning. 
@@ -215,10 +218,26 @@ that allow the expression of unrestricted probability models in a Turing complet
 
 \subsection{Stochastic Simulators}
 
-Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Within the context of epidemiology simulators we can model treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made given a series of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}. However, since the development happens over several decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}. In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. We provide examples of former in next Section~\textbf{TO ADD REF} and discuss the latter in ~\bg{Link to conclusion / future work}.
+Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Within the context of epidemiology simulators we can model treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made given a series of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}.
+However, since the development happens over several decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
+Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}. 
+In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 
+1) It enables software developers and policy making to understand complicated code bases and dissect outputs of simulators.
+ 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to the inference outcome. 
+ This is critical in several domains, especially in epidemiology. 
+ We provide examples of former in next Section~\ref{sec:casestudy} and discuss the latter in ~\bg{Link to conclusion / future work}.
 
+
+ \subsubsection*{Epidemiology Simulators}
+ \paragraph*{OpenMalaria} Write a small paragraph on openmalaria, 
+ What is openmalaria? Open Malaria is an open-source simulator funded by the Gates Foundation to model different  aspects of the malaria prevention and treatment cycle for varying population dynamics.
+ Models in OpenMalaria are specified via a scenario file, in the form of an XML document, which specifies the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
+The scenario file encodes all input and output parameters, some of which we wish to simulate to try and infer, others remain fixed. 
+
+ \paragraph{EMOD} Do the same for EMOD as OM
 
 \section{Case Study}
+\label{sec:casestudy}
 \subsection{Connecting a Epidemiology Simulators to a Probabilistic Programming System}
 
 In order to hijack the stochastic simulator we are only required to override the location of the stochastic primitives, i.e. the operations that generate the stochasticity and randomness within the simulator. 
@@ -227,20 +246,26 @@ However, given the sheer number of simulators it maybe slightly different proced
 To our knowledge it shouldn't be, but we have not been able view of all stochastic simulators we cannot make this guarantee with certainty. 
 The first step is to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
 This greatly improves the scope of applicability of our system, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. 
-The second step requires one to 
-
+The second step requires one to override the stochastic primitives, which requires re-writing aspects of the sampling procedures inside the simulator. 
+This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
+ Such information is typically saved in $\texttt{RANDOM.<filetype>}$.  We now demonstrate this for a normal primitive. 
+\bg{Add code snippet here showing original code then modified code}
+The third step is creating the protocols, which enable communication between the simulator and probabilistic programming system. 
+For this we extend the existing bringing framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight c++ interface, however this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is.
+In doing this we enable a larger class of sampling procedures to be overridden. The PPX protocols in particular take advantage of flat buffer protocols \bg{add cite to google fb}, which require a flatbuffers script to be specified, see here for an example of a flat buffers script \bg{reference PPX github page}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. 
+The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$, \bg{add more on this later}
+The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on c++ we can extend an existing interface called pyprob\_cpp\footnote{Add github link here} to account for the additional sampling procedures.
+Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the probabilistic programming system. We provide examples of this output in Figure~\ref{fig:plotewan}. 
 
 % \subsection{Extending Probabilistic Programming Protocols}
 
 \begin{figure*}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{../plots/ewan_25_pop_10.pdf}
-	\caption{Add something. Population 10}
-\end{figure*}
-\begin{figure*}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{../plots/ewan_25_pop_100.pdf}
 	\caption{Add something. Population 100}
+	\label{fig:plotewan}
 \end{figure*}
 TODO
 
@@ -251,63 +276,147 @@ TODO
 % \usepackage{graphicx}
 % Please add the following required packages to your document preamble:
 % \usepackage{graphicx}
-%\begin{table*}[b!]
-%\footnotesize
-%\setlength{\tabcolsep}{1mm}
-%\caption{Addresses}
-%\label{table:addresses}
-%\def\arraystretch{1.25}
-%% \setlength{\tabcolsep}{1mm}
-%\begin{tabularx}{\textwidth}{@{}lX@{}} 
-%\toprule
-%Address & Physical event                                                                                                                            \midrule
-%1 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const)+0x28a; OM::Population::createInitialHumans()+0x94; OM::Population::newHuman(OM::SimTime)+0x5c; OM::Host::Human::Human(OM::SimTime)+0x12b; OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99; OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a; OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6; OM::util::random::gauss(double, double)+0xb4]\_\_Normal\\
-%2 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0x1e9; OM::Population::newHuman(OM::SimTime)+0x5c; OM::Host::Human::Human(OM::SimTime)+0x12b; OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99; OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a; OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6; OM::util::random::gauss(double, double)+0xb4]\_\_Normal\\
-%3 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x22c; OM::Host::InfectionIncidenceModel::numNewInfections(OM::Host::Human const\&, double)+0x2a3; OM::util::random::poisson(double)+0x13f]\_\_Poisson\\
-%4 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc; OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96; OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc; OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96; OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%6 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x280; OM::WithinHost::DescriptiveWithinHostModel::update(int, std::vector \textgreater{}\&, double, double)+0x3a2; OM::WithinHost::DescriptiveInfection::determineDensities(double, double, double, double\&, double, double)+0x303; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%7 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc; OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8; OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67; OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73; OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x143; OM::util::random::bernoulli(double)+0x47; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%8 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc; OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8; OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67; OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73; OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x162; OM::util::random::bernoulli(double)+0x47; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%9 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc; OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8; OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67; OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73; OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x1c7; OM::util::random::bernoulli(double)+0x47; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%10 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc; OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8; OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xe3; OM::Clinical::ImmediateOutcomes::uncomplicatedEvent(OM::Host::Human\&, OM::Clinical::Episode::State)+0x87; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%11 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc; OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8; OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xad; OM::Clinical::CM5DayCommon::severeMalaria(OM::Host::Human\&, OM::Clinical::Episode::State, double, int\&)+0x4b1; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%\bottomrule                                                                                                                                   
-%\end{tabularx}
-% \end{table*}
-% \subsubsection*{Acknowledgments}
+  \begin{table*}[h!]
+  \footnotesize
+  \setlength{\tabcolsep}{1mm}
+  \caption{Addresses }
+  \label{table:addresses}
+  \def\arraystretch{1.25}
+  % \setlength{\tabcolsep}{1mm}
+  \begin{tabularx}{\textwidth}{@{}lX@{}} 
+    \toprule
+    Address ID & Full address \\
+    \midrule
+  A1 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const)+0x28a;
 
-% Use unnumbered third level headings for the acknowledgments. All acknowledgments
-% go at the end of the paper. Do not include acknowledgments in the anonymized
-% submission, only in the final paper.
+  OM::Population::createInitialHumans()+0x94; 
 
-<<<<<<< HEAD
-% OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+  OM::Population::newHuman(OM::SimTime)+0x5c;
 
-% OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+  OM::Host::Human::Human(OM::SimTime)+0x12b;
 
-% OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xe3;
+  OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99;
 
-% OM::Clinical::ImmediateOutcomes::uncomplicatedEvent(OM::Host::Human\&, OM::Clinical::Episode::State)+0x87;
+  OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a;
 
-% OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-% A11 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
-% OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+  OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6; 
 
-% OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+  OM::util::random::gauss(double, double)+0xb4]\_\_Normal\\
+  % A2 & [forward()+0x204; 
+  % OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-% OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xad;
+  %  OM::Population::update1(OM::SimTime)+0x1e9;
 
-% OM::Clinical::CM5DayCommon::severeMalaria(OM::Host::Human\&, OM::Clinical::Episode::State, double, int\&)+0x4b1;
-% OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-%     \bottomrule
-%   \end{tabularx}
-%   \end{table*}
-% \section*{References}
-% \newpage\phantom{blabla}\newpage\phantom{blabla}
-=======
-%\section*{References}
->>>>>>> 8ecc465673b40e3df7fb5ffadadd4604889369c0
+  %  OM::Population::newHuman(OM::SimTime)+0x5c;
+
+  %  OM::Host::Human::Human(OM::SimTime)+0x12b;
+
+  %  OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99; 
+
+  %  OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a;
+
+  %  OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6;
+
+  %  OM::util::random::gauss(double, double)+0xb4]\_\_Normal \\
+  % A3 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+
+  %  OM::Population::update1(OM::SimTime)+0xff;
+
+  %  OM::Host::Human::update(bool)+0x22c;
+
+  %  OM::Host::InfectionIncidenceModel::numNewInfections(OM::Host::Human const\&, double)+0x2a3;
+
+  %  OM::util::random::poisson(double)+0x13f]\_\_Poisson\\
+  % A4 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; 
+
+  % OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+
+  %  OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96; 
+
+  %  OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
+
+    % OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+    $\vdots$ & $\vdots$ \\
+%   A5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+
+%    OM::Population::update1(OM::SimTime)+0xff;
+
+%     OM::Host::Human::update(bool)+0x2bc;
+
+%     OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96;
+
+%     OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
+
+%     OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+%   A6 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+
+%    OM::Population::update1(OM::SimTime)+0xff;
+
+%    OM::Host::Human::update(bool)+0x280;
+
+%    OM::WithinHost::DescriptiveWithinHostModel::update(int, std::vector \textgreater{}\&, double, double)+0x3a2;
+
+%    OM::WithinHost::DescriptiveInfection::determineDensities(double, double, double, double\&, double, double)+0x303;
+
+%    OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+%    A7 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+%    ı
+% 	OM::Population::update1(OM::SimTime)+0xff;
+
+% 	OM::Host::Human::update(bool)+0x2bc;
+
+% 	OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+
+% 	OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
+
+% 	OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
+% ı
+% 	OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x143;
+
+% 	OM::util::random::bernoulli(double)+0x47;
+
+% 	OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+% 	A8 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+
+% 	OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+
+% 	OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+
+% 	OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
+
+% 	OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
+
+% 	OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x162;
+
+	% OM::util::random::bernoulli(double)+0x47;
+
+% 	OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+% A9 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+%  OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+
+%  OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+
+%   OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
+
+%   OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
+
+%   OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x1c7;
+
+%   OM::util::random::bernoulli(double)+0x47; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+A11 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+
+OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+
+OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+
+OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xad;
+
+OM::Clinical::CM5DayCommon::severeMalaria(OM::Host::Human\&, OM::Clinical::Episode::State, double, int\&)+0x4b1;
+OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+\bottomrule
+  \end{tabularx}
+  \end{table*}
+
 
 \bibliographystyle{icml2019}
 \bibliography{malaria,refs}
