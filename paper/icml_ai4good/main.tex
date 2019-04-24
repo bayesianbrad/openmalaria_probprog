@@ -27,13 +27,13 @@
 
 % The \icmltitle you define below is probably too long as a header.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Submission and Formatting Instructions for ICML 2019}
+\icmltitlerunning{Understanding the Black-box Structure of Epidemiology Simulators for Policy Decision Making}
 
 \begin{document}
 
 \twocolumn[
-\icmltitle{Submission and Formatting Instructions for \\
-           International Conference on Machine Learning (ICML 2019)}
+\icmltitle{Understanding the Black-box Structure of Epidemiology Simulators\\
+			 for Policy Decision Making}
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
@@ -107,10 +107,9 @@ This makes it challenging to deploy ML/AI systems into the wild, especially in h
 as epidemiology, as we lose \emph{interpretability}. 
 In this work, we explain how to design ML/AI systems that combine
 probabilistic programming systems (PPSs) and epidemiology simulators, to extract
-fully interpretable posterior structures, enabling policy makers 
+fully interpretable structures, enabling policy makers 
 and practitioners to make interpretable inferences. 
-In particular, we demonstrate this for the Malaria disease and show how we can 
-perform interpretable inference in such settings.
+In particular, we demonstrate this for the Malaria disease in two commonly used simulators; EMOD and OpenMalaria.
 \end{abstract}
 
 \section{Introduction}
@@ -119,26 +118,35 @@ Ending the epidemics of AIDS, tuberculosis, malaria and other infectious disease
 Despite decades of substantial international efforts, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
 Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals\cite{}. 
 
-In contrast to AIDS, Malaria can be routinely cured thanks to the disposability of a variety of medical interventions. 
-Issues are further aggravated due to the increasing emergence of parasite resistance to multiple drugs, including artemisinin, or even insecticides. 
-Hence, despite decades of substantial international efforts, initial hopes of regional elimination or even global eradication have not been met.
- So difficult is Malaria control that, even today, about a quarter of a million children under the age of 5 succumb to it every year in Africa alone. 
+%maybe cut some of this paragraph out
+% In contrast to AIDS, Malaria can be routinely cured thanks to the disposability of a variety of medical interventions. 
+% Issues are further aggravated due to the increasing emergence of parasite resistance to multiple drugs, including artemisinin, or even insecticides. 
+% Hence, despite decades of substantial international efforts, initial hopes of regional elimination or even global eradication have not been met.
+%  So difficult is Malaria control that, even today, about a quarter of a million children under the age of 5 succumb to it every year in Africa alone. 
 
 To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers increasingly turn to evidence-based methods. 
-However, the collection of large quantities of field data is often infeasible due to logistic, economic or political constraints, or outright impossible if novel methods are to be assessed a priori. Hence in silico simulation of malaria epidemiology plays an increasingly crucial role in evidence-based policymaking.
+However, the collection of large quantities of field data is often infeasible due to logistic, economic or political constraints, or outright impossible if novel methods are to be assessed a priori. 
+Hence in silico simulation of malaria epidemiology plays an increasingly crucial role in evidence-based policymaking.
 %Hence epidemiology simulators fine-tuned on real data play a crucial role in determining policy implications.
+Even in the absence of political, economic and social constraints, Malaria epidemiology is governed by a complex set of drivers, few of which can be understood in isolation.
+These include within-host dynamics, population-specific traits and even local geography.
+Some progress in modeling specific components has been made, such as the parasite life-cycle, transmission vector dynamics and the inter-dependencies between infection rates and vicinity to open water. 
+However, comprehensive modeling of all of these components in a regional context remains challenging, and is greatly impeded by the lack of available field data for regional calibration, hence the need for comprehensive simulators.
+% Simulation complexity is further aggravated by considering feedback effects from a large arsenal of anti-malaria interventions, ranging from distribution of mosquito nets, indoor residual spraying and mass drug administration to age-specific vaccinations. 
+Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. 
+For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmittivity.
 
-Even in the absence of political, economic and social constraints, Malaria epidemiology is governed by a complex set of drivers, few of which can be understood in isolation. These include within-host dynamics, population-specific traits and even local geography. Some progress in modeling specific components has been made, such as the parasite life-cycle, transmission vector dynamics and the inter-dependencies between infection rates and vicinity to open water. However, comprehensive modeling of all of these components in a regional context remains challenging, and is greatly impeded by the lack of available field data for regional calibration. Simulation complexity is further aggravated by considering feedback effects from a large arsenal of anti-malaria interventions, ranging from distribution of mosquito nets, indoor residual spraying and mass drug administration to age-specific vaccinations. 
+However, since many of these simulators are stochastic in nature and therefore act as black-boxes, understanding the structure of these complex simulators is challenging and poses several challenges for policy makers. 
+Therefore, sophisticated tools are required that enable us to not only digest the results of the simulation, but provide pathways to perform complex inferences. 
+To this end, we extend the work of \citep{baydin2018efficient} to enabling any epidemiology simulator to be transformed into probabilistic model that can be used as input to a probabilistic programming system enabling trace paths to be extracted from the simulator on both a per human level and a population level, from which we can extract trace probabilities allowing policy makers to easily see what actions had the biggest impact on the final output of the simulator.
+% maybe talk about this framework enables a pathway to inference etc..  
 
-All of the above limitations require contemporary malaria epidemiology simulators to employ stochastic modeling techniques, which negotiate data scarcity and model uncertainty through the use of appropriate prior distributions that can be tuned even from small samples of field data. The population dynamics of groups of typically several thousand hosts are then initialised by sampling from the initial distributions, using initial random seeds. Forward simulation then proceeds by rolling out population dynamics over time. Simulation outcomes of cherry-picked scenarios and interventions of interest are then compared to suitably designed control runs.
+% All of the above limitations require contemporary malaria epidemiology simulators to employ stochastic modeling techniques, which negotiate data scarcity and model uncertainty through the use of appropriate prior distributions that can be tuned even from small samples of field data. The population dynamics of groups of typically several thousand hosts are then initialised by sampling from the initial distributions, using initial random seeds. Forward simulation then proceeds by rolling out population dynamics over time. Simulation outcomes of cherry-picked scenarios and interventions of interest are then compared to suitably designed control runs.
 
-Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmittivity.
 
-However valuable forward simulations of epidemiology scenarios are, the holy grail of goal-driven policymaking ultimately lies in solving the inverse problem: Given a desired outcome and regional context, identify the series of interventions that will best reach the desired target after a given amount of time. Due to computational constraints, even an approximate search over the whole simulator input space usually proves intractable. An experience-guided search over the simulation output of a small set of manually-designed scenarios of interest therefore long seemed the only feasible way of investigating implications of policy interventions.
+% This is great, if we had inference implemented right now.
+% However valuable forward simulations of epidemiology scenarios are, the holy grail of goal-driven policymaking ultimately lies in solving the inverse problem: Given a desired outcome and regional context, identify the series of interventions that will best reach the desired target after a given amount of time. Due to computational constraints, even an approximate search over the whole simulator input space usually proves intractable. An experience-guided search over the simulation output of a small set of manually-designed scenarios of interest therefore long seemed the only feasible way of investigating implications of policy interventions.
 
-Recent work by \citep{Baydin} introduces a fundamental paradigm change that allows to tackle the inverse problem directly. Using a novel software tool named \textit{pyprob}, \citep{Baydin} extract program execution traces from state-of-the-art particle decay simulation engine SHERPA\cite{}. Using latest techniques from universal probabilistic programming inference, the sampled execution traces are then used in order to characterise the posterior distribution of the simulator output. From these, regions in simulator input space can be associated with specified outcomes.
-
-SHERPA, however, is different from leading epidemiology simulators in that it does not simulate population dynamics, but instead models individual decays at a time. In this paper, we for the first time demonstrate the applicability of \textit{pyprob}, and hence probabilistic programming inference, to population-based epidemiology simulators. In particular, we discuss how the leading malaria epidemiology simulators EMOD\cite{} and OpenMalaria\cite{} can be interfaced with \textit{pyprob}. We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
 
 
 % , and, above all, the lack of available field data for calibration, 
@@ -180,11 +188,16 @@ SHERPA, however, is different from leading epidemiology simulators in that it do
 
 \section{Epidemiology Simulators and Probabilistic Programming}
 \label{sec:background}
-This will kind of be like a background section. 
 
+Recent work by \citep{Baydin} introduces a fundamental paradigm change that allows to tackle the inverse problem directly. 
+Using a novel software tool named \textit{pyprob}, \citep{Baydin} extract program execution traces from state-of-the-art particle decay simulation engine SHERPA\cite{}.
+ Using latest techniques from universal probabilistic programming inference, the sampled execution traces are then used in order to characterise the posterior distribution of the simulator output. 
+ From these, regions in simulator input space can be associated with specified outcomes.
 
-
-\section{Methodology}
+SHERPA, however, is different from leading epidemiology simulators in that it does not simulate population dynamics, but instead models individual decays at a time.
+ In this paper, we for the first time demonstrate the applicability of \textit{pyprob}, and hence probabilistic programming inference, to population-based epidemiology simulators. 
+ In particular, we discuss how the leading malaria epidemiology simulators EMOD\cite{} and OpenMalaria\cite{} can be interfaced with \textit{pyprob}.
+  We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
 
 \subsection{Probabilistic Programming}
 Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the coming together of multiple disciplines; computer science, statistics and machine learning. 
@@ -441,7 +454,7 @@ OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
 %   \end{tabularx}
 %   \end{table*}
 % \section*{References}
-\newpage\phantom{blabla}\newpage\phantom{blabla}
+% \newpage\phantom{blabla}\newpage\phantom{blabla}
 
 \bibliographystyle{icml2019}
 \bibliography{refs}
