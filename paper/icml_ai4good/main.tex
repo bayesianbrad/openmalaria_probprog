@@ -8,7 +8,6 @@
 \usepackage{subfigure}
 \usepackage{booktabs} % for professional tables
 \usepackage{tabularx}
-
 % hyperref makes hyperlinks in the resulting PDF.
 % If your build breaks (sometimes temporarily if a hyperlink spans a page)
 % please comment out the following usepackage line and replace
@@ -204,8 +203,8 @@ that allow the expression of unrestricted probability models in a Turing complet
 Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. 
 Within the context of epidemiology simulators we can model treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made given a series of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}. 
 However, since the development happens over several decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
-Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators. 
-Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest. 
+Our method of overriding simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators. 
+Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}
 In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. 
 This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 
 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. 
@@ -216,7 +215,7 @@ We provide examples of former in next Section~\textbf{TO ADD REF} and discuss th
 \section{Case Study}
 \subsection{Connecting a Epidemiology Simulators to a Probabilistic Programming System}
 
-In order to hijack the stochastic simulator we are only required to override the location of the stochastic primitives, i.e. the operations that generate the stochasticity and randomness within the simulator. 
+In order to overriding the stochastic simulator we are only required to override the location of the stochastic primitives, i.e. the operations that generate the stochasticity and randomness within the simulator. 
 We will walk through how this is done for EMOD and OpenMalaria, you will see that it is procedurally identical.
 However, given the sheer number of simulators it maybe slightly different procedurally. 
 To our knowledge it shouldn't be, but we have not been able view of all stochastic simulators we cannot make this guarantee with certainty. 
@@ -227,17 +226,17 @@ A stochastic simulator may have a variety of other distribution and sampling pri
 
 
 % \subsection{Extending Probabilistic Programming Protocols}
+\begin{figure*}[h!]
+\centering
+   \includegraphics[width=\textwidth]{../plots/ewan_25_pop_10.pdf}
+   \bigbreak 
+   \includegraphics[width=\textwidth]{../plots/ewan_25_pop_100.pdf}
+   % \label{fig:Ng2}
 
-\begin{figure*}[h!]
-	\centering
-	\includegraphics[width=\textwidth]{../plots/ewan_25_pop_10.pdf}
-	\caption{Add something. Population 10}
+\caption{In overriding the stochasticity in the simulator we are able to control all random variables in the program,
+	 from which we can understand the physical events that unfold. }
 \end{figure*}
-\begin{figure*}[h!]
-	\centering
-	\includegraphics[width=\textwidth]{../plots/ewan_25_pop_100.pdf}
-	\caption{Add something. Population 100}
-\end{figure*}
+
 TODO
 
 % Please add the following required packages to your document preamble:
@@ -264,7 +263,7 @@ TODO
 % \end{tabularx}
 % \end{table*}
 
-  \begin{table*}[b!]
+  \begin{table*}[h!]
   \footnotesize
   \setlength{\tabcolsep}{1mm}
   \caption{Addresses }
@@ -290,136 +289,107 @@ TODO
   OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6; 
 
   OM::util::random::gauss(double, double)+0xb4]\_\_Normal\\
-  A2 & [forward()+0x204; 
-  OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+  % A2 & [forward()+0x204; 
+  % OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-   OM::Population::update1(OM::SimTime)+0x1e9;
+  %  OM::Population::update1(OM::SimTime)+0x1e9;
 
-   OM::Population::newHuman(OM::SimTime)+0x5c;
+  %  OM::Population::newHuman(OM::SimTime)+0x5c;
 
-   OM::Host::Human::Human(OM::SimTime)+0x12b;
+  %  OM::Host::Human::Human(OM::SimTime)+0x12b;
 
-   OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99; 
+  %  OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99; 
 
-   OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a;
+  %  OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a;
 
-   OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6;
+  %  OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6;
 
-   OM::util::random::gauss(double, double)+0xb4]\_\_Normal \\
-  A3 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+  %  OM::util::random::gauss(double, double)+0xb4]\_\_Normal \\
+  % A3 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-   OM::Population::update1(OM::SimTime)+0xff;
+  %  OM::Population::update1(OM::SimTime)+0xff;
 
-   OM::Host::Human::update(bool)+0x22c;
+  %  OM::Host::Human::update(bool)+0x22c;
 
-   OM::Host::InfectionIncidenceModel::numNewInfections(OM::Host::Human const\&, double)+0x2a3;
+  %  OM::Host::InfectionIncidenceModel::numNewInfections(OM::Host::Human const\&, double)+0x2a3;
 
-   OM::util::random::poisson(double)+0x13f]\_\_Poisson\\
-  A4 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; 
+  %  OM::util::random::poisson(double)+0x13f]\_\_Poisson\\
+  % A4 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; 
 
-  OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+  % OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
 
-   OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96; 
+  %  OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96; 
 
-   OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
+  %  OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
 
-    OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-  A5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+    % OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+    $\vdots$ & $\vdots$ \\
+%   A5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-   OM::Population::update1(OM::SimTime)+0xff;
+%    OM::Population::update1(OM::SimTime)+0xff;
 
-    OM::Host::Human::update(bool)+0x2bc;
+%     OM::Host::Human::update(bool)+0x2bc;
 
-    OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96;
+%     OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96;
 
-    OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
+%     OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
 
-    OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-  A6 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+%     OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+%   A6 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-   OM::Population::update1(OM::SimTime)+0xff;
+%    OM::Population::update1(OM::SimTime)+0xff;
 
-   OM::Host::Human::update(bool)+0x280;
+%    OM::Host::Human::update(bool)+0x280;
 
-   OM::WithinHost::DescriptiveWithinHostModel::update(int, std::vector \textgreater{}\&, double, double)+0x3a2;
+%    OM::WithinHost::DescriptiveWithinHostModel::update(int, std::vector \textgreater{}\&, double, double)+0x3a2;
 
-   OM::WithinHost::DescriptiveInfection::determineDensities(double, double, double, double\&, double, double)+0x303;
+%    OM::WithinHost::DescriptiveInfection::determineDensities(double, double, double, double\&, double, double)+0x303;
 
-   OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-   A7 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
-   ı
-	OM::Population::update1(OM::SimTime)+0xff;
+%    OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+%    A7 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+%    ı
+% 	OM::Population::update1(OM::SimTime)+0xff;
 
-	OM::Host::Human::update(bool)+0x2bc;
+% 	OM::Host::Human::update(bool)+0x2bc;
 
-	OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+% 	OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
 
-	OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
+% 	OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
 
-	OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
-ı
-	OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x143;
+% 	OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
+% ı
+% 	OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x143;
 
-	OM::util::random::bernoulli(double)+0x47;
+% 	OM::util::random::bernoulli(double)+0x47;
 
-	OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-	A8 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+% 	OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+% 	A8 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-	OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+% 	OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
 
-	OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+% 	OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
 
-	OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
+% 	OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
 
-	OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
+% 	OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
 
-	OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x162;
+% 	OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x162;
 
-	OM::util::random::bernoulli(double)+0x47;
+	% OM::util::random::bernoulli(double)+0x47;
 
-	OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-A9 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
- OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+% 	OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+% A9 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+%  OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
 
- OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+%  OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
 
-  OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
+%   OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0x67;
 
-  OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
+%   OM::WithinHost::WHFalciparum::determineMorbidity(OM::Host::Human\&, double, bool)+0x73;
 
-  OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x1c7;
+%   OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x1c7;
 
-  OM::util::random::bernoulli(double)+0x47; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-\bottomrule
-  \end{tabularx}
-  \end{table*}
-% \subsubsection*{Acknowledgments}
-
-% Use unnumbered third level headings for the acknowledgments. All acknowledgments
-% go at the end of the paper. Do not include acknowledgments in the anonymized
-% submission, only in the final paper.
-  \begin{table*}[ht!]
-  \footnotesize
-  \setlength{\tabcolsep}{1mm}
-  \caption{Addresses .}
-  \label{table:addresses}
-  \def\arraystretch{1.25}
-  % \setlength{\tabcolsep}{1mm}
-  \begin{tabularx}{\textwidth}{@{}lX@{}} 
-    \toprule
-    Address ID & Full address \\
-    \midrule
-A10 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
-
-OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
-
-OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
-
-OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xe3;
-
-OM::Clinical::ImmediateOutcomes::uncomplicatedEvent(OM::Host::Human\&, OM::Clinical::Episode::State)+0x87;
-
-OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+%   OM::util::random::bernoulli(double)+0x47; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
 A11 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
 
@@ -429,10 +399,50 @@ OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xad;
 
 OM::Clinical::CM5DayCommon::severeMalaria(OM::Host::Human\&, OM::Clinical::Episode::State, double, int\&)+0x4b1;
 OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-    \bottomrule
+\bottomrule
   \end{tabularx}
   \end{table*}
-\section*{References}
+% \subsubsection*{Acknowledgments}
+
+% Use unnumbered third level headings for the acknowledgments. All acknowledgments
+% go at the end of the paper. Do not include acknowledgments in the anonymized
+% submission, only in the final paper.
+  % \begin{table*}[ht!]
+%   \footnotesize
+%   \setlength{\tabcolsep}{1mm}
+%   \caption{Addresses .}
+%   \label{table:addresses}
+%   \def\arraystretch{1.25}
+%   % \setlength{\tabcolsep}{1mm}
+%   \begin{tabularx}{\textwidth}{@{}lX@{}} 
+%     \toprule
+%     Address ID & Full address \\
+%     \midrule
+% A10 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+
+% OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+
+% OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+
+% OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xe3;
+
+% OM::Clinical::ImmediateOutcomes::uncomplicatedEvent(OM::Host::Human\&, OM::Clinical::Episode::State)+0x87;
+
+% OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+% A11 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+% OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+
+% OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+
+% OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xad;
+
+% OM::Clinical::CM5DayCommon::severeMalaria(OM::Host::Human\&, OM::Clinical::Episode::State, double, int\&)+0x4b1;
+% OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+%     \bottomrule
+%   \end{tabularx}
+%   \end{table*}
+% \section*{References}
+\newpage\phantom{blabla}\newpage\phantom{blabla}
 
 \bibliographystyle{icml2019}
 \bibliography{refs}
