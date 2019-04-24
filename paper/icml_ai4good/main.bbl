@@ -1,4 +1,4 @@
-\begin{thebibliography}{17}
+\begin{thebibliography}{20}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -13,6 +13,24 @@ Baydin, A.~G., Heinrich, L., Bhimji, W., Gram-Hansen, B., Louppe, G., Shao, L.,
   standard model.
 \newblock \emph{arXiv preprint arXiv:1807.07706}, 2018.
 
+\bibitem[Bershteyn et~al.()Bershteyn, Gerardin, Bridenbecker, Lorton, Bloedow,
+  Baker, Chabot-Couture, Chen, Fischle, Frey, Gauld, Hu, Izzo, Klein,
+  Lukacevic, {McCarthy}, Miller, Ouedraogo, Perkins, Steinkraus, ten Bosch,
+  Ting, Titova, Wagner, Welkhoff, Wenger, and
+  Wiswell]{bershteyn_implementation_2018}
+Bershteyn, A., Gerardin, J., Bridenbecker, D., Lorton, C.~W., Bloedow, J.,
+  Baker, R.~S., Chabot-Couture, G., Chen, Y., Fischle, T., Frey, K., Gauld,
+  J.~S., Hu, H., Izzo, A.~S., Klein, D.~J., Lukacevic, D., {McCarthy}, K.~A.,
+  Miller, J.~C., Ouedraogo, A.~L., Perkins, T.~A., Steinkraus, J., ten Bosch,
+  Q.~A., Ting, H.-F., Titova, S., Wagner, B.~G., Welkhoff, P.~A., Wenger,
+  E.~A., and Wiswell, C.~N.
+\newblock Implementation and applications of {EMOD}, an individual-based
+  multi-disease modeling platform.
+\newblock 76\penalty0 (5).
+\newblock \doi{10.1093/femspd/fty059}.
+\newblock URL
+  \url{https://academic.oup.com/femspd/article/76/5/fty059/5050059}.
+
 \bibitem[Bingham et~al.(2019)Bingham, Chen, Jankowiak, Obermeyer, Pradhan,
   Karaletsos, Singh, Szerlip, Horsfall, and Goodman]{bingham2019pyro}
 Bingham, E., Chen, J.~P., Jankowiak, M., Obermeyer, F., Pradhan, N.,
@@ -21,25 +39,19 @@ Bingham, E., Chen, J.~P., Jankowiak, M., Obermeyer, F., Pradhan, N.,
 \newblock \emph{The Journal of Machine Learning Research}, 20\penalty0
   (1):\penalty0 973--978, 2019.
 
-\bibitem[Evensen(1994)]{evensen1994sequential}
-Evensen, G.
-\newblock Sequential data assimilation with a nonlinear quasi-geostrophic model
-  using monte carlo methods to forecast error statistics.
-\newblock \emph{Journal of Geophysical Research: Oceans}, 99\penalty0
-  (C5):\penalty0 10143--10162, 1994.
+\bibitem[Gleisberg et~al.()Gleisberg, Hoeche, Krauss, Schönherr, Schumann,
+  Siegert, and Winter]{gleisberg_event_2008}
+Gleisberg, T., Hoeche, S., Krauss, F., Schönherr, M., Schumann, S., Siegert,
+  F., and Winter, J.
+\newblock Event generation with {SHERPA} 1.1.
+\newblock 2009.
+\newblock \doi{10.1088/1126-6708/2009/02/007}.
 
 \bibitem[Goodman et~al.(2012)Goodman, Mansinghka, Roy, Bonawitz, and
   Tenenbaum]{goodman2012church}
 Goodman, N., Mansinghka, V., Roy, D.~M., Bonawitz, K., and Tenenbaum, J.~B.
 \newblock Church: a language for generative models.
 \newblock \emph{arXiv preprint arXiv:1206.3255}, 2012.
-
-\bibitem[Goodman et~al.(2008)Goodman, Mansinghka, Roy, Bonawitz, and
-  Tenenbaum]{Goodman08church:a}
-Goodman, N.~D., Mansinghka, V.~K., Roy, D.~M., Bonawitz, K., and Tenenbaum,
-  J.~B.
-\newblock Church: A language for generative models.
-\newblock In \emph{In UAI}, pp.\  220--229, 2008.
 
 \bibitem[Gordon et~al.(2014)Gordon, Henzinger, Nori, and
   Rajamani]{gordon2014probabilistic}
@@ -48,12 +60,12 @@ Gordon, A.~D., Henzinger, T.~A., Nori, A.~V., and Rajamani, S.~K.
 \newblock In \emph{Proceedings of the Future of Software Engineering}, pp.\
   167--181. ACM, 2014.
 
-\bibitem[J{\"a}ckel(2002)]{jackel2002monte}
-J{\"a}ckel, P.
-\newblock \emph{Monte Carlo Methods in Finance}.
-\newblock The Wiley Finance Series. Wiley, 2002.
-\newblock ISBN 9780471497417.
-\newblock URL \url{https://books.google.co.uk/books?id=jG6BQgAACAAJ}.
+\bibitem[Gunes~Baydin et~al.()Gunes~Baydin, Heinrich, Bhimji, Gram-Hansen,
+  Louppe, Shao, Prabhat, Cranmer, and Wood]{gunes_baydin_efficient_2018}
+Gunes~Baydin, A., Heinrich, L., Bhimji, W., Gram-Hansen, B., Louppe, G., Shao,
+  L., Prabhat, M., Cranmer, K., and Wood, F.
+\newblock \emph{Efficient Probabilistic Inference in the Quest for Physics
+  Beyond the Standard Model}.
 
 \bibitem[Kozen(1979)]{kozen1979semantics}
 Kozen, D.
@@ -87,10 +99,20 @@ Merkel, D.
   deployment.
 \newblock \emph{Linux Journal}, 2014\penalty0 (239):\penalty0 2, 2014.
 
-\bibitem[Organization(2016)]{world2016world}
-Organization, W.~H.
-\newblock \emph{World malaria report 2015}.
-\newblock World Health Organization, 2016.
+\bibitem[Mwendera et~al.()Mwendera, de~Jager, Longwe, Kumwenda, Hongoro, Phiri,
+  and Mutero]{mwendera_challenges_2019}
+Mwendera, C.~A., de~Jager, C., Longwe, H., Kumwenda, S., Hongoro, C., Phiri,
+  K., and Mutero, C.~M.
+\newblock Challenges to the implementation of malaria policies in malawi.
+\newblock 19\penalty0 (1):\penalty0 194.
+\newblock ISSN 1472-6963.
+\newblock \doi{10.1186/s12913-019-4032-2}.
+\newblock URL \url{https://doi.org/10.1186/s12913-019-4032-2}.
+
+\bibitem[Refugees()]{refugees_2030_nodate}
+Refugees, U. N. H. C.~f.
+\newblock The 2030 agenda for sustainable development.
+\newblock URL \url{https://www.refworld.org/docid/57b6e3e44.html}.
 
 \bibitem[Siddharth et~al.(2017)Siddharth, Paige, van~de Meent, Desmaison,
   Goodman, Kohli, Wood, and Torr]{siddharth2017learning}
@@ -105,13 +127,17 @@ Siddharth, N., Paige, B., van~de Meent, J.-W., Desmaison, A., Goodman, N.~D.,
 \newblock URL
   \url{http://papers.nips.cc/paper/7174-learning-disentangled-representations-with-semi-supervised-deep-generative-models.pdf}.
 
-\bibitem[Smith et~al.(2008)Smith, Maire, Ross, Penny, Chitnis, Schapira,
-  Studer, Genton, Lengeler, Tediosi, et~al.]{smith2008towards}
-Smith, T., Maire, N., Ross, A., Penny, M., Chitnis, N., Schapira, A., Studer,
-  A., Genton, B., Lengeler, C., Tediosi, F., et~al.
-\newblock Towards a comprehensive simulation model of malaria epidemiology and
-  control.
-\newblock \emph{Parasitology}, 135\penalty0 (13):\penalty0 1507--1516, 2008.
+\bibitem[Smith et~al.()Smith, Ross, Maire, Chitnis, Studer, Hardy, Brooks,
+  Penny, and Tanner]{smith_ensemble_2012}
+Smith, T., Ross, A., Maire, N., Chitnis, N., Studer, A., Hardy, D., Brooks, A.,
+  Penny, M., and Tanner, M.
+\newblock Ensemble modeling of the likely public health impact of a
+  pre-erythrocytic malaria vaccine.
+\newblock 9\penalty0 (1):\penalty0 e1001157.
+\newblock ISSN 1549-1676.
+\newblock \doi{10.1371/journal.pmed.1001157}.
+\newblock URL
+  \url{https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1001157}.
 
 \bibitem[Staton et~al.(2016)Staton, Yang, Wood, Heunen, and
   Kammar]{staton2016semantics}
@@ -120,6 +146,17 @@ Staton, S., Yang, H., Wood, F., Heunen, C., and Kammar, O.
   continuous distributions, and soft constraints.
 \newblock In \emph{Proceedings of the 31st Annual ACM/IEEE Symposium on Logic
   in Computer Science}, pp.\  525--534. ACM, 2016.
+
+\bibitem[{UN}()]{un_sustainable_2018}
+{UN}.
+\newblock The sustainable development goals report 2018.
+\newblock URL \url{https://doi.org/10.18356/7d014b41-en}.
+
+\bibitem[{WHO}()]{who_global_2015}
+{WHO}.
+\newblock Global technical strategy for malaria 2016-2030.
+\newblock URL
+  \url{http://www.who.int/malaria/areas/global_technical_strategy/en/}.
 
 \bibitem[Wood et~al.(2014)Wood, Meent, and Mansinghka]{wood2014new}
 Wood, F., Meent, J.~W., and Mansinghka, V.
