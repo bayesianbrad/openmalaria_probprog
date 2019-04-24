@@ -115,23 +115,33 @@ perform interpretable inference in such settings.
 \end{abstract}
 
 \section{Introduction}
-Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target by the Good Health \& Well-Being section of the UN Sustainable Development Goals. Despite decades of substantial international efforts, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
 
-Malaria can be routinely cured thanks to a variety of medical interventions. 
-Issues are further aggravated due to the emergence of parasite resistance to multiple drugs, including artemisinin, or even insecticides.
+Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target by the Good Health \& Well-Being section of the UN Sustainable Development Goals. 
+Despite decades of substantial international efforts, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
+Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals\cite{}. 
 
-To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers increasingly turn to evidence-based methods. However, the collection of large quantities of field data is often infeasible due to logistic, economic or political constraints, or outright impossible if novel methods are to be assessed a priori. Hence in silico simulation of malaria epidemiology plays an increasingly crucial role in evidence-based policymaking.
+In contrast to AIDS, Malaria can be routinely cured thanks to the disposability of a variety of medical interventions. 
+Issues are further aggravated due to the increasing emergence of parasite resistance to multiple drugs, including artemisinin, or even insecticides. 
+Hence, despite decades of substantial international efforts, initial hopes of regional elimination or even global eradication have not been met.
+ So difficult is Malaria control that, even today, about a quarter of a million children under the age of 5 succumb to it every year in Africa alone. 
+
+To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers increasingly turn to evidence-based methods. 
+However, the collection of large quantities of field data is often infeasible due to logistic, economic or political constraints, or outright impossible if novel methods are to be assessed a priori. Hence in silico simulation of malaria epidemiology plays an increasingly crucial role in evidence-based policymaking.
 %Hence epidemiology simulators fine-tuned on real data play a crucial role in determining policy implications.
 
-Even in the absence of political, economic and social constraints, Malaria epidemiology is governed by a complex set of drivers, few of which can be understood in isolation. These include within-host dynamics, population-specific traits and even local geography. Some progress in modeling specific components has been made, such as the parasite life-cycle, transmission vector dynamics and the inter-dependencies between infection rates and vicinity to open water. However, comprehensive modeling of all of these components in a regional context remains challenging, and is greatly impeded by the lack of available field data.
+Even in the absence of political, economic and social constraints, Malaria epidemiology is governed by a complex set of drivers, few of which can be understood in isolation. These include within-host dynamics, population-specific traits and even local geography. Some progress in modeling specific components has been made, such as the parasite life-cycle, transmission vector dynamics and the inter-dependencies between infection rates and vicinity to open water. However, comprehensive modeling of all of these components in a regional context remains challenging, and is greatly impeded by the lack of available field data for regional calibration. Simulation complexity is further aggravated by considering feedback effects from a large arsenal of anti-malaria interventions, ranging from distribution of mosquito nets, indoor residual spraying and mass drug administration to age-specific vaccinations. 
 
-Studying the implications of a diverse set of anti-malaria 
+All of the above limitations require contemporary malaria epidemiology simulators to employ stochastic modeling techniques, which negotiate data scarcity and model uncertainty through the use of appropriate prior distributions that can be tuned even from small samples of field data. The population dynamics of groups of typically several thousand hosts are then initialised by sampling from the initial distributions, using initial random seeds. Forward simulation then proceeds by rolling out simulation dynamics over time. Policymakers then take interest in comparing simulation outcomes of cherry-picked scenarios and interventions with those of suitably chosen control groups.
 
-All of the above limitations require contemporary malaria epidemiology simulators to employ stochastic modeling techniques, which negotiate data scarcity and model uncertainty through the use of appropriate prior distributions. Simulator calibration then equates to calibrating the 
+Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmission. 
 
-, and, above all, the lack of available field data for calibration, 
+However valuable forward simulations of epidemiology scenarios are, the holy grail of goal-driven policymaking lies ultimately in the inverse problem: Given a desired outcome, we wish to find the optimal respective intervention policy given a specific regional context. Due to computational constraints, even an approximate search over the whole simulator input space usually proves intractable.
 
-%parasite life-cycle, transmission vectors, population dynamics and even local geographic circumstances, with policy measures ranging from distribution of mosquito nets to experimental vaccines, requires such simulators to be stochastic. Simulation outcomes thus need to be evaluated on a population of subjects.
+
+
+% , and, above all, the lack of available field data for calibration, 
+
+% parasite life-cycle, transmission vectors, population dynamics and even local geographic circumstances, with policy measures ranging from distribution of mosquito nets to experimental vaccines, requires such simulators to be stochastic. Simulation outcomes thus need to be evaluated on a population of subjects.
 
 <Section about prob prog inference, with reference to SHERPA>
 
@@ -191,7 +201,16 @@ that allow the expression of unrestricted probability models in a Turing complet
 
 \subsection{Stochastic Simulators}
 
-Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Within the context of epidemiology simulators we can model treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made given a series of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}. However, since the development happens over several decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}. In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. We provide examples of former in next Section~\textbf{TO ADD REF} and discuss the latter in ~\bg{Link to conclusion / future work}.
+Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. 
+Within the context of epidemiology simulators we can model treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made given a series of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}. 
+However, since the development happens over several decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
+Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators. 
+Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest. 
+In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. 
+This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 
+2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. 
+This is critical in several domains, and is particularly important in the medical domain. 
+We provide examples of former in next Section~\textbf{TO ADD REF} and discuss the latter in ~\bg{Link to conclusion / future work}.
 
 
 \section{Case Study}
@@ -203,7 +222,8 @@ However, given the sheer number of simulators it maybe slightly different proced
 To our knowledge it shouldn't be, but we have not been able view of all stochastic simulators we cannot make this guarantee with certainty. 
 The first step is to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
 This greatly improves the scope of applicability of our system, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. 
-The second step requires one to 
+The second step requires one to override the stochastic primitives in the language, for example, the \emph{Uniform} and \emph{Normal} draws. 
+A stochastic simulator may have a variety of other distribution and sampling primitives, but the underlying methodology is the same. 
 
 
 % \subsection{Extending Probabilistic Programming Protocols}
