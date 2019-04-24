@@ -127,11 +127,14 @@ Even in the absence of political, economic and social constraints, Malaria epide
 
 All of the above limitations require contemporary malaria epidemiology simulators to employ stochastic modeling techniques, which negotiate data scarcity and model uncertainty through the use of appropriate prior distributions that can be tuned even from small samples of field data. The population dynamics of groups of typically several thousand hosts are then initialised by sampling from the initial distributions, using initial random seeds. Forward simulation then proceeds by rolling out population dynamics over time. Simulation outcomes of cherry-picked scenarios and interventions of interest are then compared to suitably designed control runs.
 
-Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmittivity. 
+Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmittivity.
 
 However valuable forward simulations of epidemiology scenarios are, the holy grail of goal-driven policymaking ultimately lies in solving the inverse problem: Given a desired outcome and regional context, identify the series of interventions that will best reach the desired target after a given amount of time. Due to computational constraints, even an approximate search over the whole simulator input space usually proves intractable. An experience-guided search over the simulation output of a small set of manually-designed scenarios of interest therefore long seemed the only feasible way of investigating implications of policy interventions.
 
-Recent work by \citep{Baydin} introduces a fundamental paradigm change that, for the first time, allows to tackle this inverse problem in a way that . 
+Recent work by \citep{Baydin} introduces a fundamental paradigm change that allows to tackle the inverse problem directly. Using a novel software tool named \textit{pyprob}, \citep{Baydin} extract program execution traces from state-of-the-art particle decay simulation engine SHERPA\cite{}. Using latest techniques from universal probabilistic programming inference, the sampled execution traces are then used in order to characterise the posterior distribution of the simulator output. From these, regions in simulator input space can be associated with specified outcomes.
+
+SHERPA, however, is different from leading epidemiology simulators in that it does not simulate population dynamics, but instead models individual decays at a time. In this paper, we for the first time demonstrate the applicability of \textit{pyprob}, and hence probabilistic programming inference, to population-based epidemiology simulators. In particular, we discuss how the leading malaria epidemiology simulators EMOD\cite{} and OpenMalaria\cite{} can be interfaced with \textit{pyprob}. We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
+
 
 % , and, above all, the lack of available field data for calibration, 
 
@@ -139,11 +142,7 @@ Recent work by \citep{Baydin} introduces a fundamental paradigm change that, for
 
 % <Section about prob prog inference, with reference to SHERPA>
 
-In this paper, we for the first time demonstrate the applicability of trace introspection, and hence universal probabilistic inference, to population-based simulators. In particular, we discuss how the leading malaria epidemiology simulators EMOD[] and OpenMalaria[] can be interfaced with <TODO>. We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
-
-
-
-- issues of public health are complex and 
+%- issues of public health are complex and 
 
 %To do. 
 %
