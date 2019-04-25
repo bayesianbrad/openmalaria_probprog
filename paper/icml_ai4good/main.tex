@@ -288,9 +288,7 @@ TODO
     Address ID & Full address \\
     \midrule
   A1 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const)+0x28a;
-
-  OM::Population::createInitialHumans()+0x94; 
-
+  OM::Population::createInitialHumans()+0x94;
   OM::Population::newHuman(OM::SimTime)+0x5c;
 
   OM::Host::Human::Human(OM::SimTime)+0x12b;
@@ -299,55 +297,23 @@ TODO
 
   OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a;
 
-  OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6; 
+  OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6;
 
   OM::util::random::gauss(double, double)+0xb4]\_\_Normal\\
-  % A2 & [forward()+0x204; 
-  % OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-  %  OM::Population::update1(OM::SimTime)+0x1e9;
+   $\vdots$ & $\vdots$ \\
+  A5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-  %  OM::Population::newHuman(OM::SimTime)+0x5c;
+   OM::Population::update1(OM::SimTime)+0xff;
 
-  %  OM::Host::Human::Human(OM::SimTime)+0x12b;
+    OM::Host::Human::update(bool)+0x2bc;
 
-  %  OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99; 
+    OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96;
 
-  %  OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a;
+    OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
 
-  %  OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6;
+    OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
 
-  %  OM::util::random::gauss(double, double)+0xb4]\_\_Normal \\
-  % A3 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
-
-  %  OM::Population::update1(OM::SimTime)+0xff;
-
-  %  OM::Host::Human::update(bool)+0x22c;
-
-  %  OM::Host::InfectionIncidenceModel::numNewInfections(OM::Host::Human const\&, double)+0x2a3;
-
-  %  OM::util::random::poisson(double)+0x13f]\_\_Poisson\\
-  % A4 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468; 
-
-  % OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
-
-  %  OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96; 
-
-  %  OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
-
-    % OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-    $\vdots$ & $\vdots$ \\
-%   A5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
-
-%    OM::Population::update1(OM::SimTime)+0xff;
-
-%     OM::Host::Human::update(bool)+0x2bc;
-
-%     OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96;
-
-%     OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
-
-%     OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
 %   A6 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
 %    OM::Population::update1(OM::SimTime)+0xff;
@@ -403,16 +369,20 @@ TODO
 %   OM::WithinHost::Pathogenesis::PathogenesisModel::determineState(OM::Host::Human\&, double, double, double, bool)+0x1c7;
 
 %   OM::util::random::bernoulli(double)+0x47; OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
-A11 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+ $\vdots$ & $\vdots$ \\
+ 
+% A11 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
+% OM::Population::update1(OM::SimTime)+0xff; OM::Host::Human::update(bool)+0x2bc;
 
-OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
+% OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0xe8;
 
-OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xad;
+% OM::Clinical::CM5DayCommon::doClinicalUpdate(OM::Host::Human\&, double)+0xad;
 
-OM::Clinical::CM5DayCommon::severeMalaria(OM::Host::Human\&, OM::Clinical::Episode::State, double, int\&)+0x4b1;
-OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+% OM::Clinical::CM5DayCommon::severeMalaria(OM::Host::Human\&, OM::Clinical::Episode::State, double, int\&)+0x4b1;
+
+% OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+
 \bottomrule
   \end{tabularx}
   \end{table*}
