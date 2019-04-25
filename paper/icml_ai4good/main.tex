@@ -9,6 +9,9 @@
 \usepackage{booktabs} % for professional tables
 \usepackage{tabularx}
 \usepackage{listings}
+\usepackage{pgfplots}
+\usepackage{tikz}
+
 % hyperref makes hyperlinks in the resulting PDF.
 % If your build breaks (sometimes temporarily if a hyperlink spans a page)
 % please comment out the following usepackage line and replace
@@ -25,7 +28,18 @@
 \newcommand{\ag}[1]{~{{[{\it \textcolor{red}{{\bf AG:} #1}}]}}}
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2019}
-
+\usetikzlibrary{arrows,chains,matrix,positioning,scopes}
+%
+\makeatletter
+\tikzset{join/.code=\tikzset{after node path={%
+\ifx\tikzchainprevious\pgfutil@empty\else(\tikzchainprevious)%
+edge[every join]#1(\tikzchaincurrent)\fi}}}
+\makeatother
+%
+\tikzset{>=stealth',every on chain/.append style={join},
+         every join/.style={->}}
+\tikzstyle{labeled}=[execute at begin node=$\scriptstyle,
+   execute at end node=$]
 % The \icmltitle you define below is probably too long as aer.
 % Therefore, a short form for the running title is supplied here:
 \icmltitlerunning{Understanding the Black-box Structure of Epidemiology Simulators for Policy Decision Making}
@@ -38,6 +52,7 @@
                 morecomment=[l][\color{magenta}]{\#},
                 breaklines = true
 }
+\pgfplotsset{width=9.5cm,compat=1.5}
 \begin{document}
 
 \twocolumn[
@@ -258,8 +273,9 @@ The second step requires one to override the stochastic primitives, which requir
 This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
  Such information is typically saved in $\texttt{RANDOM.<filetype>}$.  We now demonstrate this for a uniform primitive.
 
-\begin{tabular}{|p{3.6cm}|p{3.6cm}|}
+\begin{tabular}{p{3.6cm}|p{3.6cm}}
 Before  &  After  \\
+\midrule
 \begin{lstlisting}
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_rng.h>
@@ -274,6 +290,7 @@ OM_RANDOM_USE_BOOST
  gsl_rng_uniform (rng.gsl_generator);
 # endif
     return result;
+    }
 \end{lstlisting}&
 \begin{lstlisting}
 #include <pyprob_cpp.h>
@@ -288,12 +305,54 @@ return pyprob_cpp::sample(uniform)(0);
 
 The third step is creating the protocols, which enable communication between the simulator and probabilistic programming system. 
 For this we extend the existing bringing framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight c++ interface, however this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is.
-In doing this we enable a larger class of sampling procedures to be overridden. The PPX protocols in particular take advantage of flat buffer protocols\footnote{https://github.com/google/flatbuffers}, which require a flatbuffers script to be specified, see here for an example of a flat buffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. 
+In doing this we enable a larger class of sampling procedures to be overridden. The PPX protocols in particular take advantage of flat buffer protocols\footnote{\url{https://github.com/google/flatbuffers}}, which require a flatbuffers script to be specified, see here for an example of a flat buffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. 
 The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$, \bg{add more on this later}
-The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on c++ we can extend an existing interface called pyprob\_cpp\footnote{https://github.com/probprog/pyprob_cpp} to account for the additional sampling procedures.
+The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on c++ we can extend an existing interface called pyprob\_cpp\footnote{\url{https://github.com/probprog/pyprob_cpp}} to account for the additional sampling procedures.
 Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the probabilistic programming system. We provide examples of this output in Figure~\ref{fig:plotewan}. 
 
 % \subsection{Extending Probabilistic Programming Protocols}
+% \begin{tikzpicture}
+% \begin{axis}[
+%     ybar,
+%     enlargelimits=0.15,
+%     legend style={at={(0.5,-0.15)},
+%       anchor=north,legend columns=-1},
+%       xlabel = {Address},
+%     % ylabel={Probabilities},
+%     symbolic x coords={A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11},
+%     xtick=data,
+%     nodes near coords,
+%     nodes near coords align={vertical},
+%     ]
+% % \addplot coordinates {(tool8,7) (tool9,9) (tool10,4)};
+% \addplot coordinates {(A1,0.2) (A2,0.5) (A3,0.7) (A4,0.3) (A5,0.4) (A6,0.4) (A7,0.6) (A8,0.7) (A9,0.9) (A10,0.12) (A11,0.23)};
+% % \addplot coordinates {(A1,0.2) (A2,0.5) (A3,0.7) (A4,0.9)};
+% % \addplot coordinates {(A1,0.1) (A2,0.1) (A3,0.1) (A4,0.3)};
+% % \legend{used,understood,not understood}
+% \end{axis}
+% \caption{Trace probabilities}
+% \end{tikzpicture}
+\begin{tikzpicture}
+  \matrix (m) [matrix of math nodes, row sep=3em, column sep=3em]
+    { Start & A1  & A2  & A3  & A4 \\
+      Start & A1 & A2 & A3 & A4 \\ };
+  { [start chain] \chainin (m-1-1);
+    \chainin (m-1-2);
+    { [start branch=A] \chainin (m-2-2)
+        [join={node[right,labeled] {0.90}}];}
+    \chainin (m-1-3) [join={node[above,labeled] {\varphi}}];
+    { [start branch=B] \chainin (m-2-3)
+        [join={node[right,labeled] {\eta_2}}];}
+    \chainin (m-1-4) [join={node[above,labeled] {\psi}}];
+    { [start branch=C] \chainin (m-2-4)
+        [join={node[right,labeled] {\eta_3}}];}
+    \chainin (m-1-5); }
+  { [start chain] \chainin (m-2-1);
+    \chainin (m-2-2);
+    \chainin (m-2-3) [join={node[above,labeled] {\varphi'}}];
+    \chainin (m-2-4) [join={node[above,labeled] {\psi'}}];
+    \chainin (m-2-5); }
+\end{tikzpicture}
 
 \begin{figure*}[h!]
 	\centering
