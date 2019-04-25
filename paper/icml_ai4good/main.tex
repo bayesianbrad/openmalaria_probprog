@@ -52,7 +52,7 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
                 morecomment=[l][\color{magenta}]{\#},
                 breaklines = true
 }
-\pgfplotsset{width=9.5cm,compat=1.5}
+\pgfplotsset{width=7cm,compat=1.8}
 \begin{document}
 
 \twocolumn[
@@ -260,8 +260,7 @@ Open Malaria is an open-source simulator funded by the Gates Foundation to model
  Models in OpenMalaria are specified via a scenario file, in the form of an XML document, which specifies the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
 The scenario file encodes all input and output parameters, some of which we wish to simulate to try and infer, others remain fixed. 
 
- \paragraph{EMOD} Do the same for EMOD as OM
-
+\paragraph{EMOD} Do the same for EMOD as OM
 
 In both these well used simulators users are accustomed to writing their models as either XML, or JSON files and so it is important that any system built around this framework enables the models to be inputted in the same format, without requiring the users to learn how to use a new set of protocols. 
 
@@ -273,13 +272,14 @@ In order to overhaul the stochastic simulators we are only required to override 
 We will walk through how this is done for a standard epidemiology simulator.
 
 The initial step first requires one to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
-This greatly improves the scope of applicability of our system and the simulator, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. This step will be slightly different for individual simulators, but the overall idea is the same. We cannot provide a link to an example of a containerized environment for openmalaria and system in this submission due to anonymity\footbote{We shall provide a link in the camera ready submission}.
+This greatly improves the scope of applicability of our system and the simulator, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. This step will be slightly different for individual simulators, but the overall idea is the same. We cannot provide a link to an example of a containerized environment for OpenMalaria and system in this submission due to anonymity\footnote{We shall provide a link in the camera ready submission}.
 The second step requires one to override the stochastic primitives, which requires re-writing aspects of the sampling procedures inside the simulator. 
 This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
  Such information is typically saved in $\texttt{RANDOM.<filetype>}$, although it may vary slightly between simulators. We now demonstrate this for a uniform primitive.
 
-\begin{tabular}{p{3.6cm}|p{3.6cm}}
+\begin{table}[h!]
 \footnotesize
+\begin{tabular}{p{3.6cm}|p{3.6cm}}
 Before  &  After  \\
 \midrule
 \begin{lstlisting}
@@ -308,7 +308,7 @@ return pyprob_cpp::sample(uniform)(0);
 }
 \end{lstlisting}
 \end{tabular} 
-
+\end{table}
 As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
 The third step is generating the protocols, which enable communication between the simulator and probabilistic programming system. 
 For this we extend the existing bridging framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight C ++ interface, however the language of this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is. 
@@ -319,6 +319,7 @@ The final step is to create a light-weight interface. As both the EMOD and OpenM
 Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS. We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
 
 \subsection{Extending Probabilistic Programming Protocols}
+\begin{figure}
 \begin{tikzpicture}
 \begin{axis}[
     ybar,
@@ -327,7 +328,7 @@ Once these steps are complete, the containerized environment will now contain ev
       anchor=north,legend columns=-1},
       xlabel = {Address},
     ylabel={Probabilities},
-    symbolic x coords={Trace 1, Trace 2, Trace 3}},
+    symbolic x coords={Trace 1, Trace 2, Trace 3},
     xtick=data,
     nodes near coords,
     nodes near coords align={vertical},
@@ -338,9 +339,10 @@ Once these steps are complete, the containerized environment will now contain ev
 % \addplot coordinates {(A1,0.1) (A2,0.1) (A3,0.1) (A4,0.3)};
 % \legend{used,understood,not understood}
 \end{axis}
-\caption{Trace probabilities. Trace 1 corresponds to A1,A1,A1,...,A4,... Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating.}
 \end{tikzpicture}
-
+\caption{Trace probabilities. Trace 1 corresponds to A1,A1,A4,... 
+Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating.}
+\end{figure}
 \begin{figure*}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{../plots/ewan_25_pop_10.pdf}
@@ -397,7 +399,7 @@ Once these steps are complete, the containerized environment will now contain ev
   \end{tabularx}
   \end{table*}
 
-
+\bg{Add comments about how this trace structure helps policy makers.}
 \bibliographystyle{icml2019}
 \bibliography{malaria,refs}
 
