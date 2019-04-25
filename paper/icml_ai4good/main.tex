@@ -8,7 +8,7 @@
 \usepackage{subfigure}
 \usepackage{booktabs} % for professional tables
 \usepackage{tabularx}
-
+\usepackage{listings}
 % hyperref makes hyperlinks in the resulting PDF.
 % If your build breaks (sometimes temporarily if a hyperlink spans a page)
 % please comment out the following usepackage line and replace
@@ -30,6 +30,14 @@
 % Therefore, a short form for the running title is supplied here:
 \icmltitlerunning{Understanding the Black-box Structure of Epidemiology Simulators for Policy Decision Making}
 
+\lstset{language=C++,
+                basicstyle=\footnotesize,
+                keywordstyle=\color{blue}\ttfamily,
+                stringstyle=\color{red}\ttfamily,
+                commentstyle=\color{green}\ttfamily,
+                morecomment=[l][\color{magenta}]{\#},
+                breaklines = true
+}
 \begin{document}
 
 \twocolumn[
@@ -248,13 +256,41 @@ The first step is to build a containerized environment, such as Docker~\cite{mer
 This greatly improves the scope of applicability of our system, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. 
 The second step requires one to override the stochastic primitives, which requires re-writing aspects of the sampling procedures inside the simulator. 
 This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
- Such information is typically saved in $\texttt{RANDOM.<filetype>}$.  We now demonstrate this for a normal primitive. 
-\bg{Add code snippet here showing original code then modified code}
+ Such information is typically saved in $\texttt{RANDOM.<filetype>}$.  We now demonstrate this for a uniform primitive.
+
+\begin{tabular}{|p{3.6cm}|p{3.6cm}|}
+Before  &  After  \\
+\begin{lstlisting}
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
+//preamble
+double random::uniform_01 () {
+    double result =
+# ifdef 
+OM_RANDOM_USE_BOOST
+       rng_uniform01 ();
+# else
+ gsl_rng_uniform (rng.gsl_generator);
+# endif
+    return result;
+\end{lstlisting}&
+\begin{lstlisting}
+#include <pyprob_cpp.h>
+#include "xtensor/xadapt.hpp"
+// preamble
+double random::uniform_01 () {
+auto uniform = pyprob_cpp::distributions::Uniform(0,1);
+return pyprob_cpp::sample(uniform)(0);
+}
+\end{lstlisting}
+\end{tabular} 
+
 The third step is creating the protocols, which enable communication between the simulator and probabilistic programming system. 
 For this we extend the existing bringing framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight c++ interface, however this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is.
-In doing this we enable a larger class of sampling procedures to be overridden. The PPX protocols in particular take advantage of flat buffer protocols \bg{add cite to google fb}, which require a flatbuffers script to be specified, see here for an example of a flat buffers script \bg{reference PPX github page}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. 
+In doing this we enable a larger class of sampling procedures to be overridden. The PPX protocols in particular take advantage of flat buffer protocols\footnote{https://github.com/google/flatbuffers}, which require a flatbuffers script to be specified, see here for an example of a flat buffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. 
 The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$, \bg{add more on this later}
-The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on c++ we can extend an existing interface called pyprob\_cpp\footnote{Add github link here} to account for the additional sampling procedures.
+The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on c++ we can extend an existing interface called pyprob\_cpp\footnote{https://github.com/probprog/pyprob_cpp} to account for the additional sampling procedures.
 Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the probabilistic programming system. We provide examples of this output in Figure~\ref{fig:plotewan}. 
 
 % \subsection{Extending Probabilistic Programming Protocols}
