@@ -132,16 +132,16 @@ as epidemiology, as we lose \emph{interpretability}.
 In this work, we explain how to design ML/AI systems that combine
 probabilistic programming systems (PPSs) and epidemiology simulators, to extract
 fully interpretable structures, enabling policy makers 
-and practitioners to make interpretable inferences. 
+and practitioners to make decisions from simulator outputs that can be fully resoned on.
+ % interpretable inferences. 
 In particular, we demonstrate this for the Malaria disease in two commonly used simulators; EMOD and OpenMalaria.
 \end{abstract}
 
 \section{Introduction}
 Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals \cite{refugees_2030_nodate}\cite{un_sustainable_2018}. 
+However, despite decades of substantial international efforts, these diseases kill hundreads of million people a year.
+In particular, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
 
-Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target by the Good Health \& Well-Being section of the UN Sustainable Development Goals. 
-Despite decades of substantial international efforts, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
-Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals\cite{}. 
 
 %maybe cut some of this paragraph out
 % In contrast to AIDS, Malaria can be routinely cured thanks to the disposability of a variety of medical interventions. 
@@ -160,12 +160,12 @@ Some progress in modeling specific components has been made, such as the parasit
 However, comprehensive modeling of all of these components in a regional context remains challenging, and is greatly impeded by the lack of available field data for regional calibration, hence the need for comprehensive simulators.
 % Simulation complexity is further aggravated by considering feedback effects from a large arsenal of anti-malaria interventions, ranging from distribution of mosquito nets, indoor residual spraying and mass drug administration to age-specific vaccinations. 
 Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. 
-For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmittivity.
+For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmittivity. \bg{citation?}
 
 
-However, since many of these simulators are stochastic in nature and therefore act as black-boxes, understanding the structure of these complex simulators is challenging and poses several challenges for policy makers. 
+However, since many of these simulators are stochastic in nature and therefore act as black-boxes, understanding the structure of these complex simulators is challenging and poses several challenges for policy makers who want to interpret the decisions being inferred. 
 Therefore, sophisticated tools are required that enable us to not only digest the results of the simulation, but provide pathways to perform complex inferences. 
-To this end, we extend the work of \citep{baydin2018efficient} to enable multiple stochastic epidemiology simulators to be transformed into a probabilistic model that can be used as input to a probabilistic programming system, enabling trace paths to be extracted from the simulator on both a per human level and a population level, from which we can extract trace probabilities allowing policy makers to determine what actions have the biggest impact on the final output of the simulator and thus can shape policy decisions accordingly.
+To this end, we extend the work of \citep{baydin2018efficient} to enable multiple stochastic epidemiology simulators to be transformed into a probabilistic model that can be used as input to a probabilistic programming system, enabling trace paths to be extracted from the simulator on both a per human level and a population level, from which we can extract trace probabilities allowing policy makers to determine what actions have the biggest impact on differing populations dynamics and thus shape policy decisions accordingly.
  We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
 
 % Recent work by \citep{Baydin} introduces a fundamental paradigm change that allows to tackle the inverse problem directly. 
@@ -231,49 +231,55 @@ To this end, we extend the work of \citep{baydin2018efficient} to enable multipl
 \subsection{Probabilistic Programming}
 Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the coming together of multiple disciplines; computer science, statistics and machine learning. 
 It attempts to unify the three fields by creating automated frameworks in which one can easily extrapolate their observed data and perform sophisticated statistical analysis with advance inference procedures such as 
-Markov Chain Monte Carlo (MCMC), Variational Inference~(VI) and Deep Neural Networks~(DNN) in an accessible way, i.e. without the need of expert knowledge in implementing and using such procedures.
-Users can then exploit these algorithms on an array of models
-within the probabilistic programming language~(PPL), using the language itself to create models that represent complicated distribution objects. 
-PPLs typically extend existing programming languages such as python, c++, go and so forth, which means that users do not have to learn
-a completely new set of operating semantics.  
-Our PPL PyProb~\cite{le-2016-inference,baydin2018efficient} belongs to the family of universal PPLs 
+Markov Chain Monte Carlo (MCMC), Variational Inference~(VI) and Deep Neural Networks~(DNN) in an accessible way, i.e. without the need of expert knowledge in implementing and using such procedures. In addition to this, probabilistic programming systems~(PPSs) provide tools that enable the source code of a program to be throughly analysed in an automated fashion.
+Users can then exploit these algorithms and tools on an array of models
+within the PPS, using the language itself to create models that represent complicated distribution objects which are then analysed by the PPS. 
+PPSs are extensions, or reductions, of existing programming languages such as python, c++, go and so forth, which means that users do not have to learn
+a completely new set of operating semantics and can write programs in the same vain as they are accustomed to.  
+The PPS that we use, PyProb~\cite{le-2016-inference,baydin2018efficient}, belongs to the family of universal PPSs 
 that allow the expression of unrestricted probability models in a Turing complete fashion~\cite{wood2014new,goodman2012church,landau_binder_2014,siddharth2017learning,bingham2019pyro}.
 
 \subsection{Stochastic Simulators}
 
-Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Within the context of epidemiology simulators we can model treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made given a series of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}.
-However, since the development happens over several decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
-Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}. 
-In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 
-1) It enables software developers and policy making to understand complicated code bases and dissect outputs of simulators.
+Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. 
+Within the context of epidemiology simulators we can model the treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made on a set of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}.
+However, since the development happens over several years, or decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
+Our method of overriding simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular population based simulators such as those found in epidemiology.
+Our framework provides a simple solution to do this and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in. 
+In particular, the framework currently supports 13 popular languages, but there is nothing to stop this being extended to any language of interest. 
+In addition to this, we can understand the structure of simulators as programs for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 
+1) It enables software developers and policy makers to understand complicated code bases and dissect outputs of simulators for guiding policy decision making, as we shall see later in Section~\ref{sec:casestudy}.
  2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to the inference outcome. 
  This is critical in several domains, especially in epidemiology. 
- We provide examples of former in next Section~\ref{sec:casestudy} and discuss the latter in ~\bg{Link to conclusion / future work}.
+ We provide examples of former in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
 
 
  \subsubsection*{Epidemiology Simulators}
- \paragraph*{OpenMalaria} Write a small paragraph on openmalaria, 
- What is openmalaria? Open Malaria is an open-source simulator funded by the Gates Foundation to model different  aspects of the malaria prevention and treatment cycle for varying population dynamics.
+ \paragraph*{OpenMalaria} 
+Open Malaria is an open-source simulator funded by the Gates Foundation to model different  aspects of the malaria prevention and treatment cycle for varying population dynamics.
  Models in OpenMalaria are specified via a scenario file, in the form of an XML document, which specifies the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
 The scenario file encodes all input and output parameters, some of which we wish to simulate to try and infer, others remain fixed. 
 
  \paragraph{EMOD} Do the same for EMOD as OM
 
+
+In both these well used simulators users are accustomed to writing their models as either XML, or JSON files and so it is important that any system built around this framework enables the models to be inputted in the same format, without requiring the users to learn how to use a new set of protocols. 
+
 \section{Case Study}
 \label{sec:casestudy}
 \subsection{Connecting a Epidemiology Simulators to a Probabilistic Programming System}
 
-In order to hijack the stochastic simulator we are only required to override the location of the stochastic primitives, i.e. the operations that generate the stochasticity and randomness within the simulator. 
-We will walk through how this is done for EMOD and OpenMalaria, you will see that it is procedurally identical.
-However, given the sheer number of simulators it maybe slightly different procedurally. 
-To our knowledge it shouldn't be, but we have not been able view of all stochastic simulators we cannot make this guarantee with certainty. 
-The first step is to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
-This greatly improves the scope of applicability of our system, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. 
+In order to overhaul the stochastic simulators we are only required to override the location of the stochastic primitives, i.e. the base operations that generate the stochasticity and randomness within the simulator. 
+We will walk through how this is done for a standard epidemiology simulator.
+
+The initial step first requires one to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
+This greatly improves the scope of applicability of our system and the simulator, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. This step will be slightly different for individual simulators, but the overall idea is the same. We cannot provide a link to an example of a containerized environment for openmalaria and system in this submission due to anonymity\footbote{We shall provide a link in the camera ready submission}.
 The second step requires one to override the stochastic primitives, which requires re-writing aspects of the sampling procedures inside the simulator. 
 This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
- Such information is typically saved in $\texttt{RANDOM.<filetype>}$.  We now demonstrate this for a uniform primitive.
+ Such information is typically saved in $\texttt{RANDOM.<filetype>}$, although it may vary slightly between simulators. We now demonstrate this for a uniform primitive.
 
 \begin{tabular}{p{3.6cm}|p{3.6cm}}
+\footnotesize
 Before  &  After  \\
 \midrule
 \begin{lstlisting}
@@ -303,55 +309,36 @@ return pyprob_cpp::sample(uniform)(0);
 \end{lstlisting}
 \end{tabular} 
 
-The third step is creating the protocols, which enable communication between the simulator and probabilistic programming system. 
-For this we extend the existing bringing framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight c++ interface, however this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is.
-In doing this we enable a larger class of sampling procedures to be overridden. The PPX protocols in particular take advantage of flat buffer protocols\footnote{\url{https://github.com/google/flatbuffers}}, which require a flatbuffers script to be specified, see here for an example of a flat buffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. 
-The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$, \bg{add more on this later}
-The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on c++ we can extend an existing interface called pyprob\_cpp\footnote{\url{https://github.com/probprog/pyprob_cpp}} to account for the additional sampling procedures.
-Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the probabilistic programming system. We provide examples of this output in Figure~\ref{fig:plotewan}. 
+As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
+The third step is generating the protocols, which enable communication between the simulator and probabilistic programming system. 
+For this we extend the existing bridging framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight C ++ interface, however the language of this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is. 
+For both OpenMalaria and EMOD, the file is written in C ++.
+In using these protocols a larger class of sampling procedures can be overridden. The PPX protocols work by making use of the flatbuffer protocols\footnote{\url{https://github.com/google/flatbuffers}}, which require a flatbuffers script to be specified, see here for an example of a flatbuffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. The flatbuffers script is simple, clean and intuitive, making it easy for a non-expert to produced.
+The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$ and defining an additional forward function which runs one execution of the simulator to enable message passing between the simulator and PPS\footnote{A link to an example will be provided after the review period to preserve anonymity}.
+The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on C ++ we can extend an existing interface called pyprob\_cpp\footnote{\url{https://github.com/probprog/pyprob_cpp}} to account for the additional sampling procedures.
+Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS. We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
 
-% \subsection{Extending Probabilistic Programming Protocols}
-% \begin{tikzpicture}
-% \begin{axis}[
-%     ybar,
-%     enlargelimits=0.15,
-%     legend style={at={(0.5,-0.15)},
-%       anchor=north,legend columns=-1},
-%       xlabel = {Address},
-%     % ylabel={Probabilities},
-%     symbolic x coords={A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11},
-%     xtick=data,
-%     nodes near coords,
-%     nodes near coords align={vertical},
-%     ]
-% % \addplot coordinates {(tool8,7) (tool9,9) (tool10,4)};
-% \addplot coordinates {(A1,0.2) (A2,0.5) (A3,0.7) (A4,0.3) (A5,0.4) (A6,0.4) (A7,0.6) (A8,0.7) (A9,0.9) (A10,0.12) (A11,0.23)};
-% % \addplot coordinates {(A1,0.2) (A2,0.5) (A3,0.7) (A4,0.9)};
-% % \addplot coordinates {(A1,0.1) (A2,0.1) (A3,0.1) (A4,0.3)};
-% % \legend{used,understood,not understood}
-% \end{axis}
-% \caption{Trace probabilities}
-% \end{tikzpicture}
+\subsection{Extending Probabilistic Programming Protocols}
 \begin{tikzpicture}
-  \matrix (m) [matrix of math nodes, row sep=3em, column sep=3em]
-    { Start & A1  & A2  & A3  & A4 \\
-      Start & A1 & A2 & A3 & A4 \\ };
-  { [start chain] \chainin (m-1-1);
-    \chainin (m-1-2);
-    { [start branch=A] \chainin (m-2-2)
-        [join={node[right,labeled] {0.90}}];}
-    \chainin (m-1-3) [join={node[above,labeled] {\varphi}}];
-    { [start branch=B] \chainin (m-2-3)
-        [join={node[right,labeled] {\eta_2}}];}
-    \chainin (m-1-4) [join={node[above,labeled] {\psi}}];
-    { [start branch=C] \chainin (m-2-4)
-        [join={node[right,labeled] {\eta_3}}];}
-    \chainin (m-1-5); }
-  { [start chain] \chainin (m-2-1);
-    \chainin (m-2-2);
-    \chainin (m-2-3) [join={node[above,labeled] {\varphi'}}];
-    \chainin (m-2-4) [join={node[above,labeled] {\psi'}}];
-    \chainin (m-2-5); }
+\begin{axis}[
+    ybar,
+    enlargelimits=0.15,
+    legend style={at={(0.5,-0.15)},
+      anchor=north,legend columns=-1},
+      xlabel = {Address},
+    ylabel={Probabilities},
+    symbolic x coords={Trace 1, Trace 2, Trace 3}},
+    xtick=data,
+    nodes near coords,
+    nodes near coords align={vertical},
+    ]
+% \addplot coordinates {(tool8,7) (tool9,9) (tool10,4)};
+\addplot coordinates {(Trace 1,0.2) (Trace 2,0.5) (Trace 3,0.23)};
+% \addplot coordinates {(A1,0.2) (A2,0.5) (A3,0.7) (A4,0.9)};
+% \addplot coordinates {(A1,0.1) (A2,0.1) (A3,0.1) (A4,0.3)};
+% \legend{used,understood,not understood}
+\end{axis}
+\caption{Trace probabilities. Trace 1 corresponds to A1,A1,A1,...,A4,... Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating.}
 \end{tikzpicture}
 
 \begin{figure*}[h!]
