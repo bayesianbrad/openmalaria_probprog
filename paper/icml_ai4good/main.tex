@@ -387,7 +387,7 @@ Both EMOD and OpenMalaria are open source and implemented in C++.
 \label{sec:hijackingsimulators}
 
  Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
-can be used to express probabilistic models and consequently perform automated inference thereon. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{}, Variational Inference~(VI)\cite{} and Deep Neural Networks~(DNN)\cite{},  can be used out-of-the-box by non-experts. 
+can be used to express probabilistic models and consequently perform automated inference these. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{}, Variational Inference~(VI)\cite{} and Deep Neural Networks~(DNN)\cite{},  can be used by non-experts in an automated fashion. 
  
 \textit{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator.
 
