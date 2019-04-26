@@ -11,6 +11,7 @@
 \usepackage{listings}
 \usepackage{pgfplots}
 \usepackage{tikz}
+\usepackage{todonotes}
 
 % hyperref makes hyperlinks in the resulting PDF.
 % If your build breaks (sometimes temporarily if a hyperlink spans a page)
@@ -44,8 +45,8 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 % The \icmltitle you define below is probably too long as aer.
 % Therefore, a short form for the running title is supplied here:
 %\icmltitlerunning{Hijacking Simulators for the Greater Good}
-\icmltitlerunning{Automatically Converting Epidemiology Simulations
-to Probabilistic Programs}
+\icmltitlerunning{Hijacking Epidemiology Simulators
+	with Probabilistic Programming}
 
 \lstset{language=C++,
                 basicstyle=\footnotesize,
@@ -60,9 +61,10 @@ to Probabilistic Programs}
 
 \twocolumn[
 %\icmltitle{Hijacking Simulators for the Greater Good}
-\icmltitle{Automatically Converting Epidemiology Simulations
-	to Probabilistic Programs}
-
+%\icmltitle{Automatically Converting Epidemiology Simulations
+%	to Probabilistic Programs}
+\icmltitle{Hijacking Epidemiology Simulators
+	with Probabilistic Programming}
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
@@ -125,7 +127,7 @@ to Probabilistic Programs}
 A goal of probabilistic programming is to couple simulators, with inference. This is 
 because stochastic simulators are used prominently in many industrial settings,
 do not require one to construct hand-crafted joint distributions as they implicitly 
-define a joint distribution of the program and encode learnt structures 
+define a joint distribution of the program and encode learned structures 
 directly. This makes simulators powerful tools and much of machine learning (ML) and 
 Artificial Intelligence (AI)
 can be seen as trying to emulate such simulators from a purely data-driven approach.
@@ -143,8 +145,9 @@ In particular, we demonstrate this for the Malaria disease in two commonly used 
 \end{abstract}
 
 \section{Introduction}
-Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals \cite{refugees_2030_nodate,un_sustainable_2018}. 
-However, despite decades of substantial international efforts, these diseases kill hundreads of million people a year.
+Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals\todo{These citations
+should still have years} \cite{refugees_2030_nodate,un_sustainable_2018}. 
+However, despite decades of substantial international efforts, these diseases kill hundreds of million people a year.
 For example, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
 
 
@@ -154,20 +157,60 @@ For example, malaria still annually kills about a quarter of a million children 
 % Hence, despite decades of substantial international efforts, initial hopes of regional elimination or even global eradication have not been met.
 %  So difficult is Malaria control that, even today, about a quarter of a million children under the age of 5 succumb to it every year in Africa alone. 
 
-To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers increasingly turn to evidence-based methods and computational simulations CITATIONS. 
+To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers are increasingly turning to evidence-based methods and computational simulations CITATIONS. 
 These simulations allow policymakers to infer critical information like
-INSERT and make predictions about the impacts of policies, allowing
+INSERT and make predictions about the impacts of policies
+before they are rolled out, improving understanding and allowing
 more effective decisions to be made in combating the disease at a
-macro-level and ultimately saving lives.
+macro-level, thereby ultimately saving lives.
 For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transition. \bg{citation?}
 
 However, malaria epidemiology is governed by a complex set of drivers, 
-few of which can be understood in isolation.
+few of which can be understood in isolation CITATION.
 These include within-host dynamics, population-specific traits and even local geography.
-Comprehensive modeling of all of these components remains challenging, particular in a regional-specific context. Therefore simulators 
-need to be both comprehensive and powerful, while it can
+Comprehensive modeling of all of these components remains challenging, particularly in a regional-specific context. Therefore the resulting simulators 
+are both comprehensive and powerful.  Since many of these simulators are stochastic in nature, it can
 be highly non-trivial to both interpret their outputs and draw desired
-inferences when coupling them with observed data.  
+inferences when coupling them with observed data CITATION?.
+In this paper, we show how probabilistic programming
+techniques CITATIONS can be used to help automate the required calculations to do this, interpreting the simulators as 
+generative models to perform principled statistical analysis, while
+providing insights and summary statistics on their behavior to users.
+
+Achieving this aim is substantially complicated by the fact that
+a vast array of different epidemiology simulators are currently 
+used in practice.
+Manually reimplementing these systems in existing
+probabilistic programming systems (PPSs) is therefore infeasible, as each
+system would require manual and laborious porting.  Instead, we 
+take the novel approach of \emph{hijacking} existing simulators by
+overriding their internal random number generator, building
+on ideas from~\citep{baydin2018efficient}.  Specifically, by
+replacing the existing low-level random number generator in a simulator
+with a call to a purpose-built ``controller'' PPS, the stochasticity
+of the simulator can be both manipulated and tracked by this controller
+system.  In turn, this allows for a variety of tasks to be performed on
+the hijacked simulator, such as running inference (by conditioning
+the values of certain draws and manipulating others),
+uncovering stochastic structure, and automatically
+producing result summaries, such as establishing the probability
+of different program paths.  By providing a common abstraction 
+framework for different simulators, our approach further allows for
+easy and direct comparison between related or competing
+simulators, a characteristic that is valuable in the context of
+epidemiology simulators CITATIONS.
+
+Critically, this hijacking can be performed on a wide variety of simulators
+with only minimal changes to the simulator.  Our framework already
+supports 13 popular languages for the base simulator, and can easily
+be extended to others if needed.  Moreover, though our focus
+is on hijacking epidemiology simulators, our general approach and
+framework can be applied more widely to a general class of stochastic
+simulators.  In time, we hope our approach will play a critical role in
+bringing recent advancements in probabilistic programming to bear on
+the vast array of existing simulators used throughout the sciences,
+thereby providing wide-ranging impacts across a number of fields.
+
 
 %However, the collection of large quantities of field data is often infeasible due to logistic, economic or political constraints, or outright impossible if novel methods are to be assessed a priori. 
 %Hence in silico simulation of malaria epidemiology plays an increasingly crucial role in evidence-based policymaking.
@@ -180,10 +223,11 @@ inferences when coupling them with observed data.
 %Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. 
 
 
-However, since many of these simulators are stochastic in nature and therefore act as black-boxes, understanding the structure of these complex simulators is challenging and poses several challenges for policy makers who want to interpret the decisions being inferred. 
-Therefore, sophisticated tools are required that enable us to not only digest the results of the simulation, but provide pathways to perform complex inferences. 
-To this end, we extend the work of \citep{baydin2018efficient} to enable multiple stochastic epidemiology simulators to be transformed into a probabilistic model that can be used as input to a probabilistic programming system, enabling trace paths to be extracted from the simulator on both a per human level and a population level, from which we can extract trace probabilities allowing policy makers to determine what actions have the biggest impact on differing populations dynamics and thus shape policy decisions accordingly.
- We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
+%However, since many of these simulators are stochastic in nature and therefore act as black-boxes, understanding the structure of these complex simulators is challenging and poses several challenges for policy makers who want to interpret the decisions being inferred. 
+%Therefore, sophisticated tools are required that enable us to not only digest the results of the simulation, but provide pathways to perform complex inferences. 
+
+%To this end, we extend the work of \citep{baydin2018efficient} to enable multiple stochastic epidemiology simulators to be transformed into a probabilistic model that can be used as input to a probabilistic programming system, enabling trace paths to be extracted from the simulator on both a per human level and a population level, from which we can extract trace probabilities allowing policy makers to determine what actions have the biggest impact on differing populations dynamics and thus shape policy decisions accordingly.
+% We argue that our work is likely to have significant social impact on many livelihoods affected by Malaria and discuss opportunities for future research.
 
 % Recent work by \citep{Baydin} introduces a fundamental paradigm change that allows to tackle the inverse problem directly. 
 % Using a novel software tool named \textit{pyprob}, \citep{Baydin} extract program execution traces from state-of-the-art particle decay simulation engine SHERPA\cite{}.
