@@ -52,4 +52,4 @@
 *.log
 *.out
 *.synctex.*
-*.pdf
+#*.pdf
