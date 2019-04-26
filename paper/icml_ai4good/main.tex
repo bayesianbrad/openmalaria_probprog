@@ -140,8 +140,8 @@ against the epidemics of various infectious diseases like AIDS and
 malaria.
 However, the complicated and stochastic nature of these simulators
 can mean their output is difficult to interpret, which reduces their usefulness to policymakers.
-In this paper, we introduce an approach that allows one to treat a large class of population-based epidemiology simulators as probabilistic generative models. This is achieved by \emph{hijacking} the internal random number generator calls, through the use of an universal probabilistic programming system (PPS). In contrast to other methods, our approach can be easily retrofitted to simulators written in conventional industrial programming frameworks. 
-We demonstrate that our method can be used for interpretable introspection and inference, thus shedding light on black-box simulators  . This reinstates much needed trust between policymakers and evidence-based methods. 
+In this paper, we introduce an approach that allows one to treat a large class of population-based epidemiology simulators as probabilistic generative models. This is achieved by \emph{hijacking} the internal random number generator calls, through the use of an universal probabilistic programming system (PPS). In contrast to other methods, our approach can be easily retrofitted to simulators written in popular industrial programming frameworks. 
+We demonstrate that our method can be used for interpretable introspection and inference, thus shedding light on black-box simulators. This reinstates much needed trust between policymakers and evidence-based methods. 
 
 %This allows for various advanced statistical analyses to be performed
 %on the simulators in an automated fashion, while also tracking
@@ -195,22 +195,34 @@ These include within-host dynamics, population-specific traits and even local ge
 Comprehensive modeling of all of these components remains challenging, particularly in a region-specific context. 
 Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{TODO}.
 
-In this paper, we introduce a novel method that allows to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by interpreting such simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP)\cite{TODO}. 
+In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{TODO} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP)\cite{TODO}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
 
-Our approach is based on \cite{TODO} and unique in that it can easily be retrofit to simulators written in common industrial programming frameworks. This is crucial as, given the enormous code size and complexity, rewriting epidemiology simulators using a dedicated universal probabilistic programming language, such as Pyro\cite{}, is often infeasible.
- 
+This allows for a variety of tasks to be performed on
+the hijacked simulator, such as running inference (by conditioning
+the values of certain draws and manipulating others),
+uncovering stochastic structure, and automatically
+producing result summaries, such as establishing the probability
+of different program paths/traces.  By providing a common abstraction 
+framework for different simulators, our approach further allows for
+easy and direct comparison between related or competing
+simulators, a characteristic that is valuable in the context of
+epidemiology simulators \cite{TODO}. We provide a case study of the above in Section \ref{sec:casestudy}.
 
-Our framework already supports application to simulators written in 13 industrial programming frameworks, and is easily extensible. 
-Moreover, though our focus is on hijacking epidemiology simulators, our general approach and framework can be applied more widely to a general class of stochastic simulators.  
+Our framework already supports application to simulators written in 13 industrial programming frameworks, and is easily extensible. This is crucial as, given the enormous code size and complexity, rewriting epidemiology simulators using a dedicated universal probabilistic programming language, such as Pyro\cite{}, is often infeasible.
+%Moreover, though our focus is on hijacking epidemiology simulators, our general approach and framework can be applied more widely to a general class of stochastic simulators.
+
 In time, we hope our approach will play a critical role in
 bringing recent advancements in probabilistic programming to bear on
 the vast array of existing simulators used throughout the sciences,
 thereby providing wide-ranging impacts across a number of fields.
 
-This paper first gives an overview of existing Malaria simulators (section \ref{TODO}), and proceed by introducing the necessary background on the \textit{pyprob} framework and the concept of universal probabilistic programming (section \ref{TODO}). Our approach is then demonstrated and analysed in the context of a Malaria case study (section \ref{TODO}). 
+This paper first gives an overview of existing Malaria simulators (Section \ref{sec:background}), and proceed by introducing the necessary background on the \textit{pyprob} framework and the concept of universal probabilistic programming (Section \ref{sec:hijackingsimulators}). Our approach is then demonstrated and analysed in the context of a Malaria case study (Section \ref{sec:casestudy}). 
 
-that allows one to treat a large class of population-based epidemiology simulators as probabilistic generative models. This is achieved by \emph{hijacking} the internal random number generator calls, through the use of an universal probabilistic programming system (PPS). In contrast to other methods, our approach requires only minimal changes to existing simulators to be made. 
-We demonstrate that our method can be used for interpretable introspection of and inference on what used to be de facto black box simulators. This reinstates much needed trust between policymakers and evidence-based methods. 
+
+%Our approach is extending recent work by  and is unique in that it can easily be retrofitted to population-based simulators written in popular industrial programming frameworks. This is crucial as, given the enormous code size and complexity, rewriting epidemiology simulators using a dedicated universal probabilistic programming language, such as Pyro\cite{}, is often infeasible.
+
+%that allows one to treat a large class of population-based epidemiology simulators as probabilistic generative models. This is achieved by \emph{hijacking} the internal random number generator calls, through the use of an universal probabilistic programming system (PPS). In contrast to other methods, our approach requires only minimal changes to existing simulators to be made. 
+%We demonstrate that our method can be used for interpretable introspection of and inference on what used to be de facto black box simulators. This reinstates much needed trust between policymakers and evidence-based methods. 
 
 
 %In this paper, we show how probabilistic programming
@@ -332,6 +344,9 @@ weather prediction~\cite{evensen1994sequential}, epidemiology~\cite{smith2008tow
 In many cases, simulation output can augment or even replace real data that may otherwise be costly or even impossible to generate.
 Recent advances in hardware have enabled simulations to model increasingly complex systems.
 Epidemiology studies the prevalence and spreading of diseases across populations. Recent advances in hardware have enabled simulations to model the dynamics of infectious diseases, such as Malaria, in ever greater detail.
+
+
+
 Two the most advanced Malaria simulators, namely EMOD~\cite{bershteyn2018implementation} and OpenMalaria\cite{smith2008towards}, have proven to be particularly valuable to policymakers.
 OpenMalaria is based on microsimulations of Plasmodium falciparum in humans and was originally developed to simulate the impacts of malaria vaccines within simple villages or districts
 Compared with OpenMalaria, EMOD is able to simulate a variety of additional drivers, including complex geographies complete with migration and a large number of policy interventions
