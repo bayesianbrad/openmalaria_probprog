@@ -299,11 +299,7 @@ thereby providing wide-ranging impacts across a number of fields.
 %
 %% taken from Toms thesis. 
 %
-%Stochastic simulators are common across a number of domains, statistical physics~\cite{landau_binder_2014}, financial modeling~\cite{jackel2002monte},
-%weather prediction~\cite{evensen1994sequential}, epidemiology~\cite{smith2008towards} and many others. 
-%An advantage of using stochastic simulators is that they provide a level of interpretability not found in modern deep learning settings, as they directly incorporate model structure from carefully reasoned observations and experiments.  
-%Probabilistic programming systems~(PPSs) are purpose built systems for making inferences and probabilistic 
-%modeling accessible. 
+
 %In particular, PPSs allow probabilistic models to be represented in the form of a generative model through the
 %probabilistic programming language~(PPL), which enables one to write statements that enable conditioning on data~\cite{gordon2014probabilistic,Goodman08church:a}. 
 %Thus, it seems only natural to connect simulators with PPSs, as simulators explicitly define a generative model, in the language in which they are written, and the nature of the PPSs enables us to perform inference in these simulators, by conditioning on observations, which are fed in as input to the simulators. 
@@ -316,11 +312,51 @@ thereby providing wide-ranging impacts across a number of fields.
  \section{Epidemiology Simulators}
  \label{sec:background}
 
-Simulators provide users with the ability to model complex environments and problems in a black-box way, enabling new insights to be generated and predictions to be made. A simulator typically encodes several years, if not decades, of research and development and so by their very nature are structurally complicated. 
-Within the context of epidemiology simulators we can model the treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made on a set of field observations.
-This enables practitioners to model a wide array of different scenarios at ease.
-However, since the development happens over several years, or decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
-Our method of overriding simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular population based simulators such as those found in epidemiology.
+% Stochastic simulators are common across a number of domains, statistical physics~\cite{landau_binder_2014}, financial modeling~\cite{jackel2002monte},
+% weather prediction~\cite{evensen1994sequential}, epidemiology~\cite{smith2008towards} and many others. 
+% An advantage of using stochastic simulators is that they provide a level of interpretability not found in modern deep learning settings, as they directly incorporate model structure from carefully reasoned observations and experiments. In addition to this, 
+
+In-silico simulators have become a crucial tool in evidence-based decision-making within a large number of disciplines, including statistical physics~\cite{landau_binder_2014}, financial modeling~\cite{jackel2002monte},
+weather prediction~\cite{evensen1994sequential}, epidemiology~\cite{smith2008towards} and many others.
+In many cases, simulation output can augment or even replace real data that may otherwise be costly or even impossible to generate.
+Recent advances in hardware have enabled simulations to model increasingly complex systems.
+Epidemiology studies the prevalence and spreading of diseases across populations. Recent advances in hardware have enabled simulations to model the dynamics of infectious diseases, such as Malaria, in ever greater detail.
+Two the most advanced Malaria simulators, namely EMOD~\cite{bershteyn2018implementation} and OpenMalaria\cite{smith2008towards}, have proven to be particularly valuable to policymakers.
+OpenMalaria is based on microsimulations of Plasmodium falciparum in humans and was originally developed to simulate the impacts of malaria vaccines within simple villages or districts
+Compared with OpenMalaria, EMOD is able to simulate a variety of additional drivers, including complex geographies complete with migration and a large number of policy interventions
+Both EMOD and OpenMalaria are open source and implemented in C++.
+
+
+
+% Simulators provide users with the ability to model complex environments and problems in a black-box way, enabling new insights to be generated and predictions to be made. A simulator typically encodes several years, if not decades, of research and development and so by their very nature are structurally complicated. 
+
+
+% Within the context of epidemiology simulators we can model the treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made on a set of field observations. Such scenarios in practices would be 
+
+
+% This enables practitioners to model a wide array of different scenarios at ease.
+% However, since the development happens over several years, or decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
+%
+
+% Two prominent simulators for modeling Malaria are OpenMalaria~\cite{smith2008towards} and Emod~\cite{bershteyn2018implementation}, which are used by practitioners to model several aspects of the Malaria disease.
+
+%  \paragraph*{OpenMalaria} 
+% is an open-source simulator funded by the Gates Foundation to model different aspects of the malaria prevention and treatment cycle for varying population dynamics.
+%  Users specify models in OpenMalaria via a scenario file, in the form of an XML document, which determines the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
+% The scenario file encodes all input and output parameters, some of which we wish to simulate, others remain fixed. 
+
+% \paragraph{EMOD} provides the modularity and structural flexibility necessary for modeling multiple infectious diseases at the within-host and population level. 
+% EMOD can be used to model HIV, Tuberculosis, Malaria and generic diseases, but for the purposes of the comparison, we just focus on Malaria. 
+% To specify models in EMOD a configuration file is written by the user, which is in the form of a JSON and provides similar functionality to OpenMalaria, in terms of what can be specified and the outputs that it produces. 
+
+
+% In both these well used simulators users are accustomed to writing their models as either XML, or JSON files and so it is important that any system built around this framework enables the models to be inputted in the same format, without requiring the users to learn how to use a new set of protocols. Our system facilitates this as we shall discuss in the proceeding sections.  
+
+
+
+\section{Hijacking Simulators}
+\label{sec:hijackingsimulators}
+ Our method of overriding simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular population based simulators such as those found in epidemiology.
 Our framework provides a simple solution to do this and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in. 
 In particular, the framework currently supports 13 popular languages, but there is nothing to stop this being extended to any language of interest. 
 Furthermore, we can understand the structure of simulators as programs for both decoding \emph{black-box structures} and for posterior inference, which enables two things. 
@@ -328,26 +364,6 @@ Furthermore, we can understand the structure of simulators as programs for both 
  2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to the inference outcome. 
  This is critical in several domains, especially in epidemiology. 
  We provide examples of (1) in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
-
-Two prominent simulators for modeling Malaria are OpenMalaria~\cite{smith2008towards} and Emod~\cite{bershteyn2018implementation}, which are used by practitioners to model several aspects of the Malaria disease.
-
- \paragraph*{OpenMalaria} 
-is an open-source simulator funded by the Gates Foundation to model different aspects of the malaria prevention and treatment cycle for varying population dynamics.
- Users specify models in OpenMalaria via a scenario file, in the form of an XML document, which determines the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
-The scenario file encodes all input and output parameters, some of which we wish to simulate, others remain fixed. 
-
-\paragraph{EMOD} provides the modularity and structural flexibility necessary for modeling multiple infectious diseases at the within-host and population level. 
-EMOD can be used to model HIV, Tuberculosis, Malaria and generic diseases, but for the purposes of the comparison, we just focus on Malaria. 
-To specify models in EMOD a configuration file is written by the user, which is in the form of a JSON and provides similar functionality to OpenMalaria, in terms of what can be specified and the outputs that it produces. 
-
-
-In both these well used simulators users are accustomed to writing their models as either XML, or JSON files and so it is important that any system built around this framework enables the models to be inputted in the same format, without requiring the users to learn how to use a new set of protocols. Our system facilitates this as we shall discuss in the proceeding sections.  
-
-
-
-\section{Hijacking Simulators}
-\label{sec:hijackingsimulators}
-
 % Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the intersection of computer science, statistics and machine learning. 
 % It attempts to unify the three fields by creating automated frameworks in which one can easily extrapolate their observed data and perform sophisticated statistical analysis with advance inference procedures such as 
 % Markov Chain Monte Carlo (MCMC), Variational Inference~(VI) and Deep Neural Networks~(DNN) in an accessible way, i.e. without the need of expert knowledge in implementing and using such procedures. In addition to this, probabilistic programming systems~(PPSs) provide tools that enable the source code of a program to be throughly analysed in an automated fashion.
@@ -367,15 +383,15 @@ In both these well used simulators users are accustomed to writing their models 
     every node/.style={fill=white, font=\sffamily}, align=center]
   % Specification of nodes (position, etc.)
   % \node (start)             [activityStarts]              {Activity starts};
-  \node (SimulatorSystem)     [activityStarts]          {Simulator System \\ e.g EMOD};
-  \node (onStartBlock)      [process, below of=SimulatorSystem]   {onStart()};
-  \node (onResumeBlock)     [process, below of=onStartBlock]   {onResume()};
+  \node (SimulatorSystem)     [activityStarts]          {Simulator System \\ e.g. EMOD};
+  \node (onStartBlock)      [process, below of=SimulatorSystem]   {Specific Model / Specification \\ e.g. XML files};
+  \node (onResumeBlock)     [process, below of=onStartBlock]   {Run Simulator};
   \node (activityRuns)      [activityRuns, below of=onResumeBlock]
                                                       {Activity is running};
   \node (onPauseBlock)      [process, below of=activityRuns, yshift=-1cm]
-                                                                {onPause()};
+                                                                {Posterior Output};
   \node (onStopBlock)       [process, below of=onPauseBlock, yshift=-1cm]
-                                                                 {onStop()};
+                                                                 {};
   \node (onDestroyBlock)    [process, below of=onStopBlock, yshift=-1cm] 
                                                               {onDestroy()};
   \node (onRestartBlock)    [process, right of=onStartBlock, xshift=4cm]
@@ -403,7 +419,7 @@ In both these well used simulators users are accustomed to writing their models 
                                    (onRestartBlock);
   \draw[->]    (onDestroyBlock) -- (ActivityDestroyed);
   \draw[->]      (onPauseBlock) -| node(priorityXMemory)
-                                   {higher priority $\rightarrow$ more memory}
+                                   {todo}
                                    (ActivityEnds);
   \draw           (onStopBlock) -| (priorityXMemory);
   \draw[->]     (ActivityEnds)  |- node [yshift=-2cm, text width=3.1cm]
@@ -475,7 +491,7 @@ Once these steps are complete, the containerized environment will now contain ev
 
 
 We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
-When comparing the two trace plots between EMOD and OpenMalaria we see significant difference, despite both evaluating the same model for the same disease. 
+When comparing the two trace plots between EMOD and OgpenMalaria we see significant difference, despite both evaluating the same model for the same disease. 
 We can see from the addressing schemes $A_1, \ldots, A_N$ \bg{ref table 1 and 2} what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria 
 By having access to such diagrams users can internally evaluate and scrutinize the decisions that the simulator is making.
 This is incredibly important for policy makers, or non-experts, as it not only details how we arrive at the given outputs, but it provides an understanding of which processes were most crucial in determining those outputs as can be seen from the path probabilities assigned to each of the vertices.
