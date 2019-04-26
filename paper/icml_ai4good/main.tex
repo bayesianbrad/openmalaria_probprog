@@ -30,8 +30,20 @@
 \newcommand{\ag}[1]{~{{[{\it \textcolor{red}{{\bf AG:} #1}}]}}}
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2019}
-\usetikzlibrary{arrows,chains,matrix,positioning,scopes}
-%
+\usetikzlibrary{arrows,chains,matrix,positioning,scopes, arrows.meta}
+
+\tikzset{%
+  >={Latex[width=2mm,length=2mm]},
+  % Specifications for style of nodes:
+            base/.style = {rectangle, rounded corners, draw=black,
+                           minimum width=4cm, minimum height=1cm,
+                           text centered, font=\sffamily},
+  activityStarts/.style = {base, fill=blue!30},
+       startstop/.style = {base, fill=red!30},
+    activityRuns/.style = {base, fill=green!30},
+         process/.style = {base, minimum width=2.5cm, fill=orange!15,
+                           font=\ttfamily},
+}
 \makeatletter
 \tikzset{join/.code=\tikzset{after node path={%
 \ifx\tikzchainprevious\pgfutil@empty\else(\tikzchainprevious)%
@@ -301,53 +313,114 @@ thereby providing wide-ranging impacts across a number of fields.
 %\label{sec:related}
 
 
-\section{Epidemiology Simulators and Probabilistic Programming}
-\label{sec:background}
+ \section{Epidemiology Simulators}
+ \label{sec:background}
 
-
-
-\subsection{Probabilistic Programming}
-Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the coming together of multiple disciplines; computer science, statistics and machine learning. 
-It attempts to unify the three fields by creating automated frameworks in which one can easily extrapolate their observed data and perform sophisticated statistical analysis with advance inference procedures such as 
-Markov Chain Monte Carlo (MCMC), Variational Inference~(VI) and Deep Neural Networks~(DNN) in an accessible way, i.e. without the need of expert knowledge in implementing and using such procedures. In addition to this, probabilistic programming systems~(PPSs) provide tools that enable the source code of a program to be throughly analysed in an automated fashion.
-Users can then exploit these algorithms and tools on an array of models
-within the PPS, using the language itself to create models that represent complicated distribution objects which are then analysed by the PPS. 
-PPSs are extensions, or reductions, of existing programming languages such as python, c++, go and so forth, which means that users do not have to learn
-a completely new set of operating semantics and can write programs in the same vain as they are accustomed to.  
-The PPS that we use, PyProb~\cite{le-2016-inference,baydin2018efficient}, belongs to the family of universal PPSs 
-that allow the expression of unrestricted probability models in a Turing complete fashion~\cite{wood2014new,goodman2012church,landau_binder_2014,siddharth2017learning,bingham2019pyro}.
-
-\subsection{Stochastic Simulators}
-
-Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. 
-Within the context of epidemiology simulators we can model the treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made on a set of field observations \bg{Make sure that I do not state they can already do what PP can do, i.e. the ability to update and infer the input parameters continually conditioned on new observations.}.
+Simulators provide users with the ability to model complex environments and problems in a black-box way, enabling new insights to be generated and predictions to be made. A simulator typically encodes several years, if not decades, of research and development and so by their very nature are structurally complicated. 
+Within the context of epidemiology simulators we can model the treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made on a set of field observations.
+This enables practitioners to model a wide array of different scenarios at ease.
 However, since the development happens over several years, or decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
 Our method of overriding simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular population based simulators such as those found in epidemiology.
 Our framework provides a simple solution to do this and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in. 
 In particular, the framework currently supports 13 popular languages, but there is nothing to stop this being extended to any language of interest. 
-In addition to this, we can understand the structure of simulators as programs for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 
-1) It enables software developers and policy makers to understand complicated code bases and dissect outputs of simulators for guiding policy decision making, as we shall see later in Section~\ref{sec:casestudy}.
+Furthermore, we can understand the structure of simulators as programs for both decoding \emph{black-box structures} and for posterior inference, which enables two things. 
+1) It enables software developers and policy makers to understand complicated code bases and dissect the outputs of simulators for guiding policy decision making.
  2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to the inference outcome. 
  This is critical in several domains, especially in epidemiology. 
- We provide examples of former in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
+ We provide examples of (1) in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
 
+Two prominent simulators for modeling Malaria are OpenMalaria~\cite{smith2008towards} and Emod~\cite{bershteyn2018implementation}, which are used by practitioners to model several aspects of the Malaria disease.
 
- \subsubsection*{Epidemiology Simulators}
  \paragraph*{OpenMalaria} 
-Open Malaria is an open-source simulator funded by the Gates Foundation to model different  aspects of the malaria prevention and treatment cycle for varying population dynamics.
- Models in OpenMalaria are specified via a scenario file, in the form of an XML document, which specifies the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
-The scenario file encodes all input and output parameters, some of which we wish to simulate to try and infer, others remain fixed. 
+is an open-source simulator funded by the Gates Foundation to model different aspects of the malaria prevention and treatment cycle for varying population dynamics.
+ Users specify models in OpenMalaria via a scenario file, in the form of an XML document, which determines the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
+The scenario file encodes all input and output parameters, some of which we wish to simulate, others remain fixed. 
 
-\paragraph{EMOD} Do the same for EMOD as OM
+\paragraph{EMOD} provides the modularity and structural flexibility necessary for modeling multiple infectious diseases at the within-host and population level. 
+EMOD can be used to model HIV, Tuberculosis, Malaria and generic diseases, but for the purposes of the comparison, we just focus on Malaria. 
+To specify models in EMOD a configuration file is written by the user, which is in the form of a JSON and provides similar functionality to OpenMalaria, in terms of what can be specified and the outputs that it produces. 
 
-In both these well used simulators users are accustomed to writing their models as either XML, or JSON files and so it is important that any system built around this framework enables the models to be inputted in the same format, without requiring the users to learn how to use a new set of protocols. 
 
-\section{Case Study}
-\label{sec:casestudy}
-\subsection{Connecting a Epidemiology Simulators to a Probabilistic Programming System}
+In both these well used simulators users are accustomed to writing their models as either XML, or JSON files and so it is important that any system built around this framework enables the models to be inputted in the same format, without requiring the users to learn how to use a new set of protocols. Our system facilitates this as we shall discuss in the proceeding sections.  
 
-In order to overhaul the stochastic simulators we are only required to override the location of the stochastic primitives, i.e. the base operations that generate the stochasticity and randomness within the simulator. 
-We will walk through how this is done for a standard epidemiology simulator.
+
+
+\section{Hijacking Simulators}
+\label{sec:hijackingsimulators}
+
+% Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the intersection of computer science, statistics and machine learning. 
+% It attempts to unify the three fields by creating automated frameworks in which one can easily extrapolate their observed data and perform sophisticated statistical analysis with advance inference procedures such as 
+% Markov Chain Monte Carlo (MCMC), Variational Inference~(VI) and Deep Neural Networks~(DNN) in an accessible way, i.e. without the need of expert knowledge in implementing and using such procedures. In addition to this, probabilistic programming systems~(PPSs) provide tools that enable the source code of a program to be throughly analysed in an automated fashion.
+% Users can then exploit these algorithms and tools on an array of models
+% within the PPS, using the language itself to create models that represent complicated distribution objects which are then analysed by the PPS. 
+% PPSs are extensions, or reductions, of existing programming languages such as python, c++, go and so forth, which means that users do not have to learn
+% a completely new set of operating semantics and can write programs in the same vain as they are accustomed to.  
+% The PPS that we use, PyProb~\cite{le-2016-inference,baydin2018efficient}, belongs to the family of universal PPSs 
+% that allow the expression of unrestricted probability models in a Turing complete fashion~\cite{wood2014new,goodman2012church,landau_binder_2014,siddharth2017learning,bingham2019pyro}.
+
+\begin{itemize}
+\item Add what - What are we trying to do to make peoples lifes easier
+\item Add WHy - Why is this important to do and what does it enable.
+\item Then deal with "How" - How is this done - what is currently there. 
+\end{itemize}
+\begin{tikzpicture}[node distance=1.5cm,
+    every node/.style={fill=white, font=\sffamily}, align=center]
+  % Specification of nodes (position, etc.)
+  % \node (start)             [activityStarts]              {Activity starts};
+  \node (SimulatorSystem)     [activityStarts]          {Simulator System \\ e.g EMOD};
+  \node (onStartBlock)      [process, below of=SimulatorSystem]   {onStart()};
+  \node (onResumeBlock)     [process, below of=onStartBlock]   {onResume()};
+  \node (activityRuns)      [activityRuns, below of=onResumeBlock]
+                                                      {Activity is running};
+  \node (onPauseBlock)      [process, below of=activityRuns, yshift=-1cm]
+                                                                {onPause()};
+  \node (onStopBlock)       [process, below of=onPauseBlock, yshift=-1cm]
+                                                                 {onStop()};
+  \node (onDestroyBlock)    [process, below of=onStopBlock, yshift=-1cm] 
+                                                              {onDestroy()};
+  \node (onRestartBlock)    [process, right of=onStartBlock, xshift=4cm]
+                                                              {onRestart()};
+  \node (ActivityEnds)      [startstop, left of=activityRuns, xshift=-4cm]
+                                                        {Process is killed};
+  \node (ActivityDestroyed) [startstop, below of=onDestroyBlock]
+                                                    {Activity is shut down};     
+  % Specification of lines between nodes specified above
+  % with aditional nodes for description 
+  % \draw[->]             (start) -- (onCreateBlock);
+  \draw[->]     (SimulatorSystem) -- (onStartBlock);
+  \draw[->]      (onStartBlock) -- (onResumeBlock);
+  \draw[->]     (onResumeBlock) -- (activityRuns);
+  \draw[->]      (activityRuns) -- node[text width=4cm]
+                                   {Another activity comes in
+                                    front of the activity} (onPauseBlock);
+  \draw[->]      (onPauseBlock) -- node {The activity is no longer visible}
+                                   (onStopBlock);
+  \draw[->]       (onStopBlock) -- node {The activity is shut down by
+                                   user or system} (onDestroyBlock);
+  \draw[->]    (onRestartBlock) -- (onStartBlock);
+  \draw[->]       (onStopBlock) -| node[yshift=1.25cm, text width=3cm]
+                                   {The activity comes to the foreground}
+                                   (onRestartBlock);
+  \draw[->]    (onDestroyBlock) -- (ActivityDestroyed);
+  \draw[->]      (onPauseBlock) -| node(priorityXMemory)
+                                   {higher priority $\rightarrow$ more memory}
+                                   (ActivityEnds);
+  \draw           (onStopBlock) -| (priorityXMemory);
+  \draw[->]     (ActivityEnds)  |- node [yshift=-2cm, text width=3.1cm]
+                                    {User navigates back to the activity}
+                                    (SimulatorSystem);
+  \draw[->] (onPauseBlock.east) -- ++(2.6,0) -- ++(0,2) -- ++(0,2) --                
+     node[xshift=1.2cm,yshift=-1.5cm, text width=2.5cm]
+     {The activity comes to the foreground}(onResumeBlock.east);
+  \end{tikzpicture}
+As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
+
+Essentially, from the users perspective, our approach can be viewed as follows the user would first select the simulator that they are going to use, for example EMOD, they would then write their model, in the desired simulator, according to the given simulator specification. The user would then run the simulator. Now comes the hijacking. During the forward run of the simulator all sampling calls from the random number generator are directed through the probabilistic programming system~(PPS), which in addition to the standard output of the simulator now generates a series of result summaries and path probabilities, as we demonstrate in Section~\ref{sec:casestudy}.
+
+By connecting with the PPS we track all sampling procedures, which enables us to control the myriad of random variables generated within the simulator. 
+
+In order to overhaul a stochastic simulator like EMOD, or OpenMalaria, we are only required to override the location of the stochastic primitives, i.e. the base operations that generate the stochasticity and randomness within the simulator. 
+We will walk through how this is done for a standard epidemiology simulator, see the flowchart for a pictorial representation of what is happening \bg{add ref to flow chart}.
 
 The initial step first requires one to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
 This greatly improves the scope of applicability of our system and the simulator, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. This step will be slightly different for individual simulators, but the overall idea is the same. We cannot provide a link to an example of a containerized environment for OpenMalaria and system in this submission due to anonymity\footnote{We shall provide a link in the camera ready submission}.
@@ -355,50 +428,63 @@ The second step requires one to override the stochastic primitives, which requir
 This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
  Such information is typically saved in $\texttt{RANDOM.<filetype>}$, although it may vary slightly between simulators. We now demonstrate this for a uniform primitive.
 
-\begin{table}[h!]
-\footnotesize
-\begin{tabular}{p{3.6cm}|p{3.6cm}}
-Before  &  After  \\
-\midrule
-\begin{lstlisting}
-#include <gsl/gsl_cdf.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
-//preamble
-double random::uniform_01 () {
-    double result =
-# ifdef 
-OM_RANDOM_USE_BOOST
-       rng_uniform01 ();
-# else
- gsl_rng_uniform (rng.gsl_generator);
-# endif
-    return result;
-    }
-\end{lstlisting}&
-\begin{lstlisting}
-#include <pyprob_cpp.h>
-#include "xtensor/xadapt.hpp"
-// preamble
-double random::uniform_01 () {
-auto uniform = pyprob_cpp::distributions::Uniform(0,1);
-return pyprob_cpp::sample(uniform)(0);
-}
-\end{lstlisting}
-\end{tabular} 
-\end{table}
-As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
+% \begin{table}[h!]
+% \footnotesize
+% \begin{tabular}{p{3.6cm}|p{3.6cm}}
+% Before  &  After  \\
+% \midrule
+% \begin{lstlisting}
+% #include <gsl/gsl_cdf.h>
+% #include <gsl/gsl_rng.h>
+% #include <gsl/gsl_randist.h>
+% //preamble
+% double random::uniform_01 () {
+%     double result =
+% # ifdef 
+% OM_RANDOM_USE_BOOST
+%        rng_uniform01 ();
+% # else
+%  gsl_rng_uniform (rng.gsl_generator);
+% # endif
+%     return result;
+%     }
+% \end{lstlisting}&
+% \begin{lstlisting}
+% #include <pyprob_cpp.h>
+% #include "xtensor/xadapt.hpp"
+% // preamble
+% double random::uniform_01 () {
+% auto uniform = pyprob_cpp::distributions::Uniform(0,1);
+% return pyprob_cpp::sample(uniform)(0);
+% }
+% \end{lstlisting}
+% \end{tabular} 
+% \end{table}
+% As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
 The third step is generating the protocols, which enable communication between the simulator and probabilistic programming system. 
 For this we extend the existing bridging framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight C ++ interface, however the language of this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is. 
 For both OpenMalaria and EMOD, the file is written in C ++.
 In using these protocols a larger class of sampling procedures can be overridden. The PPX protocols work by making use of the flatbuffer protocols\footnote{\url{https://github.com/google/flatbuffers}}, which require a flatbuffers script to be specified, see here for an example of a flatbuffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. The flatbuffers script is simple, clean and intuitive, making it easy for a non-expert to produced.
 The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$ and defining an additional forward function which runs one execution of the simulator to enable message passing between the simulator and PPS\footnote{A link to an example will be provided after the review period to preserve anonymity}.
 The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on C ++ we can extend an existing interface called pyprob\_cpp\footnote{\url{https://github.com/probprog/pyprob_cpp}} to account for the additional sampling procedures.
-Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS. We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
-
-\subsection{Extending Probabilistic Programming Protocols}
+Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS.
 
 \bg{Add performance plot showing memory consumptions of pyprob and our new system.}
+\section{Case Study}
+\label{sec:casestudy}
+
+
+We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
+When comparing the two trace plots between EMOD and OpenMalaria we see significant difference, despite both evaluating the same model for the same disease. 
+We can see from the addressing schemes $A1, \ldots, A_N$ \bg{ref table 1 and 2} what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria 
+By having access to such diagrams users can internally evaluate and scrutinize the decisions that the simulator is making.
+This is incredibly important for policy makers, or non-experts, as it not only details how we arrive at the given outputs, but it provides an understanding of which processes were most crucial in determining those outputs as can be seen from the path probabilities assigned to each of the vertices.
+
+
+
+% 
+
+
 % \begin{tikzpicture}
 % \begin{axis}[xlabel={Population size},ylabel={memory consumption (MB)},
 % legend style={at={(0.5,-0.15)},xmin=0,xmax=700,ymin=0,ymax=70, axis lines=center]
@@ -439,17 +525,17 @@ Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating
 \end{figure}
 \begin{figure*}[h!]
 	\centering
-	\includegraphics[width=\textwidth]{../plots/ewan_25_pop_10.pdf}
-	\centering
+	\includegraphics[width=\textwidth]{../plots/emod_24_prior_pop_100.pdf}
 	\includegraphics[width=\textwidth]{../plots/ewan_25_pop_100.pdf}
-	\caption{Add something. Population 100}
+	\caption{Here we run two equivalent models, compare the corresponding trace paths and corresponding 
+	path probabilities taken by the thousands of random variables generated internally within the simulators. \textit{\textbf{Top:}} The specified model run in EMOD. \textit{\textbf{Bottom:}} The specified model in OpenMalaria.}
 	\label{fig:plotewan}
 \end{figure*}
 
  \begin{table*}[h!]
   \footnotesize
   \setlength{\tabcolsep}{1mm}
-  \caption{Addresses TODO }
+  \caption{A few addresses generated for the OpenMalaria simulator, see the Supplement for the full table.}
   \label{table:addresses}
   \def\arraystretch{1.25}
   % \setlength{\tabcolsep}{1mm}
@@ -493,7 +579,6 @@ Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating
   \end{tabularx}
   \end{table*}
 
-\bg{Add comments about how this trace structure helps policy makers.}
 \bibliographystyle{icml2019}
 \bibliography{malaria,refs}
 
