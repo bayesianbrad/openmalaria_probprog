@@ -466,7 +466,7 @@ Furthermore, we can understand the structure of simulators as programs for both 
   %    {The activity comes to the foreground}(onResumeBlock.east);
   \end{tikzpicture}
   \label{fig:how}
-  \caption{This flow-chart provides an overview of the process of how our system hijacks a generic population-based epidemiology simulator, such as EMOD, and how we modify the simulator to be able 
+  \caption{This flow-chart provides an overview of the process of how our system hijacks a generic population-based epidemiology simulator, such as EMOD, and how we modify the simulator to 
   to hijack the random number generator (RNG).}
   \end{figure}
 As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
