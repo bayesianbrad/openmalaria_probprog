@@ -186,21 +186,17 @@ For example, malaria still annually kills about a quarter of a million children 
 % Hence, despite decades of substantial international efforts, initial hopes of regional elimination or even global eradication have not been met.
 %  So difficult is Malaria control that, even today, about a quarter of a million children under the age of 5 succumb to it every year in Africa alone. 
 
-To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers are increasingly turning to evidence-based methods and computational simulations CITATIONS. 
-These simulations allow policymakers to infer critical information like
-INSERT and make predictions about the impacts of policies
-before they are rolled out, improving understanding and allowing
-more effective decisions to be made in combating the disease at a
-macro-level, thereby ultimately saving lives.
-For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transition. \bg{citation?}
+To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers are increasingly turning to evidence-based methods, thus oftentimes relying on computational simulations CITATIONS. 
+These simulations allow policymakers to infer critical information on disease dynamics and make predictions about the impacts of policies
+before they are rolled out. This frequently increases the effectiveness of interventions and thus ultimately saves resources, or even lifes.
+For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmission \bg{citation?}. 
 
-However, malaria epidemiology is governed by a complex set of drivers, 
+Malaria epidemiology is governed by a complex set of drivers, 
 few of which can be understood in isolation CITATION.
 These include within-host dynamics, population-specific traits and even local geography.
-Comprehensive modeling of all of these components remains challenging, particularly in a regional-specific context. Therefore the resulting simulators 
-are both comprehensive and powerful.  Since many of these simulators are stochastic in nature, it can
-be highly non-trivial to both interpret their outputs and draw desired
-inferences when coupling them with observed data CITATION?.
+Comprehensive modeling of all of these components remains challenging, particularly in a region-specific context. 
+Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{TODO}.
+
 In this paper, we show how probabilistic programming
 techniques CITATIONS can be used to help automate the required calculations to do this, interpreting the simulators as 
 generative models to perform principled statistical analysis, while
