@@ -12,6 +12,7 @@
 \usepackage{pgfplots}
 \usepackage{tikz}
 \usepackage{todonotes}
+\usepackage{tikz-cd}
 
 % hyperref makes hyperlinks in the resulting PDF.
 % If your build breaks (sometimes temporarily if a hyperlink spans a page)
@@ -31,17 +32,20 @@
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2019}
 \usetikzlibrary{arrows,chains,matrix,positioning,scopes, arrows.meta}
-
+\tikzset{
+  shift left/.style ={commutative diagrams/shift left={#1}},
+  shift right/.style={commutative diagrams/shift right={#1}}
+}
 \tikzset{%
   >={Latex[width=2mm,length=2mm]},
   % Specifications for style of nodes:
             base/.style = {rectangle, rounded corners, draw=black,
                            minimum width=4cm, minimum height=1cm,
                            text centered, font=\sffamily},
-  activityStarts/.style = {base, fill=blue!30},
-       startstop/.style = {base, fill=red!30},
-    activityRuns/.style = {base, fill=green!30},
-         process/.style = {base, minimum width=2.5cm, fill=orange!15,
+  activityStarts/.style = {base, fill=blue!50},
+       startstop/.style = {base, fill=red!50},
+    activityRuns/.style = {base, fill=green!50},
+         process/.style = {base, minimum width=2.5cm, fill=orange!55,
                            font=\ttfamily},
 }
 \makeatletter
@@ -309,7 +313,7 @@ thereby providing wide-ranging impacts across a number of fields.
 %\label{sec:related}
 
 
- \section{Epidemiology Simulators}
+ \section{Simulating Diseases}
  \label{sec:background}
 
 % Stochastic simulators are common across a number of domains, statistical physics~\cite{landau_binder_2014}, financial modeling~\cite{jackel2002monte},
@@ -321,6 +325,9 @@ weather prediction~\cite{evensen1994sequential}, epidemiology~\cite{smith2008tow
 In many cases, simulation output can augment or even replace real data that may otherwise be costly or even impossible to generate.
 Recent advances in hardware have enabled simulations to model increasingly complex systems.
 Epidemiology studies the prevalence and spreading of diseases across populations. Recent advances in hardware have enabled simulations to model the dynamics of infectious diseases, such as Malaria, in ever greater detail.
+
+\subsection{Epidemiology Simulators}
+
 Two the most advanced Malaria simulators, namely EMOD~\cite{bershteyn2018implementation} and OpenMalaria\cite{smith2008towards}, have proven to be particularly valuable to policymakers.
 OpenMalaria is based on microsimulations of Plasmodium falciparum in humans and was originally developed to simulate the impacts of malaria vaccines within simple villages or districts
 Compared with OpenMalaria, EMOD is able to simulate a variety of additional drivers, including complex geographies complete with migration and a large number of policy interventions
@@ -364,6 +371,7 @@ Furthermore, we can understand the structure of simulators as programs for both 
  2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to the inference outcome. 
  This is critical in several domains, especially in epidemiology. 
  We provide examples of (1) in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
+
 % Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the intersection of computer science, statistics and machine learning. 
 % It attempts to unify the three fields by creating automated frameworks in which one can easily extrapolate their observed data and perform sophisticated statistical analysis with advance inference procedures such as 
 % Markov Chain Monte Carlo (MCMC), Variational Inference~(VI) and Deep Neural Networks~(DNN) in an accessible way, i.e. without the need of expert knowledge in implementing and using such procedures. In addition to this, probabilistic programming systems~(PPSs) provide tools that enable the source code of a program to be throughly analysed in an automated fashion.
@@ -379,56 +387,65 @@ Furthermore, we can understand the structure of simulators as programs for both 
 \item Add WHy - Why is this important to do and what does it enable.
 \item Then deal with "How" - How is this done - what is currently there. 
 \end{itemize}
+\begin{figure}
 \begin{tikzpicture}[node distance=1.5cm,
     every node/.style={fill=white, font=\sffamily}, align=center]
   % Specification of nodes (position, etc.)
   % \node (start)             [activityStarts]              {Activity starts};
   \node (SimulatorSystem)     [activityStarts]          {Simulator System \\ e.g. EMOD};
-  \node (onStartBlock)      [process, below of=SimulatorSystem]   {Specific Model / Specification \\ e.g. XML files};
-  \node (onResumeBlock)     [process, below of=onStartBlock]   {Run Simulator};
-  \node (activityRuns)      [activityRuns, below of=onResumeBlock]
-                                                      {Activity is running};
-  \node (onPauseBlock)      [process, below of=activityRuns, yshift=-1cm]
+   \node (randomprim)      [process, left of=SimulatorSystem, xshift=5.6cm]
+                                                      {Redefine RNG \\ to make \\ externally \\ callable};
+  \node (onStartBlock)      [process, below of=SimulatorSystem]   {Specify Model \\ e.g. XML files};
+  \node (activityRuns)      [activityRuns, below of=onStartBlock]
+                                                      {Run Simulator};
+  \node (onPauseBlock)      [startstop, below of=activityRuns, yshift=-1cm]
                                                                 {Posterior Output};
-  \node (onStopBlock)       [process, below of=onPauseBlock, yshift=-1cm]
-                                                                 {};
-  \node (onDestroyBlock)    [process, below of=onStopBlock, yshift=-1cm] 
-                                                              {onDestroy()};
-  \node (onRestartBlock)    [process, right of=onStartBlock, xshift=4cm]
-                                                              {onRestart()};
-  \node (ActivityEnds)      [startstop, left of=activityRuns, xshift=-4cm]
-                                                        {Process is killed};
-  \node (ActivityDestroyed) [startstop, below of=onDestroyBlock]
-                                                    {Activity is shut down};     
+  % \node (onStopBlock)       [process, below of=onPauseBlock, yshift=-1cm]
+  %                                                                {};
+  % \node (onDestroyBlock)    [process, below of=onStopBlock, yshift=-1cm] 
+  %                                                             {onDestroy()};
+  \node (onRestartBlock)    [process, right of=activityRuns, xshift=3cm]
+                                                              {PPS hijacks \\ random number \\ generator};
+  \node (ActivityEnds)      [startstop, below of=onRestartBlock, yshift=-1cm]
+                                                        {Result summaries \\ path probabilities};
+  % \node (ActivityDestroyed) [startstop, below of=onDestroyBlock]
+  %                                                   {Activity is shut down};     
   % Specification of lines between nodes specified above
   % with aditional nodes for description 
   % \draw[->]             (start) -- (onCreateBlock);
   \draw[->]     (SimulatorSystem) -- (onStartBlock);
-  \draw[->]      (onStartBlock) -- (onResumeBlock);
-  \draw[->]     (onResumeBlock) -- (activityRuns);
-  \draw[->]      (activityRuns) -- node[text width=4cm]
-                                   {Another activity comes in
-                                    front of the activity} (onPauseBlock);
-  \draw[->]      (onPauseBlock) -- node {The activity is no longer visible}
-                                   (onStopBlock);
-  \draw[->]       (onStopBlock) -- node {The activity is shut down by
-                                   user or system} (onDestroyBlock);
-  \draw[->]    (onRestartBlock) -- (onStartBlock);
-  \draw[->]       (onStopBlock) -| node[yshift=1.25cm, text width=3cm]
-                                   {The activity comes to the foreground}
-                                   (onRestartBlock);
-  \draw[->]    (onDestroyBlock) -- (ActivityDestroyed);
-  \draw[->]      (onPauseBlock) -| node(priorityXMemory)
-                                   {todo}
-                                   (ActivityEnds);
-  \draw           (onStopBlock) -| (priorityXMemory);
-  \draw[->]     (ActivityEnds)  |- node [yshift=-2cm, text width=3.1cm]
-                                    {User navigates back to the activity}
-                                    (SimulatorSystem);
-  \draw[->] (onPauseBlock.east) -- ++(2.6,0) -- ++(0,2) -- ++(0,2) --                
-     node[xshift=1.2cm,yshift=-1.5cm, text width=2.5cm]
-     {The activity comes to the foreground}(onResumeBlock.east);
+  \draw[dashed, <-]  (SimulatorSystem) -- (randomprim);
+  % \draw[->]      (onStartBlock) -- (onResumeBlock);
+  \draw[->]     (onStartBlock) -- (activityRuns);
+  \draw[->]      (activityRuns) -- (onPauseBlock);
+  % \draw[->]      (onPauseBlock) -- node {The activity is no longer visible}
+  %                                  (onStopBlock);
+  % \draw[->]       (onStopBlock) -- node {The activity is shut down by
+  %                                  user or system} (onDestroyBlock);
+  % \draw[->]    (onRestartBlock) -- (activityRuns);
+  \path[->, shift left=.75ex]
+  (onRestartBlock) edge (activityRuns)
+  (activityRuns) edge (onRestartBlock);
+  % \draw[<-]    (activityRuns) -- (onRestartBlock);
+  % \draw[->]       (onStopBlock) -| node[yshift=1.25cm, text width=3cm]
+  %                                  {The activity comes to the foreground}
+  %                                  (onRestartBlock);
+
+  \draw[->]    (onRestartBlock) -- (ActivityEnds);
+  % \draw[->]      (onPauseBlock) -| node(priorityXMemory)
+  %                                  {todo}
+  %                                  (ActivityEnds);
+  % \draw           (onStopBlock) -| (priorityXMemory);
+  % \draw[->]     (ActivityEnds)  |- node [yshift=-2cm, text width=3.1cm]
+  %                                   {User navigates back to the activity}
+  %                                   (SimulatorSystem);
+  % \draw[->] (onPauseBlock.east) -- ++(2.6,0) -- ++(0,2) -- ++(0,2) --                
+  %    node[xshift=1.2cm,yshift=-1.5cm, text width=2.5cm]
+  %    {The activity comes to the foreground}(onResumeBlock.east);
   \end{tikzpicture}
+  \label{fig:how}
+  \caption{TODO}
+  \end{figure}
 As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
 
 Essentially, from the users perspective, our approach can be viewed as follows the user would first select the simulator that they are going to use, for example EMOD, they would then write their model, in the desired simulator, according to the given simulator specification. The user would then run the simulator. Now comes the hijacking. During the forward run of the simulator all sampling calls from the random number generator are directed through the probabilistic programming system~(PPS), which in addition to the standard output of the simulator now generates a series of result summaries and path probabilities, as we demonstrate in Section~\ref{sec:casestudy}.
