@@ -13,6 +13,7 @@
 \usepackage{tikz}
 \usepackage{todonotes}
 \usepackage{tikz-cd}
+\usepackage[binary-units=true]{siunitx}
 
 % hyperref makes hyperlinks in the resulting PDF.
 % If your build breaks (sometimes temporarily if a hyperlink spans a page)
@@ -103,13 +104,6 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 \icmlauthor{Cieua Vvvvv}{goo}
 \icmlauthor{Iaesut Saoeu}{ed}
 \icmlauthor{Fiuea Rrrr}{to}
-\icmlauthor{Tateu H.~Yasehe}{ed,to,goo}
-\icmlauthor{Aaoeu Iasoh}{goo}
-\icmlauthor{Buiui Eueu}{ed}
-\icmlauthor{Aeuia Zzzz}{ed}
-\icmlauthor{Bieea C.~Yyyy}{to,goo}
-\icmlauthor{Teoau Xxxx}{ed}
-\icmlauthor{Eee Pppp}{ed}
 \end{icmlauthorlist}
 
 \icmlaffiliation{to}{Department of Computation, University of Torontoland, Torontoland, Canada}
@@ -388,13 +382,25 @@ Both EMOD and OpenMalaria are open source and implemented in C++.
 
  Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
 can be used to express probabilistic models and consequently perform automated inference thereon. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{geyer1992practical}, Variational Inference~(VI)\cite{ranganath2014black} and Deep Neural Networks~(DNN)\cite{Goodfellow:2016:DL:3086952},  can be used out-of-the-box by non-experts. 
+
  
 \paragraph{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures, which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{schaling2011boost}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator.
 
 The PPS and the simulator exchange xTensor objects \url{https://xtensor.readthedocs.io/en/latest/} through TCP or ICP using a generic FlatBuffers \url{http://google.github.io/flatbuffers/} protocol. On the PPS side, sampling is done using the deep learning framework PyTorch \cite{paszke2017automatic}.
 
 After a variable has been sampled, it is sent to the PPS using \textit{pyprob\_cpp::sample}, alongside with its simulator source trace. This allows the PPS to construct sample trace probabilities and other summary statistics (cf. Section \ref{sec:casestudy}). 
-%
+
+Finally, the entry point to the simulator, i.e. \textit{main} in C++, is replaced by a special \textit{forward} call, in this case \textit{pyprob\_cpp::forward}.
+This allows the PPS to generate roll outs from the simulator remotely. 
+
+\paragraph{Population-based simulators} In contrast to the setup used by \cite{baydin2018efficient}, who interface a particle physics simulator that creates a single trace per \textit{forward} call, a population-based simulator creates a trace per population member. This means that e.g. in EMOD, a standard scenario simulation rollout over the span of $3$ years  
+with a population of size $n=5000$ \cite{smith2008towards} will generate about $ \SI{4}{\tera\byte}$ of raw trace data. Unlike with \citep{baydin2018efficient}, this amount of data cannot possibly be kept in RAM, which makes \textit{a posteriori} trace analysis very inefficient. 
+In order to deal with the shortcomings of \textit{pyprob} in a population-based simulator context, we therefore extend the framework to be able to do trace analysis on the fly.
+
+By extending \textit{pyprob} to handle population-based simulators, the PPS can now track all stochastic random variables that are created within the simulator, which then allows us to generate trace plots and path probabilities associated to the execution paths of the program.
+The corresponding increase of simulator transparency helps reinstate much needed trust between policymakers and evidence-based methods.
+
+
 %As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
 %
 %Essentially, from the users perspective, our approach can be viewed as follows the user would first select the simulator that they are going to use, for example EMOD, they would then write their model, in the desired simulator, according to the given simulator specification. The user would then run the simulator. Now comes the hijacking. During the forward run of the simulator all sampling calls from the random number generator are directed through the probabilistic programming system~(PPS), which in addition to the standard output of the simulator now generates a series of result summaries and path probabilities, as we demonstrate in Section~\ref{sec:casestudy}.
@@ -678,12 +684,9 @@ This is incredibly important for policy makers, or non-experts, as it not only d
 
   a new human, or humans, may get infected \\
 
-  A4 & Potential children deaths 
+  A4, A5 & Potential child deaths 
 
   within the population are simulated \\
-  A5 & Potential children deaths within
-
-   the population are simulated \\
 
   A6 & Determines parasite density
 
