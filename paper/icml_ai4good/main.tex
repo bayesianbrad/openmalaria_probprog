@@ -18,6 +18,7 @@
 % \usepackage{icml2019} with \usepackage[nohyperref]{icml2019} above.
 \usepackage{hyperref}
 
+% \usepgfplotslibrary{external}
 % Attempt to make hyperref and algorithmic work together better:
 \newcommand{\theHalgorithm}{\arabic{algorithm}}
 
@@ -42,7 +43,7 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
    execute at end node=$]
 % The \icmltitle you define below is probably too long as aer.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Understanding the Black-box Structure of Epidemiology Simulators for Policy Decision Making}
+\icmltitlerunning{Hijacking Simulators for the Greater Good}
 
 \lstset{language=C++,
                 basicstyle=\footnotesize,
@@ -56,8 +57,7 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 \begin{document}
 
 \twocolumn[
-\icmltitle{Understanding the Black-box Structure of Epidemiology Simulators\\
-			 for Policy Decision Making}
+\icmltitle{Hijacking Simulators for the Greater Good}
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
@@ -132,7 +132,7 @@ as epidemiology, as we lose \emph{interpretability}.
 In this work, we explain how to design ML/AI systems that combine
 probabilistic programming systems (PPSs) and epidemiology simulators, to extract
 fully interpretable structures, enabling policy makers 
-and practitioners to make decisions from simulator outputs that can be fully resoned on.
+and practitioners to make decisions from simulator outputs that can be fully reasoned on.
  % interpretable inferences. 
 In particular, we demonstrate this for the Malaria disease in two commonly used simulators; EMOD and OpenMalaria.
 \end{abstract}
@@ -319,6 +319,22 @@ The final step is to create a light-weight interface. As both the EMOD and OpenM
 Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS. We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
 
 \subsection{Extending Probabilistic Programming Protocols}
+
+\bg{Add performance plot showing memory consumptions of pyprob and our new system.}
+% \begin{tikzpicture}
+% \begin{axis}[xlabel={Population size},ylabel={memory consumption (MB)},
+% legend style={at={(0.5,-0.15)},xmin=0,xmax=700,ymin=0,ymax=70, axis lines=center]
+
+
+% \addplot[pyprob,domain=0:1000, color=blue,]{x};
+
+% \addplot[improved,domain=0:1000, color=red,]{10};
+
+% \legend{pyprob, improved}
+% \end{axis}
+% \end{tikzpicture}
+
+
 \begin{figure}
 \begin{tikzpicture}
 \begin{axis}[
