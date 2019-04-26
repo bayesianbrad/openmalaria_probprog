@@ -1,54 +1,58 @@
-This is BibTeX, Version 0.99d (TeX Live 2018)
+This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: icml2019.bst
 Database file #1: malaria.bib
-Warning--entry type for "refugees_2030_nodate" isn't style-file defined
---line 62 of file malaria.bib
-Warning--entry type for "un_sustainable_2018" isn't style-file defined
---line 74 of file malaria.bib
 Database file #2: refs.bib
-Warning--empty year in refugees_2030_nodate
-Warning--empty year in un_sustainable_2018
-You've used 7 entries,
+Warning--empty journal in autino_epidemiology_2012
+Warning--empty year in autino_epidemiology_2012
+Warning--empty year in autino_epidemiology_2012
+Warning--empty year in ferris_openmalaria_2015
+Warning--empty year in ferris_openmalaria_2015
+Warning--empty journal in mwendera_challenges_2019
+Warning--empty year in mwendera_challenges_2019
+Warning--empty year in mwendera_challenges_2019
+Warning--empty journal in refugees_2030
+Warning--empty journal in un_sustainable2018
+You've used 16 entries,
             2773 wiz_defined-function locations,
-            640 strings with 6412 characters,
-and the built_in function-call counts, 3942 in all, are:
-= -- 307
-> -- 345
-< -- 3
-+ -- 118
-- -- 111
-* -- 358
-:= -- 646
-add.period$ -- 21
-call.type$ -- 7
-change.case$ -- 55
-chr.to.int$ -- 7
-cite$ -- 16
-duplicate$ -- 133
-empty$ -- 255
-format.name$ -- 118
-if$ -- 783
+            710 strings with 8835 characters,
+and the built_in function-call counts, 9328 in all, are:
+= -- 782
+> -- 745
+< -- 9
++ -- 253
+- -- 237
+* -- 853
+:= -- 1504
+add.period$ -- 65
+call.type$ -- 16
+change.case$ -- 122
+chr.to.int$ -- 16
+cite$ -- 42
+duplicate$ -- 349
+empty$ -- 610
+format.name$ -- 255
+if$ -- 1889
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 5
-newline$ -- 43
-num.names$ -- 28
-pop$ -- 113
+missing$ -- 18
+newline$ -- 102
+num.names$ -- 64
+pop$ -- 245
 preamble$ -- 1
-purify$ -- 48
+purify$ -- 107
 quote$ -- 0
-skip$ -- 124
+skip$ -- 282
 stack$ -- 0
-substring$ -- 90
-swap$ -- 7
-text.length$ -- 0
+substring$ -- 247
+swap$ -- 31
+text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 77
-warning$ -- 2
-while$ -- 26
+type$ -- 166
+warning$ -- 10
+while$ -- 65
 width$ -- 0
-write$ -- 93
-(There were 4 warnings)
+write$ -- 238
+(There were 10 warnings)

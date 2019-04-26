@@ -385,14 +385,49 @@ Both EMOD and OpenMalaria are open source and implemented in C++.
 
 \section{Hijacking Simulators}
 \label{sec:hijackingsimulators}
- Our method of overriding simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular population based simulators such as those found in epidemiology.
-Our framework provides a simple solution to do this and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in. 
-In particular, the framework currently supports 13 popular languages, but there is nothing to stop this being extended to any language of interest. 
-Furthermore, we can understand the structure of simulators as programs for both decoding \emph{black-box structures} and for posterior inference, which enables two things. 
-1) It enables software developers and policy makers to understand complicated code bases and dissect the outputs of simulators for guiding policy decision making.
- 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to the inference outcome. 
- This is critical in several domains, especially in epidemiology. 
- We provide examples of (1) in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
+
+ Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
+can be used to express probabilistic models and consequently perform automated inference thereon. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{}, Variational Inference~(VI)\cite{} and Deep Neural Networks~(DNN)\cite{},  can be used out-of-the-box by non-experts. 
+ 
+\textit{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator.
+
+The PPS and the simulator exchange xTensor objects \cite{} through TCP or ICP using a generic FlatBuffers \cite{TODO} protocol. On the PPS side, sampling is done using the deep learning framework PyTorch \cite{}.
+
+After a variable has been sampled, it is sent to the PPS using \textit{pyprob\_cpp::sample}, alongside with its simulator source trace. This allows the PPS to construct sample trace probabilities and other summary statistics (cf. Section \ref{sec:casestudy}). 
+
+%
+%As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
+%
+%Essentially, from the users perspective, our approach can be viewed as follows the user would first select the simulator that they are going to use, for example EMOD, they would then write their model, in the desired simulator, according to the given simulator specification. The user would then run the simulator. Now comes the hijacking. During the forward run of the simulator all sampling calls from the random number generator are directed through the probabilistic programming system~(PPS), which in addition to the standard output of the simulator now generates a series of result summaries and path probabilities, as we demonstrate in Section~\ref{sec:casestudy}.
+%
+%By connecting with the PPS we track all sampling procedures, which enables us to control the myriad of random variables generated within the simulator. 
+%
+%In order to overhaul a stochastic simulator like EMOD, or OpenMalaria, we are only required to override the location of the stochastic primitives, i.e. the base operations that generate the stochasticity and randomness within the simulator. 
+%We will walk through how this is done for a standard epidemiology simulator, see the flowchart for a pictorial representation of what is happening \bg{add ref to flow chart}.
+%
+%The initial step first requires one to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
+%The second step requires one to override the stochastic primitives, which requires re-writing aspects of the sampling procedures inside the simulator. 
+%This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
+% Such information is typically saved in $\texttt{RANDOM.<filetype>}$, although it may vary slightly between simulators. We now demonstrate this for a uniform primitive.
+%
+%The third step is generating the protocols, which enable communication between the simulator and probabilistic programming system. 
+%For this we extend the existing bridging framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight C ++ interface, however the language of this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is. 
+%For both OpenMalaria and EMOD, the file is written in C ++.
+%In using these protocols a larger class of sampling procedures can be overridden. The PPX protocols work by making use of the flatbuffer protocols\footnote{\url{https://github.com/google/flatbuffers}}, which require a flatbuffers script to be specified, see here for an example of a flatbuffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. The flatbuffers script is simple, clean and intuitive, making it easy for a non-expert to produced.
+%The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$ and defining an additional forward function which runs one execution of the simulator to enable message passing between the simulator and PPS\footnote{A link to an example will be provided after the review period to preserve anonymity}.
+%The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on C ++ we can extend an existing interface called pyprob\_cpp\footnote{\url{https://github.com/probprog/pyprob_cpp}} to account for the additional sampling procedures.
+%Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS.
+
+
+
+ %Our method of overriding simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular population based simulators such as those found in epidemiology.
+%Our framework provides a simple solution to do this and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in. 
+%In particular, the framework currently supports 13 popular languages, but there is nothing to stop this being extended to any language of interest. 
+%Furthermore, we can understand the structure of simulators as programs for both decoding \emph{black-box structures} and for posterior inference, which enables two things. 
+%1) It enables software developers and policy makers to understand complicated code bases and dissect the outputs of simulators for guiding policy decision making.
+ %2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to the inference outcome. 
+ %This is critical in several domains, especially in epidemiology. 
+ %We provide examples of (1) in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
 
 % Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the intersection of computer science, statistics and machine learning. 
 % It attempts to unify the three fields by creating automated frameworks in which one can easily extrapolate their observed data and perform sophisticated statistical analysis with advance inference procedures such as 
@@ -403,12 +438,12 @@ Furthermore, we can understand the structure of simulators as programs for both 
 % a completely new set of operating semantics and can write programs in the same vain as they are accustomed to.  
 % The PPS that we use, PyProb~\cite{le-2016-inference,baydin2018efficient}, belongs to the family of universal PPSs 
 % that allow the expression of unrestricted probability models in a Turing complete fashion~\cite{wood2014new,goodman2012church,landau_binder_2014,siddharth2017learning,bingham2019pyro}.
-
-\begin{itemize}
-\item Add what - What are we trying to do to make peoples lifes easier
-\item Add WHy - Why is this important to do and what does it enable.
-\item Then deal with "How" - How is this done - what is currently there. 
-\end{itemize}
+%
+%\begin{itemize}
+%\item Add what - What are we trying to do to make peoples lifes easier
+%\item Add WHy - Why is this important to do and what does it enable.
+%\item Then deal with "How" - How is this done - what is currently there. 
+%\end{itemize}
 \begin{figure}
 \centering
  \scalebox{.5}{
@@ -472,20 +507,6 @@ Furthermore, we can understand the structure of simulators as programs for both 
   \caption{This flow-chart provides an overview of the process of how our system hijacks a generic population-based epidemiology simulator, such as EMOD, and how we modify the simulator to 
   to hijack the random number generator (RNG).}
   \end{figure}
-As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
-
-Essentially, from the users perspective, our approach can be viewed as follows the user would first select the simulator that they are going to use, for example EMOD, they would then write their model, in the desired simulator, according to the given simulator specification. The user would then run the simulator. Now comes the hijacking. During the forward run of the simulator all sampling calls from the random number generator are directed through the probabilistic programming system~(PPS), which in addition to the standard output of the simulator now generates a series of result summaries and path probabilities, as we demonstrate in Section~\ref{sec:casestudy}.
-
-By connecting with the PPS we track all sampling procedures, which enables us to control the myriad of random variables generated within the simulator. 
-
-In order to overhaul a stochastic simulator like EMOD, or OpenMalaria, we are only required to override the location of the stochastic primitives, i.e. the base operations that generate the stochasticity and randomness within the simulator. 
-We will walk through how this is done for a standard epidemiology simulator, see the flowchart for a pictorial representation of what is happening \bg{add ref to flow chart}.
-
-The initial step first requires one to build a containerized environment, such as Docker~\cite{merkel2014docker} and Singularity~\cite{kurtzer2017singularity}, which enables the simulators to be run on any device, independent of different hardware architectures, removing the requirement for hardware specific machines. 
-This greatly improves the scope of applicability of our system and the simulator, as this environment only has to be built once, which then enables the simulator to be run simultaneously on machines of different architectures machine. This step will be slightly different for individual simulators, but the overall idea is the same. We cannot provide a link to an example of a containerized environment for OpenMalaria and system in this submission due to anonymity\footnote{We shall provide a link in the camera ready submission}.
-The second step requires one to override the stochastic primitives, which requires re-writing aspects of the sampling procedures inside the simulator. 
-This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
- Such information is typically saved in $\texttt{RANDOM.<filetype>}$, although it may vary slightly between simulators. We now demonstrate this for a uniform primitive.
 
 % \begin{table}[h!]
 % \footnotesize
@@ -520,15 +541,7 @@ This requires zero domain-expertise and only requires one to find where the samp
 % \end{tabular} 
 % \end{table}
 % As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
-The third step is generating the protocols, which enable communication between the simulator and probabilistic programming system. 
-For this we extend the existing bridging framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight C ++ interface, however the language of this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is. 
-For both OpenMalaria and EMOD, the file is written in C ++.
-In using these protocols a larger class of sampling procedures can be overridden. The PPX protocols work by making use of the flatbuffer protocols\footnote{\url{https://github.com/google/flatbuffers}}, which require a flatbuffers script to be specified, see here for an example of a flatbuffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. The flatbuffers script is simple, clean and intuitive, making it easy for a non-expert to produced.
-The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$ and defining an additional forward function which runs one execution of the simulator to enable message passing between the simulator and PPS\footnote{A link to an example will be provided after the review period to preserve anonymity}.
-The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on C ++ we can extend an existing interface called pyprob\_cpp\footnote{\url{https://github.com/probprog/pyprob_cpp}} to account for the additional sampling procedures.
-Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS.
-
-\bg{Add performance plot showing memory consumptions of pyprob and our new system.}
+%\bg{Add performance plot showing memory consumptions of pyprob and our new system.}
 \section{Case Study}
 \label{sec:casestudy}
 
