@@ -410,6 +410,8 @@ Furthermore, we can understand the structure of simulators as programs for both 
 \item Then deal with "How" - How is this done - what is currently there. 
 \end{itemize}
 \begin{figure}
+\centering
+ \scalebox{.5}{
 \begin{tikzpicture}[node distance=1.5cm,
     every node/.style={fill=white, font=\sffamily}, align=center]
   % Specification of nodes (position, etc.)
@@ -465,6 +467,7 @@ Furthermore, we can understand the structure of simulators as programs for both 
   %    node[xshift=1.2cm,yshift=-1.5cm, text width=2.5cm]
   %    {The activity comes to the foreground}(onResumeBlock.east);
   \end{tikzpicture}
+  }
   \label{fig:how}
   \caption{This flow-chart provides an overview of the process of how our system hijacks a generic population-based epidemiology simulator, such as EMOD, and how we modify the simulator to 
   to hijack the random number generator (RNG).}
