@@ -57,7 +57,7 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 % The \icmltitle you define below is probably too long as aer.
 % Therefore, a short form for the running title is supplied here:
 %\icmltitlerunning{Hijacking Simulators for the Greater Good}
-\icmltitlerunning{Hijacking Epidemiology Simulators
+\icmltitlerunning{Hijacking Malaria Simulators
 	with Probabilistic Programming}
 
 \lstset{language=C++,
@@ -75,7 +75,7 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 %\icmltitle{Hijacking Simulators for the Greater Good}
 %\icmltitle{Automatically Converting Epidemiology Simulations
 %	to Probabilistic Programs}
-\icmltitle{Hijacking Epidemiology Simulators
+\icmltitle{Hijacking Malaria Simulators
 	with Probabilistic Programming}
 
 % It is OKAY to include author information, even for blind
@@ -135,25 +135,42 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 \printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
 
 \begin{abstract}
-
-A goal of probabilistic programming is to couple simulators, with inference. This is 
-because stochastic simulators are used prominently in many industrial settings,
-do not require one to construct hand-crafted joint distributions as they implicitly 
-define a joint distribution of the program and encode learned structures 
-directly. This makes simulators powerful tools and much of machine learning (ML) and 
-Artificial Intelligence (AI)
-can be seen as trying to emulate such simulators from a purely data-driven approach.
-However, in the 
-ML/AI setting, although we can often infer outcomes, we have little understanding about what 
-in the data led to the outputted inferences. 
-This makes it challenging to deploy ML/AI systems into the wild, especially in health-related and safety-critical domains, such
-as epidemiology, as we lose \emph{interpretability}. 
-In this work, we explain how to design ML/AI systems that combine
-probabilistic programming systems (PPSs) and epidemiology simulators, to extract
-fully interpretable structures, enabling policy makers 
-and practitioners to make decisions from simulator outputs that can be fully reasoned on.
- % interpretable inferences. 
-In particular, we demonstrate this for the Malaria disease in two commonly used simulators; EMOD and OpenMalaria.
+Epidemiology simulations have become a fundamental tool in the fight
+against the epidemics of various infectious diseases like AIDS and
+malaria.
+However, the complicated and stochastic nature of these simulators
+can mean they are difficult to work with and extract the key information
+required by policy makers.
+In this paper, we introduce an approach to \emph{hijack} these
+simulators with an external
+probabilistic programming system (PPS) that controls
+their internal random number generator.
+This allows for various advanced statistical analyses to be performed
+on the simulators in an automated fashion, while also tracking
+the behavior of the simulator to uncover key information such
+as stochastic structure and generate result summaries.
+Critically, this hijacking can be performed with only minimal changes
+to the original simulator, allowing for straightforward application
+of our approach to a wide variety of contexts and existing simulators.
+%
+%A goal of probabilistic programming is to couple simulators, with inference. This is 
+%because stochastic simulators are used prominently in many industrial settings,
+%do not require one to construct hand-crafted joint distributions as they implicitly 
+%define a joint distribution of the program and encode learned structures 
+%directly. This makes simulators powerful tools and much of machine learning (ML) and 
+%Artificial Intelligence (AI)
+%can be seen as trying to emulate such simulators from a purely data-driven approach.
+%However, in the 
+%ML/AI setting, although we can often infer outcomes, we have little understanding about what 
+%in the data led to the outputted inferences. 
+%This makes it challenging to deploy ML/AI systems into the wild, especially in health-related and safety-critical domains, such
+%as epidemiology, as we lose \emph{interpretability}. 
+%In this work, we explain how to design ML/AI systems that combine
+%probabilistic programming systems (PPSs) and epidemiology simulators, to extract
+%fully interpretable structures, enabling policy makers 
+%and practitioners to make decisions from simulator outputs that can be fully reasoned on.
+% % interpretable inferences. 
+%In particular, we demonstrate this for the Malaria disease in two commonly used simulators; EMOD and OpenMalaria.
 \end{abstract}
 
 \section{Introduction}
@@ -213,7 +230,7 @@ simulators, a characteristic that is valuable in the context of
 epidemiology simulators CITATIONS.
 
 Critically, this hijacking can be performed on a wide variety of simulators
-with only minimal changes to the simulator.  Our framework already
+with only minimal changes.  Our framework already
 supports 13 popular languages for the base simulator, and can easily
 be extended to others if needed.  Moreover, though our focus
 is on hijacking epidemiology simulators, our general approach and
