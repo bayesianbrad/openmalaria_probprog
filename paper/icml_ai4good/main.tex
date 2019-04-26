@@ -394,21 +394,7 @@ Furthermore, we can understand the structure of simulators as programs for both 
  This is critical in several domains, especially in epidemiology. 
  We provide examples of (1) in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
 
-% Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} is the intersection of computer science, statistics and machine learning. 
-% It attempts to unify the three fields by creating automated frameworks in which one can easily extrapolate their observed data and perform sophisticated statistical analysis with advance inference procedures such as 
-% Markov Chain Monte Carlo (MCMC), Variational Inference~(VI) and Deep Neural Networks~(DNN) in an accessible way, i.e. without the need of expert knowledge in implementing and using such procedures. In addition to this, probabilistic programming systems~(PPSs) provide tools that enable the source code of a program to be throughly analysed in an automated fashion.
-% Users can then exploit these algorithms and tools on an array of models
-% within the PPS, using the language itself to create models that represent complicated distribution objects which are then analysed by the PPS. 
-% PPSs are extensions, or reductions, of existing programming languages such as python, c++, go and so forth, which means that users do not have to learn
-% a completely new set of operating semantics and can write programs in the same vain as they are accustomed to.  
-% The PPS that we use, PyProb~\cite{le-2016-inference,baydin2018efficient}, belongs to the family of universal PPSs 
-% that allow the expression of unrestricted probability models in a Turing complete fashion~\cite{wood2014new,goodman2012church,landau_binder_2014,siddharth2017learning,bingham2019pyro}.
 
-\begin{itemize}
-\item Add what - What are we trying to do to make peoples lifes easier
-\item Add WHy - Why is this important to do and what does it enable.
-\item Then deal with "How" - How is this done - what is currently there. 
-\end{itemize}
 \begin{figure}
 \centering
  \scalebox{.5}{
@@ -487,46 +473,14 @@ The second step requires one to override the stochastic primitives, which requir
 This requires zero domain-expertise and only requires one to find where the sampling calls are originated, this can be done with any basic editor search function.
  Such information is typically saved in $\texttt{RANDOM.<filetype>}$, although it may vary slightly between simulators. We now demonstrate this for a uniform primitive.
 
-% \begin{table}[h!]
-% \footnotesize
-% \begin{tabular}{p{3.6cm}|p{3.6cm}}
-% Before  &  After  \\
-% \midrule
-% \begin{lstlisting}
-% #include <gsl/gsl_cdf.h>
-% #include <gsl/gsl_rng.h>
-% #include <gsl/gsl_randist.h>
-% //preamble
-% double random::uniform_01 () {
-%     double result =
-% # ifdef 
-% OM_RANDOM_USE_BOOST
-%        rng_uniform01 ();
-% # else
-%  gsl_rng_uniform (rng.gsl_generator);
-% # endif
-%     return result;
-%     }
-% \end{lstlisting}&
-% \begin{lstlisting}
-% #include <pyprob_cpp.h>
-% #include "xtensor/xadapt.hpp"
-% // preamble
-% double random::uniform_01 () {
-% auto uniform = pyprob_cpp::distributions::Uniform(0,1);
-% return pyprob_cpp::sample(uniform)(0);
-% }
-% \end{lstlisting}
-% \end{tabular} 
-% \end{table}
-% As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
-The third step is generating the protocols, which enable communication between the simulator and probabilistic programming system. 
-For this we extend the existing bridging framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight C ++ interface, however the language of this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is. 
-For both OpenMalaria and EMOD, the file is written in C ++.
-In using these protocols a larger class of sampling procedures can be overridden. The PPX protocols work by making use of the flatbuffer protocols\footnote{\url{https://github.com/google/flatbuffers}}, which require a flatbuffers script to be specified, see here for an example of a flatbuffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. The flatbuffers script is simple, clean and intuitive, making it easy for a non-expert to produced.
-The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$ and defining an additional forward function which runs one execution of the simulator to enable message passing between the simulator and PPS\footnote{A link to an example will be provided after the review period to preserve anonymity}.
-The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on C ++ we can extend an existing interface called pyprob\_cpp\footnote{\url{https://github.com/probprog/pyprob_cpp}} to account for the additional sampling procedures.
-Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS.
+
+% The third step is generating the protocols, which enable communication between the simulator and probabilistic programming system. 
+% For this we extend the existing bridging framework introduced in~\cite{baydin2018efficient}, which is comprised of the Probabilistic Programming eXecution~(PPX) protocols and a light-weight C ++ interface, however the language of this light-weight interface is dependent on whatever the file type of the $\texttt{RANDOM.<filetype>}$ file is. 
+% For both OpenMalaria and EMOD, the file is written in C ++.
+% In using these protocols a larger class of sampling procedures can be overridden. The PPX protocols work by making use of the flatbuffer protocols\footnote{\url{https://github.com/google/flatbuffers}}, which require a flatbuffers script to be specified, see here for an example of a flatbuffers script\footnote{https://github.com/probprog/ppx/blob/master/ppx.fbs}. Once this is specified the flat buffers script is compiled and automatically constructs the message passing framework between the simulator and the probabilistic programming system. The flatbuffers script is simple, clean and intuitive, making it easy for a non-expert to produced.
+% The next steps requires modifying the $\texttt{main}$ function in $\texttt{main.cpp}$ and defining an additional forward function which runs one execution of the simulator to enable message passing between the simulator and PPS\footnote{A link to an example will be provided after the review period to preserve anonymity}.
+% The final step is to create a light-weight interface. As both the EMOD and OpenMalaria are solely based on C ++ we can extend an existing interface called pyprob\_cpp\footnote{\url{https://github.com/probprog/pyprob_cpp}} to account for the additional sampling procedures.
+% Once these steps are complete, the containerized environment will now contain everything required to pass models through to the simulators, encode the simulator into a probabilistic program, which can then be evaluated in the PPS.
 
 \bg{Add performance plot showing memory consumptions of pyprob and our new system.}
 \section{Case Study}
@@ -593,17 +547,18 @@ This is incredibly important for policy makers, or non-experts, as it not only d
 	\label{fig:plotewan}
 \end{figure*}
 
- \begin{table*}[h!]
-  \footnotesize
+
+\begin{table}[h!]
+\footnotesize
   \setlength{\tabcolsep}{1mm}
-  \caption{An example of an address generated for the OpenMalaria simulator. We can see that address 1
-  relates to Generating a member of the human population who may or may not be infect with the Malaria disease. We get something similar for EMOD, except this relates to Address 7 in the EMOD program execution.}
-  \label{table:addresses}
+\label{table:asingleaddress}
+  \caption{An example of an address generated for the model run in the OpenMalaria simulator. We can see that A1
+  relates to Generating a member of the human population who may or may not be infect with the Malaria disease. We get something similar for EMOD, except this relates to A7 in the EMOD program execution.}
   \def\arraystretch{1.25}
   % \setlength{\tabcolsep}{1mm}
-  \begin{tabularx}{\textwidth}{@{}lX@{}l@{}} 
+  \begin{tabularx}{0.46\textwidth}{@{}lX@{}l@{}} 
     \toprule
-    Address ID & Full address & Interpretation\\
+    Address ID & Full address \\
     \midrule
   A1 & [forward()+0x204; OM::Simulator::
 
@@ -615,14 +570,22 @@ This is incredibly important for policy makers, or non-experts, as it not only d
 
   OM::Host::Human::Human(OM::SimTime)+0x12b;
 
-  OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99;
+  OM::WithinHost::WHInterface::
+
+  createWithinHostModel(double)+0x99;
 
   OM::WithinHost::DescriptiveWithinHostModel
   ::DescriptiveWithinHostModel(double)+0x3a;
 
-  OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6;
+  OM::WithinHost::WHFalciparum::
 
-  OM::util::random::gauss(double, double)+0xb4]\_\_Normal &  Generate a human in the population within host dynamics \\
+  WHFalciparum(double)+0xe6;
+
+  OM::util::random::
+
+  gauss(double, double)+0xb4]\_\_Normal \\
+
+  $\vdots$ & $\vdots$ \\
 
  %   $\vdots$ & $\vdots$ \\
  %  A5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
@@ -642,8 +605,70 @@ This is incredibly important for policy makers, or non-experts, as it not only d
 
 \bottomrule
   \end{tabularx}
-  \end{table*}
+  \end{table}
 
+\begin{table}[h!]
+  \footnotesize
+  \setlength{\tabcolsep}{1mm}
+  \caption{An interpretation table for each of the address of the 
+  overall trace generated from the corresponding OpenMalaria model.}
+  \label{table:addresses}
+  % \def\arraystretch{1.25}
+  % \setlength{\tabcolsep}{1mm}
+  \begin{tabularx}{0.46\textwidth}{@{}lX@{}} 
+    \toprule
+    Address ID & Interpretation \\
+    \midrule
+  A1 & Generate a human in the
+
+   population within host dynamics\\
+
+  
+  A2 & Generate another human in
+
+   the population within host dynamics\\
+
+  A3 & The population is updated and 
+
+  a new human, or humans, may get infected \\
+
+  A4 & Potential children deaths 
+
+  within the population are simulated \\
+  A5 & Potential children deaths within
+
+   the population are simulated \\
+
+  A6 & Determines parasite density
+
+   of an individual infection \\
+
+  A7 & Models how the disease is 
+
+  progressing within the infected humans \\
+
+	A8 & Models how the disease is
+
+	 progressing within the population \\
+  
+  A9 & Models how the disease is 
+
+  progressing within the infected humans
+
+   after the population has been updated\\
+
+  A10 & Full clinical update on 
+
+  the population for those without severe
+
+  or no Malaria infection. \\
+
+A11 & Full clinical update on the population 
+
+for those with severe Malaria infections \\
+\bottomrule
+  \end{tabularx}
+  \end{table}
 \bibliographystyle{icml2019}
 \bibliography{malaria,refs}
 
