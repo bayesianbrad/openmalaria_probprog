@@ -43,7 +43,9 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
    execute at end node=$]
 % The \icmltitle you define below is probably too long as aer.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Hijacking Simulators for the Greater Good}
+%\icmltitlerunning{Hijacking Simulators for the Greater Good}
+\icmltitlerunning{Automatically Converting Epidemiology Simulations
+to Probabilistic Programs}
 
 \lstset{language=C++,
                 basicstyle=\footnotesize,
@@ -57,7 +59,10 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 \begin{document}
 
 \twocolumn[
-\icmltitle{Hijacking Simulators for the Greater Good}
+%\icmltitle{Hijacking Simulators for the Greater Good}
+\icmltitle{Automatically Converting Epidemiology Simulations
+	to Probabilistic Programs}
+
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
@@ -138,9 +143,9 @@ In particular, we demonstrate this for the Malaria disease in two commonly used 
 \end{abstract}
 
 \section{Introduction}
-Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals \cite{refugees_2030_nodate}\cite{un_sustainable_2018}. 
+Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals \cite{refugees_2030_nodate,un_sustainable_2018}. 
 However, despite decades of substantial international efforts, these diseases kill hundreads of million people a year.
-In particular, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
+For example, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
 
 
 %maybe cut some of this paragraph out
@@ -149,18 +154,30 @@ In particular, malaria still annually kills about a quarter of a million childre
 % Hence, despite decades of substantial international efforts, initial hopes of regional elimination or even global eradication have not been met.
 %  So difficult is Malaria control that, even today, about a quarter of a million children under the age of 5 succumb to it every year in Africa alone. 
 
-To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers increasingly turn to evidence-based methods. 
-However, the collection of large quantities of field data is often infeasible due to logistic, economic or political constraints, or outright impossible if novel methods are to be assessed a priori. 
-Hence in silico simulation of malaria epidemiology plays an increasingly crucial role in evidence-based policymaking.
+To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers increasingly turn to evidence-based methods and computational simulations CITATIONS. 
+These simulations allow policymakers to infer critical information like
+INSERT and make predictions about the impacts of policies, allowing
+more effective decisions to be made in combating the disease at a
+macro-level and ultimately saving lives.
+For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transition. \bg{citation?}
 
-%Hence epidemiology simulators fine-tuned on real data play a crucial role in determining policy implications.
-Even in the absence of political, economic and social constraints, Malaria epidemiology is governed by a complex set of drivers, few of which can be understood in isolation.
+However, malaria epidemiology is governed by a complex set of drivers, 
+few of which can be understood in isolation.
 These include within-host dynamics, population-specific traits and even local geography.
-Some progress in modeling specific components has been made, such as the parasite life-cycle, transmission vector dynamics and the inter-dependencies between infection rates and vicinity to open water. 
-However, comprehensive modeling of all of these components in a regional context remains challenging, and is greatly impeded by the lack of available field data for regional calibration, hence the need for comprehensive simulators.
+Comprehensive modeling of all of these components remains challenging, particular in a regional-specific context. Therefore simulators 
+need to be both comprehensive and powerful, while it can
+be highly non-trivial to both interpret their outputs and draw desired
+inferences when coupling them with observed data.  
+
+%However, the collection of large quantities of field data is often infeasible due to logistic, economic or political constraints, or outright impossible if novel methods are to be assessed a priori. 
+%Hence in silico simulation of malaria epidemiology plays an increasingly crucial role in evidence-based policymaking.
+%Even in the absence of political, economic and social constraints, 
+%Malaria epidemiology is governed by a complex set of drivers, few of which can be understood in isolation.
+%These include within-host dynamics, population-specific traits and even local geography.
+%Some progress in modeling specific components has been made, such as the parasite life-cycle, transmission vector dynamics and the inter-dependencies between infection rates and vicinity to open water. 
+%However, comprehensive modeling of all of these components in a regional context remains challenging, and is greatly impeded by the lack of available field data for regional calibration, hence the need for comprehensive simulators.
 % Simulation complexity is further aggravated by considering feedback effects from a large arsenal of anti-malaria interventions, ranging from distribution of mosquito nets, indoor residual spraying and mass drug administration to age-specific vaccinations. 
-Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. 
-For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmittivity. \bg{citation?}
+%Stochastic epidemiology simulators have already proven to be an invaluable tool to policymakers with policy implications that are often counterintuitive yet far-ranging. 
 
 
 However, since many of these simulators are stochastic in nature and therefore act as black-boxes, understanding the structure of these complex simulators is challenging and poses several challenges for policy makers who want to interpret the decisions being inferred. 
