@@ -176,8 +176,7 @@ We demonstrate that our method can be used for interpretable introspection and i
 \end{abstract}
 
 \section{Introduction}
-Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals\todo{These citations
-should still have years} \cite{refugees_2030_nodate,un_sustainable_2018}. 
+Ending the epidemics of AIDS, tuberculosis, malaria and other infectious diseases by 2030 is a key target within the Good Health \& Well-Being section of the UN Sustainable Development Goals \cite{refugees_2030,un_sustainable2018}. 
 However, despite decades of substantial international efforts, these diseases kill hundreds of million people a year.
 For example, malaria still annually kills about a quarter of a million children under the age of 5 in Africa alone.
 
@@ -191,15 +190,15 @@ For example, malaria still annually kills about a quarter of a million children 
 To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers are increasingly turning to evidence-based methods, thus oftentimes relying on computational simulations CITATIONS. 
 These simulations allow policymakers to infer critical information on disease dynamics and make predictions about the impacts of policies
 before they are rolled out. This frequently increases the effectiveness of interventions and thus ultimately saves resources, or even lifes.
-For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmission \bg{citation?}. 
+For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmission \cite{cameron2015defining}. 
 
 Malaria epidemiology is governed by a complex set of drivers, 
-few of which can be understood in isolation CITATION.
+few of which can be understood in isolation \cite{cameron2015defining,autino_epidemiology_2012,smith2008towards,bershteyn2018implementation}.
 These include within-host dynamics, population-specific traits and even local geography.
 Comprehensive modeling of all of these components remains challenging, particularly in a region-specific context. 
-Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{TODO}.
+Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{mwendera_challenges_2019,ferris_openmalaria_2015}.
 
-In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{TODO} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP)\cite{TODO}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
+In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{baydin2018efficient} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP)\cite{le-2016-inference}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
 
 This allows for a variety of tasks to be performed on
 the hijacked simulator, such as running inference (by conditioning
@@ -210,9 +209,9 @@ of different program paths/traces.  By providing a common abstraction
 framework for different simulators, our approach further allows for
 easy and direct comparison between related or competing
 simulators, a characteristic that is valuable in the context of
-epidemiology simulators \cite{TODO}. We provide a case study of the above in Section \ref{sec:casestudy}.
+epidemiology simulators \cite{ferris_openmalaria_2015}. We provide a case study of the above in Section \ref{sec:casestudy}.
 
-Our framework already supports application to simulators written in 13 industrial programming frameworks, and is easily extensible. This is crucial as, given the enormous code size and complexity, rewriting epidemiology simulators using a dedicated universal probabilistic programming language, such as Pyro\cite{}, is often infeasible.
+Our framework already supports application to simulators written in 13 industrial programming frameworks, and is easily extensible. This is crucial as, given the enormous code size and complexity, rewriting epidemiology simulators using a dedicated universal probabilistic programming language, such as Pyro\cite{bingham2019pyro}, is often infeasible.
 %Moreover, though our focus is on hijacking epidemiology simulators, our general approach and framework can be applied more widely to a general class of stochastic simulators.
 
 In time, we hope our approach will play a critical role in
@@ -467,7 +466,8 @@ Furthermore, we can understand the structure of simulators as programs for both 
   %    {The activity comes to the foreground}(onResumeBlock.east);
   \end{tikzpicture}
   \label{fig:how}
-  \caption{TODO}
+  \caption{This flow-chart provides an overview of the process of how our system hijacks a generic population-based epidemiology simulator, such as EMOD, and how we modify the simulator to be able 
+  to hijack the random number generator (RNG).}
   \end{figure}
 As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
 
@@ -555,30 +555,30 @@ This is incredibly important for policy makers, or non-experts, as it not only d
 % \end{tikzpicture}
 
 
-\begin{figure}
-\begin{tikzpicture}
-\begin{axis}[
-    ybar,
-    enlargelimits=0.15,
-    legend style={at={(0.5,-0.15)},
-      anchor=north,legend columns=-1},
-      xlabel = {Address},
-    ylabel={Probabilities},
-    symbolic x coords={Trace 1, Trace 2, Trace 3},
-    xtick=data,
-    nodes near coords,
-    nodes near coords align={vertical},
-    ]
-% \addplot coordinates {(tool8,7) (tool9,9) (tool10,4)};
-\addplot coordinates {(Trace 1,0.2) (Trace 2,0.5) (Trace 3,0.23)};
-% \addplot coordinates {(A1,0.2) (A2,0.5) (A3,0.7) (A4,0.9)};
-% \addplot coordinates {(A1,0.1) (A2,0.1) (A3,0.1) (A4,0.3)};
-% \legend{used,understood,not understood}
-\end{axis}
-\end{tikzpicture}
-\caption{Trace probabilities. Trace 1 corresponds to A1,A1,A4,... 
-Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating.}
-\end{figure}
+% \begin{figure}
+% \begin{tikzpicture}
+% \begin{axis}[
+%     ybar,
+%     enlargelimits=0.15,
+%     legend style={at={(0.5,-0.15)},
+%       anchor=north,legend columns=-1},
+%       xlabel = {Address},
+%     ylabel={Probabilities},
+%     symbolic x coords={Trace 1, Trace 2, Trace 3},
+%     xtick=data,
+%     nodes near coords,
+%     nodes near coords align={vertical},
+%     ]
+% % \addplot coordinates {(tool8,7) (tool9,9) (tool10,4)};
+% \addplot coordinates {(Trace 1,0.2) (Trace 2,0.5) (Trace 3,0.23)};
+% % \addplot coordinates {(A1,0.2) (A2,0.5) (A3,0.7) (A4,0.9)};
+% % \addplot coordinates {(A1,0.1) (A2,0.1) (A3,0.1) (A4,0.3)};
+% % \legend{used,understood,not understood}
+% \end{axis}
+% \end{tikzpicture}
+% \caption{Trace probabilities. Trace 1 corresponds to A1,A1,A4,... 
+% Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating.}
+% \end{figure}
 \begin{figure*}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{../plots/emod_24_prior_pop_100.pdf}
@@ -591,15 +591,18 @@ Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating
  \begin{table*}[h!]
   \footnotesize
   \setlength{\tabcolsep}{1mm}
-  \caption{A few addresses generated for the OpenMalaria simulator, see the Supplement for the full table.}
+  \caption{An example of an address generated for the OpenMalaria simulator. We can see that address 1
+  relates to Generating a member of the human population who may or may not be infect with the Malaria disease. We get something similar for EMOD, except this relates to Address 7 in the EMOD program execution.}
   \label{table:addresses}
   \def\arraystretch{1.25}
   % \setlength{\tabcolsep}{1mm}
-  \begin{tabularx}{\textwidth}{@{}lX@{}} 
+  \begin{tabularx}{\textwidth}{@{}lX@{}l@{}} 
     \toprule
-    Address ID & Full address \\
+    Address ID & Full address & Interpretation\\
     \midrule
-  A1 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const)+0x28a;
+  A1 & [forward()+0x204; OM::Simulator::
+
+  start(scnXml::Monitoring const)+0x28a;
 
   OM::Population::createInitialHumans()+0x94;
 
@@ -609,27 +612,28 @@ Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating
 
   OM::WithinHost::WHInterface::createWithinHostModel(double)+0x99;
 
-  OM::WithinHost::DescriptiveWithinHostModel::DescriptiveWithinHostModel(double)+0x3a;
+  OM::WithinHost::DescriptiveWithinHostModel
+  ::DescriptiveWithinHostModel(double)+0x3a;
 
   OM::WithinHost::WHFalciparum::WHFalciparum(double)+0xe6;
 
-  OM::util::random::gauss(double, double)+0xb4]\_\_Normal\\
+  OM::util::random::gauss(double, double)+0xb4]\_\_Normal &  Generate a human in the population within host dynamics \\
 
-   $\vdots$ & $\vdots$ \\
-  A5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
+ %   $\vdots$ & $\vdots$ \\
+ %  A5 & [forward()+0x204; OM::Simulator::start(scnXml::Monitoring const\&)+0x468;
 
-   OM::Population::update1(OM::SimTime)+0xff;
+ %   OM::Population::update1(OM::SimTime)+0xff;
 
-    OM::Host::Human::update(bool)+0x2bc;
+ %    OM::Host::Human::update(bool)+0x2bc;
 
-    OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96;
+ %    OM::Clinical::ClinicalModel::update(OM::Host::Human\&, double, bool)+0x96;
 
-    OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
+ %    OM::Host::NeonatalMortality::eventNeonatalMortality()+0x9;
 
-    OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
+ %    OM::util::random::uniform\_01()+0xc0]\_\_Uniform\\
 
 
- $\vdots$ & $\vdots$ \\
+ % $\vdots$ & $\vdots$ \\
 
 \bottomrule
   \end{tabularx}
