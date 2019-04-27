@@ -542,16 +542,21 @@ The corresponding increase of simulator transparency helps reinstate much needed
 \section{Case Study}
 \label{sec:casestudy}
 
+Ensemble methods are commonly used in statistics in order to combine the predictive power of multiple models \cite{}. To this end, recent work has attempted to characterise the similarities and differences between two of the most advanced Malaria epidemiology simulators, EMOD \cite{} and OpenMalaria \cite{}. Evaluation is usually done by comparing a number of output parameters across a range of hand-crafted standard scenarios reflecting different geographical locations across Africa. \cite{Smith}.
+
+In the following, we illustrate how our method introduces a novel introspection paradigm. By extracting trace graphs from population-based simulators, policymakers can ask specific questions about intrinsic properties of the model trace flow. 
+
+To illustrate the above, we present simulation output generated from a scenario resembling local conditions in the town of Ifakara (Tanzania). Both EMOD and OpenMalaria are configured to simulate a single population node of $n=100$ and assume constant climatic conditions and no migration over the simulation period of $3$ years.
 
 We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
-When comparing the two trace plots between EMOD and OgpenMalaria we see significant differences, despite both evaluating the same model for the same disease. 
-We can see from the addressing schemes $A_1, \ldots, A_N$ \bg{ref table 1 and 2} what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria 
+When comparing the two trace plots between EMOD and OpenMalaria we see significant differences, despite both evaluating the same model for the same disease. 
+
+We can see from the addressing schemes $A_1, \ldots, A_N$ \ref{table:addresses}\ref{table:asingleaddress} what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria 
 By having access to such diagrams users can internally evaluate and scrutinize the decisions that the simulator is making.
+
 This is incredibly important for policy makers, or non-experts, as it not only details how we arrive at the given outputs, but it provides an understanding of which processes were most crucial in determining those outputs as can be seen from the path probabilities assigned to each of the vertices.
 
-
-
-% 
+Additionally, by associating nodes in trace graphs representing the same physical processes within different models, the significance of model detail can be evaluated. This could help developers better control model complexity, even dynamically during execution.
 
 
 % \begin{tikzpicture}
