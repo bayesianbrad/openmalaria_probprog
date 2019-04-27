@@ -1,4 +1,4 @@
-This is BibTeX, Version 0.99d (TeX Live 2018)
+This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: icml2019.bst
@@ -9,9 +9,6 @@ Repeated entry---line 210 of file refs.bib
  :                                       ,
 I'm skipping whatever remains of this entry
 Warning--I didn't find a database entry for ""
-Warning--I didn't find a database entry for "TODO"
-Warning--I didn't find a database entry for "Baydin"
-Warning--I didn't find a database entry for "smith"
 Warning--empty journal in autino_epidemiology_2012
 Warning--empty year in autino_epidemiology_2012
 Warning--empty year in autino_epidemiology_2012
@@ -25,45 +22,45 @@ Warning--empty journal in smith_ensemble_2012
 Warning--empty year in smith_ensemble_2012
 Warning--empty year in smith_ensemble_2012
 Warning--empty journal in un_sustainable2018
-You've used 18 entries,
+You've used 20 entries,
             2773 wiz_defined-function locations,
-            729 strings with 9572 characters,
-and the built_in function-call counts, 11291 in all, are:
-= -- 969
-> -- 886
-< -- 12
-+ -- 300
-- -- 282
-* -- 1015
-:= -- 1780
-add.period$ -- 77
-call.type$ -- 18
-change.case$ -- 143
-chr.to.int$ -- 18
-cite$ -- 49
-duplicate$ -- 427
-empty$ -- 737
-format.name$ -- 302
-if$ -- 2325
+            733 strings with 9865 characters,
+and the built_in function-call counts, 12376 in all, are:
+= -- 1046
+> -- 989
+< -- 13
++ -- 335
+- -- 315
+* -- 1107
+:= -- 1958
+add.period$ -- 83
+call.type$ -- 20
+change.case$ -- 159
+chr.to.int$ -- 20
+cite$ -- 53
+duplicate$ -- 471
+empty$ -- 810
+format.name$ -- 337
+if$ -- 2543
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 20
-newline$ -- 115
-num.names$ -- 72
-pop$ -- 302
+missing$ -- 23
+newline$ -- 125
+num.names$ -- 80
+pop$ -- 344
 preamble$ -- 1
-purify$ -- 126
+purify$ -- 141
 quote$ -- 0
-skip$ -- 350
+skip$ -- 384
 stack$ -- 0
-substring$ -- 344
-swap$ -- 62
+substring$ -- 348
+swap$ -- 65
 text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 188
+type$ -- 205
 warning$ -- 13
-while$ -- 79
+while$ -- 85
 width$ -- 0
-write$ -- 271
+write$ -- 295
 (There was 1 error message)

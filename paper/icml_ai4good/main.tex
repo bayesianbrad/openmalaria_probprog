@@ -547,7 +547,7 @@ The corresponding increase of simulator transparency helps reinstate much needed
 
 Ensemble methods are commonly used in statistics in order to combine the predictive power of multiple models \cite{cameron2015defining,smith_ensemble_2012}. To this end, recent work has attempted to characterise the similarities and differences between two of the most advanced Malaria epidemiology simulators, EMOD \cite{bershteyn2018implementation} and OpenMalaria \cite{smith2008towards}. Evaluation is usually done by comparing a number of output parameters across a range of hand-crafted standard scenarios reflecting different geographical locations across Africa~\cite{smith_ensemble_2012}.
 
-In the following, we illustrate how our method introduces a novel introspection paradigm. By extracting trace graphs from population-based simulators, policymakers can ask specific questions about intrinsic properties of the model trace flow. 
+In the following, we illustrate how our method introduces a novel introspection paradigm. By extracting trace graphs from population-based simulators, policymakers can ask specific questions about properties of the model trace flow. 
 
 To illustrate the above, we present simulation output generated from a scenario resembling local conditions in the town of Ifakara (Tanzania). Both EMOD and OpenMalaria are configured to simulate a single population node of $n=100$ and assume constant climatic conditions and no migration over the simulation period of $3$ years. Please refer to Figure \ref{fig:EIR} for the seasonal Entomological Inoculation Rate (EIR), a measure of infectivity.
 
@@ -619,7 +619,7 @@ Comparisons like these could help developers better control model complexity, an
 \end{figure*}
 
 
-\begin{table}[h!]
+\begin{table}[b!]
 \footnotesize
   \setlength{\tabcolsep}{1mm}
 \label{table:asingleaddress}
@@ -738,16 +738,11 @@ for those with severe Malaria infections \\
   \end{tabularx}
   \end{table}
 
-\quad\\
-\quad\\
-\quad\\
-\quad\\
-
 
 \section{Discussions and Future Work}
 
-\paragraph{Discussion} In this work we have demonstrated a method 
-that enables one to hijack population based simulators, extending 
+In this work we have demonstrated a method 
+that enables one to hijack populationbased simulators, extending 
 the work of \citep{baydin2018efficient}. 
 We applied our method to two Malaria orientated population-based simulators and 
 generated a variety of trace graphs.
@@ -755,9 +750,12 @@ Finally, we have shown how our system
 enables policy makers and non-experts to analyse simulator outputs in a 
 way previously unavailable in the field of epidemiology. 
 
-\paragraph{Future Work} To extend our work further we aim to implement additional 
+To extend our work further we aim to implement additional 
 tools that will facilitate complicated inference procedures that condition on simulator 
 output. We will also evaluate additional scenarios across Africa and South-East Asia to better understand the similarities and differences between EMOD and OpenMalaria.
+
+\quad\\
+\quad\\
 
 \bibliographystyle{icml2019}
 \bibliography{malaria,refs}
