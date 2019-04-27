@@ -540,7 +540,7 @@ The corresponding increase of simulator transparency helps reinstate much needed
 % As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
 %\bg{Add performance plot showing memory consumptions of pyprob and our new system.}
 
-\section{Case Study}
+\section{Case Study: Ifakara (Tanzania)}
 \label{sec:casestudy}
 
 Ensemble methods are commonly used in statistics in order to combine the predictive power of multiple models \cite{cameron2015defining,smith_ensemble_2012}. To this end, recent work has attempted to characterise the similarities and differences between two of the most advanced Malaria epidemiology simulators, EMOD \cite{bershteyn2018implementation} and OpenMalaria \cite{smith2008towards}. Evaluation is usually done by comparing a number of output parameters across a range of hand-crafted standard scenarios reflecting different geographical locations across Africa~\cite{smith_ensemble_2012}.
@@ -557,12 +557,13 @@ To illustrate the above, we present simulation output generated from a scenario 
 \end{figure}
 
 We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
-We can see from the addressing schemes $A_1, \ldots, A_N$ \ref{table:addresses}\ref{table:asingleaddress} what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria 
+We can see from the addressing schemes $A_1, \ldots, A_N$ \ref{table:addresses}\ref{table:asingleaddress} what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria. 
 By having access to such diagrams users can internally evaluate and scrutinize the decisions that the simulator is making.
 
-This is incredibly important for policymakers, or general non-experts, as it not only details how we arrive at the given outputs, but it provides an understanding of which processes were most crucial in determining those outputs as can be seen from the path probabilities assigned to each of the vertices. 
+This is important for policymakers, or general non-experts, as it not only details how we arrive at the given outputs, but it provides an understanding of which processes were most crucial in determining those outputs as can be seen from the path probabilities assigned to each of the vertices. 
 
-Additionally, by associating nodes in trace graphs representing the same physical processes within different models, the significance of model detail can be evaluated. This could help developers better control model complexity, even dynamically during execution.
+Additionally, by associating nodes in trace graphs representing the same physical processes within different models, the significance of model detail can be evaluated. For example, the full trace presented in Table \ref{table:asingleaddress} represent a sampling step associated with within-host dynamics of the Malaria parasite \textit{Falciparum} in OpenMalaria node $A1$. The same physical process also occurs in EMOD's trace graph at position $A7$ (see Section \ref{table:addresses}).
+Comparisons like these could help developers better control model complexity, and even provide an alternative testing and debugging paradigm.
 
 
 % \begin{tikzpicture}
@@ -734,6 +735,12 @@ for those with severe Malaria infections \\
   \end{tabularx}
   \end{table}
 
+\quad\\
+\quad\\
+\quad\\
+\quad\\
+
+
 \section{Discussions and Future Work}
 
 \paragraph{Discussion} In this work we have demonstrated a method 
@@ -747,7 +754,7 @@ way previously unavailable in the field of epidemiology.
 
 \paragraph{Future Work} To extend our work further we aim to implement additional 
 tools that will facilitate complicated inference procedures that condition on simulator 
-output. 
+output. We will also evaluate additional scenarios across Africa and South-East Asia to better understand the similarities and differences between EMOD and OpenMalaria.
 
 \bibliographystyle{icml2019}
 \bibliography{malaria,refs}

@@ -1,4 +1,4 @@
-\begin{thebibliography}{16}
+\begin{thebibliography}{18}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -64,6 +64,13 @@ Ferris, C., Raybaud, B., and Madey, G.
 \newblock URL \url{http://dl.acm.org/citation.cfm?id=2874916.2874952}.
 \newblock event-place: Chicago, Illinois.
 
+\bibitem[Gordon et~al.(2014)Gordon, Henzinger, Nori, and
+  Rajamani]{gordon2014probabilistic}
+Gordon, A.~D., Henzinger, T.~A., Nori, A.~V., and Rajamani, S.~K.
+\newblock Probabilistic programming.
+\newblock In \emph{Proceedings of the Future of Software Engineering}, pp.\
+  167--181. ACM, 2014.
+
 \bibitem[J{\"a}ckel(2002)]{jackel2002monte}
 J{\"a}ckel, P.
 \newblock \emph{Monte Carlo Methods in Finance}.
@@ -71,11 +78,11 @@ J{\"a}ckel, P.
 \newblock ISBN 9780471497417.
 \newblock URL \url{https://books.google.co.uk/books?id=jG6BQgAACAAJ}.
 
-\bibitem[Kurtzer et~al.(2017)Kurtzer, Sochat, and
-  Bauer]{kurtzer2017singularity}
-Kurtzer, G.~M., Sochat, V., and Bauer, M.~W.
-\newblock Singularity: Scientific containers for mobility of compute.
-\newblock \emph{PloS one}, 12\penalty0 (5):\penalty0 e0177459, 2017.
+\bibitem[Kozen(1979)]{kozen1979semantics}
+Kozen, D.
+\newblock Semantics of probabilistic programs.
+\newblock In \emph{Foundations of Computer Science, 1979., 20th Annual
+  Symposium on}, pp.\  101--114. IEEE, 1979.
 
 \bibitem[Landau \& Binder(2014)Landau and Binder]{landau_binder_2014}
 Landau, D.~P. and Binder, K.
@@ -90,12 +97,6 @@ Le, T.~A., Baydin, A.~G., and Wood, F.
   Artificial Intelligence and Statistics (AISTATS)}, volume~54 of
   \emph{Proceedings of Machine Learning Research}, pp.\  1338--1348, Fort
   Lauderdale, FL, USA, 2017. PMLR.
-
-\bibitem[Merkel(2014)]{merkel2014docker}
-Merkel, D.
-\newblock Docker: lightweight linux containers for consistent development and
-  deployment.
-\newblock \emph{Linux Journal}, 2014\penalty0 (239):\penalty0 2, 2014.
 
 \bibitem[Mwendera et~al.()Mwendera, de~Jager, Longwe, Kumwenda, Hongoro, Phiri,
   and Mutero]{mwendera_challenges_2019}
@@ -113,6 +114,18 @@ Refugees, U. N. H. C.~f.
 \newblock 2017.
 \newblock URL \url{https://www.refworld.org/docid/57b6e3e44.html}.
 
+\bibitem[Smith et~al.()Smith, Ross, Maire, Chitnis, Studer, Hardy, Brooks,
+  Penny, and Tanner]{smith_ensemble_2012}
+Smith, T., Ross, A., Maire, N., Chitnis, N., Studer, A., Hardy, D., Brooks, A.,
+  Penny, M., and Tanner, M.
+\newblock Ensemble modeling of the likely public health impact of a
+  pre-erythrocytic malaria vaccine.
+\newblock 9\penalty0 (1):\penalty0 e1001157.
+\newblock ISSN 1549-1676.
+\newblock \doi{10.1371/journal.pmed.1001157}.
+\newblock URL
+  \url{https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1001157}.
+
 \bibitem[Smith et~al.(2008)Smith, Maire, Ross, Penny, Chitnis, Schapira,
   Studer, Genton, Lengeler, Tediosi, et~al.]{smith2008towards}
 Smith, T., Maire, N., Ross, A., Penny, M., Chitnis, N., Schapira, A., Studer,
@@ -120,6 +133,14 @@ Smith, T., Maire, N., Ross, A., Penny, M., Chitnis, N., Schapira, A., Studer,
 \newblock Towards a comprehensive simulation model of malaria epidemiology and
   control.
 \newblock \emph{Parasitology}, 135\penalty0 (13):\penalty0 1507--1516, 2008.
+
+\bibitem[Staton et~al.(2016)Staton, Yang, Wood, Heunen, and
+  Kammar]{staton2016semantics}
+Staton, S., Yang, H., Wood, F., Heunen, C., and Kammar, O.
+\newblock Semantics for probabilistic programming: higher-order functions,
+  continuous distributions, and soft constraints.
+\newblock In \emph{Proceedings of the 31st Annual ACM/IEEE Symposium on Logic
+  in Computer Science}, pp.\  525--534. ACM, 2016.
 
 \bibitem[{UN}(2018)]{un_sustainable2018}
 {UN}.
