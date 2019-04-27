@@ -391,17 +391,22 @@ Both EMOD and OpenMalaria are open source and implemented in C++.
  Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
 can be used to express probabilistic models and consequently perform automated inference these. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{}, Variational Inference~(VI)\cite{} and Deep Neural Networks~(DNN)\cite{},  can be used by non-experts in an automated fashion. 
  
-\textit{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator.
+\paragraph{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures, which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{schaling2011boost}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator.
 
-The PPS and the simulator exchange xTensor objects \cite{} through TCP or ICP using a generic FlatBuffers \cite{TODO} protocol. On the PPS side, sampling is done using the deep learning framework PyTorch \cite{}.
+The PPS and the simulator exchange xTensor objects \url{https://xtensor.readthedocs.io/en/latest/} through TCP or ICP using a generic FlatBuffers \url{http://google.github.io/flatbuffers/} protocol. On the PPS side, sampling is done using the deep learning framework PyTorch \cite{paszke2017automatic}.
 
 After a variable has been sampled, it is sent to the PPS using \textit{pyprob\_cpp::sample}, alongside with its simulator source trace. This allows the PPS to construct sample trace probabilities and other summary statistics (cf. Section \ref{sec:casestudy}). 
+
 Finally, the entry point to the simulator, i.e. \textit{main} in C++, is replaced by a special \textit{forward} call, in this case \textit{pyprob\_cpp::forward}.
 This allows the PPS to generate roll outs from the simulator remotely. 
 
-\paragraph{Population-based simulators} In contrast to the setup used by \cite{Baydin}, who interface a particle physics simulator that creates a single trace per \textit{forward} call, a population-based simulator creates a trace per population member. This means that e.g. in EMOD, a standard scenario simulation rollout over the span of $3$ years  
-with a population of size $n=5000$ \cite{smith} will generate about $ \SI{4}{\tera\byte}$ of raw trace data. Unlike with \citep{Baydin}, this amount of data cannot possibly be kept in RAM, which makes \textit{a posteriori} trace analysis very inefficient. 
+\paragraph{Population-based simulators} In contrast to the setup used by \cite{baydin2018efficient}, who interface a particle physics simulator that creates a single trace per \textit{forward} call, a population-based simulator creates a trace per population member. This means that e.g. in EMOD, a standard scenario simulation rollout over the span of $3$ years  
+with a population of size $n=5000$ \cite{smith2008towards} will generate about $ \SI{4}{\tera\byte}$ of raw trace data. Unlike with \citep{baydin2018efficient}, this amount of data cannot possibly be kept in RAM, which makes \textit{a posteriori} trace analysis very inefficient. 
 In order to deal with the shortcomings of \textit{pyprob} in a population-based simulator context, we therefore extend the framework to be able to do trace analysis on the fly.
+
+By extending \textit{pyprob} to handle population-based simulators, the PPS can now track all stochastic random variables that are created within the simulator, which then allows us to generate trace plots and path probabilities associated to the execution paths of the program.
+The corresponding increase of simulator transparency helps reinstate much needed trust between policymakers and evidence-based methods.
+
 
 By extending \textit{pyprob} to handle population-based simulators, the PPS can now track all stochastic random variables that are created within the simulator, which then allows us to generate trace plots and path probabilities associated to the execution paths of the program.
 The corresponding increase of simulator transparency helps reinstate much needed trust between policymakers and evidence-based methods.
