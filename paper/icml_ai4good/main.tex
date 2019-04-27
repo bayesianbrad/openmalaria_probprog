@@ -192,7 +192,7 @@ These include within-host dynamics, population-specific traits and even local ge
 Comprehensive modeling of all of these components remains challenging, particularly in a region-specific context. 
 Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{mwendera_challenges_2019,ferris_openmalaria_2015}.
 
-In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{baydin2018efficient} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP) \cite{le-2016-inference}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
+In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{baydin2018efficient} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP) \cite{le-2016-inference}. To this end, we \emph{hijack} existing Bsimulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
 
 This allows for a variety of tasks to be performed on
 the hijacked simulator, such as running inference (by conditioning
@@ -541,7 +541,7 @@ The corresponding increase of simulator transparency helps reinstate much needed
 
 We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
 When comparing the two trace plots between EMOD and OgpenMalaria we see significant differences, despite both evaluating the same model for the same disease. 
-We can see from the addressing schemes $A_1, \ldots, A_N$ \bg{ref table 1 and 2} what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria 
+We can see from the addressing schemes $A_1, \ldots, A_N$ what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria 
 By having access to such diagrams users can internally evaluate and scrutinize the decisions that the simulator is making.
 This is incredibly important for policy makers, or non-experts, as it not only details how we arrive at the given outputs, but it provides an understanding of which processes were most crucial in determining those outputs as can be seen from the path probabilities assigned to each of the vertices.
 
@@ -721,6 +721,20 @@ for those with severe Malaria infections \\
 \bibliographystyle{icml2019}
 \bibliography{malaria,refs}
 
+\section{Discussions and Future Work}
+
+\paragraph{Discussion} In this work we have demonstrated a method 
+that enables one to hijack population based simulators, extending 
+the work of \citep{baydin2018efficient}. 
+We applied our method to two Malaria orientated population-based simulators and 
+generated a variety of trace graphs.
+Finally, we have shown how our system
+enables policy makers and non-experts to analyse simulator outputs in a 
+way previously unavailable in the field of epidemiology. 
+
+\paragraph{Future Work} To extend our work further we aim to implement additional 
+tools that will facilitate complicated inference procedures that condition on simulator 
+output. 
 
 \end{document}
 
