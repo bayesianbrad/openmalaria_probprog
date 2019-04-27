@@ -104,6 +104,13 @@ edge[every join]#1(\tikzchaincurrent)\fi}}}
 \icmlauthor{Cieua Vvvvv}{goo}
 \icmlauthor{Iaesut Saoeu}{ed}
 \icmlauthor{Fiuea Rrrr}{to}
+\icmlauthor{Tateu H.~Yasehe}{ed,to,goo}
+\icmlauthor{Aaoeu Iasoh}{goo}
+\icmlauthor{Buiui Eueu}{ed}
+\icmlauthor{Aeuia Zzzz}{ed}
+\icmlauthor{Bieea C.~Yyyy}{to,goo}
+\icmlauthor{Teoau Xxxx}{ed}
+\icmlauthor{Eee Pppp}{ed}
 \end{icmlauthorlist}
 
 \icmlaffiliation{to}{Department of Computation, University of Torontoland, Torontoland, Canada}
@@ -138,8 +145,8 @@ against the epidemics of various infectious diseases like AIDS and
 malaria.
 However, the complicated and stochastic nature of these simulators
 can mean their output is difficult to interpret, which reduces their usefulness to policymakers.
-In this paper, we introduce an approach that allows one to treat a large class of population-based epidemiology simulators as probabilistic generative models. This is achieved by \emph{hijacking} the internal random number generator calls, through the use of a universal probabilistic programming system (PPS). In contrast to other methods, our approach can be easily retrofitted to simulators written in popular industrial programming frameworks. 
-We demonstrate that our method can be used for interpretable introspection and inference, thus shedding light on black-box simulators. This reinstates much-needed trust between policymakers and evidence-based methods. 
+In this paper, we introduce an approach that allows one to treat a large class of population-based epidemiology simulators as probabilistic generative models. This is achieved by \emph{hijacking} the internal random number generator calls, through the use of an universal probabilistic programming system (PPS). In contrast to other methods, our approach can be easily retrofitted to simulators written in popular industrial programming frameworks. 
+We demonstrate that our method can be used for interpretable introspection and inference, thus shedding light on black-box simulators. This reinstates much needed trust between policymakers and evidence-based methods. 
 
 %This allows for various advanced statistical analyses to be performed
 %on the simulators in an automated fashion, while also tracking
@@ -181,7 +188,7 @@ For example, malaria still annually kills about a quarter of a million children 
 % Hence, despite decades of substantial international efforts, initial hopes of regional elimination or even global eradication have not been met.
 %  So difficult is Malaria control that, even today, about a quarter of a million children under the age of 5 succumb to it every year in Africa alone. 
 
-To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers are increasingly turning to evidence-based methods, thus often times relying on computational simulations~\cite{who_global_2015}. 
+To reach the WHO’s target of reducing malaria incidence and mortality rates by at least 90\% by 2030, policymakers are increasingly turning to evidence-based methods, thus oftentimes relying on computational simulations CITATIONS. 
 These simulations allow policymakers to infer critical information on disease dynamics and make predictions about the impacts of policies
 before they are rolled out. This frequently increases the effectiveness of interventions and thus ultimately saves resources, or even lifes.
 For example, it has been shown that mass vaccination may be largely ineffective in regions of large transmission rates, but may play a crucial role in areas of low transmission \cite{cameron2015defining}. 
@@ -192,7 +199,7 @@ These include within-host dynamics, population-specific traits and even local ge
 Comprehensive modeling of all of these components remains challenging, particularly in a region-specific context. 
 Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{mwendera_challenges_2019,ferris_openmalaria_2015}.
 
-In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{baydin2018efficient} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP) \cite{le-2016-inference}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
+In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{baydin2018efficient} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP)\cite{le-2016-inference}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
 
 This allows for a variety of tasks to be performed on
 the hijacked simulator, such as running inference (by conditioning
@@ -381,25 +388,22 @@ Both EMOD and OpenMalaria are open source and implemented in C++.
 \label{sec:hijackingsimulators}
 
  Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
-can be used to express probabilistic models and consequently perform automated inference thereon. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{geyer1992practical}, Variational Inference~(VI)\cite{ranganath2014black} and Deep Neural Networks~(DNN)\cite{Goodfellow:2016:DL:3086952},  can be used out-of-the-box by non-experts. 
-
+can be used to express probabilistic models and consequently perform automated inference these. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{}, Variational Inference~(VI)\cite{} and Deep Neural Networks~(DNN)\cite{},  can be used by non-experts in an automated fashion. 
  
-\paragraph{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures, which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{schaling2011boost}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator.
+\textit{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator.
 
-The PPS and the simulator exchange xTensor objects \url{https://xtensor.readthedocs.io/en/latest/} through TCP or ICP using a generic FlatBuffers \url{http://google.github.io/flatbuffers/} protocol. On the PPS side, sampling is done using the deep learning framework PyTorch \cite{paszke2017automatic}.
+The PPS and the simulator exchange xTensor objects \cite{} through TCP or ICP using a generic FlatBuffers \cite{TODO} protocol. On the PPS side, sampling is done using the deep learning framework PyTorch \cite{}.
 
 After a variable has been sampled, it is sent to the PPS using \textit{pyprob\_cpp::sample}, alongside with its simulator source trace. This allows the PPS to construct sample trace probabilities and other summary statistics (cf. Section \ref{sec:casestudy}). 
-
 Finally, the entry point to the simulator, i.e. \textit{main} in C++, is replaced by a special \textit{forward} call, in this case \textit{pyprob\_cpp::forward}.
 This allows the PPS to generate roll outs from the simulator remotely. 
 
-\paragraph{Population-based simulators} In contrast to the setup used by \cite{baydin2018efficient}, who interface a particle physics simulator that creates a single trace per \textit{forward} call, a population-based simulator creates a trace per population member. This means that e.g. in EMOD, a standard scenario simulation rollout over the span of $3$ years  
-with a population of size $n=5000$ \cite{smith2008towards} will generate about $ \SI{4}{\tera\byte}$ of raw trace data. Unlike with \citep{baydin2018efficient}, this amount of data cannot possibly be kept in RAM, which makes \textit{a posteriori} trace analysis very inefficient. 
+\paragraph{Population-based simulators} In contrast to the setup used by \cite{Baydin}, who interface a particle physics simulator that creates a single trace per \textit{forward} call, a population-based simulator creates a trace per population member. This means that e.g. in EMOD, a standard scenario simulation rollout over the span of $3$ years  
+with a population of size $n=5000$ \cite{smith} will generate about $ \SI{4}{\tera\byte}$ of raw trace data. Unlike with \citep{Baydin}, this amount of data cannot possibly be kept in RAM, which makes \textit{a posteriori} trace analysis very inefficient. 
 In order to deal with the shortcomings of \textit{pyprob} in a population-based simulator context, we therefore extend the framework to be able to do trace analysis on the fly.
 
 By extending \textit{pyprob} to handle population-based simulators, the PPS can now track all stochastic random variables that are created within the simulator, which then allows us to generate trace plots and path probabilities associated to the execution paths of the program.
 The corresponding increase of simulator transparency helps reinstate much needed trust between policymakers and evidence-based methods.
-
 
 %As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
 %
@@ -542,7 +546,14 @@ Ensemble methods are commonly used in statistics in order to combine the predict
 
 In the following, we illustrate how our method introduces a novel introspection paradigm. By extracting trace graphs from population-based simulators, policymakers can ask specific questions about intrinsic properties of the model trace flow. 
 
-To illustrate the above, we present simulation output generated from a scenario resembling local conditions in the town of Ifakara (Tanzania). Both EMOD and OpenMalaria are configured to simulate a single population node of $n=100$ and assume constant climatic conditions and no migration over the simulation period of $3$ years.
+To illustrate the above, we present simulation output generated from a scenario resembling local conditions in the town of Ifakara (Tanzania). Both EMOD and OpenMalaria are configured to simulate a single population node of $n=100$ and assume constant climatic conditions and no migration over the simulation period of $3$ years. Please refer to Figure \ref{fig:EIR} for the seasonal Entomological Inoculation Rate (EIR), a measure of infectivity.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth/2]{../plots/EIR_Ifakara.pdf}
+	\caption{Seasonal Entomological Inoculation Rate (EIR) for the Ifakara scenario. Data is averaged over $30$ day periods.}
+	\label{fig:EIR}
+\end{figure}
 
 We provide examples of the generated trace plots from the connection between the simulator and the PPS in Figure~\ref{fig:plotewan}. 
 When comparing the two trace plots between EMOD and OpenMalaria we see significant differences, despite both evaluating the same model for the same disease. 
@@ -550,7 +561,7 @@ When comparing the two trace plots between EMOD and OpenMalaria we see significa
 We can see from the addressing schemes $A_1, \ldots, A_N$ \ref{table:addresses}\ref{table:asingleaddress} what physical events are connected to each other and how outputs in EMOD are generated from a different set of procedures as compared to OpenMalaria 
 By having access to such diagrams users can internally evaluate and scrutinize the decisions that the simulator is making.
 
-This is incredibly important for policy makers, or non-experts, as it not only details how we arrive at the given outputs, but it provides an understanding of which processes were most crucial in determining those outputs as can be seen from the path probabilities assigned to each of the vertices.
+This is incredibly important for policymakers, or general non-experts, as it not only details how we arrive at the given outputs, but it provides an understanding of which processes were most crucial in determining those outputs as can be seen from the path probabilities assigned to each of the vertices. 
 
 Additionally, by associating nodes in trace graphs representing the same physical processes within different models, the significance of model detail can be evaluated. This could help developers better control model complexity, even dynamically during execution.
 
