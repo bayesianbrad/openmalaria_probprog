@@ -1,9 +1,17 @@
-This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
+This is BibTeX, Version 0.99d (TeX Live 2018)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: icml2019.bst
 Database file #1: malaria.bib
 Database file #2: refs.bib
+Repeated entry---line 210 of file refs.bib
+ : @inproceedings{gordon2014probabilistic
+ :                                       ,
+I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for ""
+Warning--I didn't find a database entry for "TODO"
+Warning--I didn't find a database entry for "Baydin"
+Warning--I didn't find a database entry for "smith"
 Warning--empty journal in autino_epidemiology_2012
 Warning--empty year in autino_epidemiology_2012
 Warning--empty year in autino_epidemiology_2012
@@ -13,46 +21,49 @@ Warning--empty journal in mwendera_challenges_2019
 Warning--empty year in mwendera_challenges_2019
 Warning--empty year in mwendera_challenges_2019
 Warning--empty journal in refugees_2030
+Warning--empty journal in smith_ensemble_2012
+Warning--empty year in smith_ensemble_2012
+Warning--empty year in smith_ensemble_2012
 Warning--empty journal in un_sustainable2018
-You've used 16 entries,
+You've used 18 entries,
             2773 wiz_defined-function locations,
-            710 strings with 8835 characters,
-and the built_in function-call counts, 9328 in all, are:
-= -- 782
-> -- 745
-< -- 9
-+ -- 253
-- -- 237
-* -- 853
-:= -- 1504
-add.period$ -- 65
-call.type$ -- 16
-change.case$ -- 122
-chr.to.int$ -- 16
-cite$ -- 42
-duplicate$ -- 349
-empty$ -- 610
-format.name$ -- 255
-if$ -- 1889
+            729 strings with 9572 characters,
+and the built_in function-call counts, 11291 in all, are:
+= -- 969
+> -- 886
+< -- 12
++ -- 300
+- -- 282
+* -- 1015
+:= -- 1780
+add.period$ -- 77
+call.type$ -- 18
+change.case$ -- 143
+chr.to.int$ -- 18
+cite$ -- 49
+duplicate$ -- 427
+empty$ -- 737
+format.name$ -- 302
+if$ -- 2325
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 18
-newline$ -- 102
-num.names$ -- 64
-pop$ -- 245
+missing$ -- 20
+newline$ -- 115
+num.names$ -- 72
+pop$ -- 302
 preamble$ -- 1
-purify$ -- 107
+purify$ -- 126
 quote$ -- 0
-skip$ -- 282
+skip$ -- 350
 stack$ -- 0
-substring$ -- 247
-swap$ -- 31
-text.length$ -- 3
+substring$ -- 344
+swap$ -- 62
+text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 166
-warning$ -- 10
-while$ -- 65
+type$ -- 188
+warning$ -- 13
+while$ -- 79
 width$ -- 0
-write$ -- 238
-(There were 10 warnings)
+write$ -- 271
+(There was 1 error message)
