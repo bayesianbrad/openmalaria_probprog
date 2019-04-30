@@ -1,8 +1,10 @@
-This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
+This is BibTeX, Version 0.99d (TeX Live 2018)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: icml2019.bst
 Database file #1: malaria.bib
+Warning--entry type for "who_global_2015" isn't style-file defined
+--line 75 of file malaria.bib
 Database file #2: refs.bib
 Repeated entry---line 210 of file refs.bib
  : @inproceedings{gordon2014probabilistic
@@ -22,45 +24,45 @@ Warning--empty journal in smith_ensemble_2012
 Warning--empty year in smith_ensemble_2012
 Warning--empty year in smith_ensemble_2012
 Warning--empty journal in un_sustainable2018
-You've used 20 entries,
+You've used 21 entries,
             2773 wiz_defined-function locations,
-            733 strings with 9865 characters,
-and the built_in function-call counts, 12376 in all, are:
-= -- 1046
-> -- 989
-< -- 13
-+ -- 335
-- -- 315
-* -- 1107
-:= -- 1958
-add.period$ -- 83
-call.type$ -- 20
-change.case$ -- 159
-chr.to.int$ -- 20
-cite$ -- 53
-duplicate$ -- 471
-empty$ -- 810
-format.name$ -- 337
-if$ -- 2543
+            737 strings with 9994 characters,
+and the built_in function-call counts, 12673 in all, are:
+= -- 1072
+> -- 999
+< -- 14
++ -- 339
+- -- 318
+* -- 1122
+:= -- 2003
+add.period$ -- 86
+call.type$ -- 21
+change.case$ -- 163
+chr.to.int$ -- 21
+cite$ -- 55
+duplicate$ -- 486
+empty$ -- 842
+format.name$ -- 341
+if$ -- 2607
 int.to.chr$ -- 1
 int.to.str$ -- 1
 missing$ -- 23
-newline$ -- 125
-num.names$ -- 80
-pop$ -- 344
+newline$ -- 130
+num.names$ -- 84
+pop$ -- 356
 preamble$ -- 1
-purify$ -- 141
+purify$ -- 144
 quote$ -- 0
-skip$ -- 384
+skip$ -- 398
 stack$ -- 0
-substring$ -- 348
-swap$ -- 65
+substring$ -- 350
+swap$ -- 66
 text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 205
+type$ -- 216
 warning$ -- 13
-while$ -- 85
+while$ -- 88
 width$ -- 0
-write$ -- 295
+write$ -- 307
 (There was 1 error message)

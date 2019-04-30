@@ -108,3 +108,21 @@ docker run --rm -it -p 2345:2345 -v $PWD/examples:/home/examples -v $PWD/code/op
 
 remember to add tcp://*:2345
 
+Using Singluarity instead
+=========================
+
+To convert a dockerfile to singularityfile run:
+
+pip install singularity
+
+Then in the terminal / commmand line run:
+
+spython recipe Dockerfile >> Singularity
+
+This will convert the Dockerfile to a singularity file and save the output as Singularity.
+
+We can also make use of pre-built docker containers, without having to install docker, by running 
+the following:
+
+singularity pull docker://bradleygh:openmalariapp
+

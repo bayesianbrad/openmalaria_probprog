@@ -1,4 +1,4 @@
-\begin{thebibliography}{20}
+\begin{thebibliography}{21}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -159,5 +159,11 @@ Staton, S., Yang, H., Wood, F., Heunen, C., and Kammar, O.
 \newblock The sustainable development goals report 2018.
 \newblock 2018.
 \newblock URL \url{https://doi.org/10.18356/7d014b41-en}.
+
+\bibitem[{WHO}(2015)]{who_global_2015}
+{WHO}.
+\newblock Global technical strategy for malaria 2016-2030, 2015.
+\newblock URL
+  \url{http://www.who.int/malaria/areas/global_technical_strategy/en/}.
 
 \end{thebibliography}
