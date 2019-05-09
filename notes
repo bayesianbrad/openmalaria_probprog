@@ -104,9 +104,20 @@ Seems very inefficient, but that is the way in whcih the simulator is set up.
 Running OM simulator with Pyprob
 ================================
 
+Mac
+===
 docker run --rm -it -p 2345:2345 -v $PWD/examples:/home/examples -v $PWD/code/openmalaria-schema-39.0/:/code/openmalaria bradleygh/openmalariapp
 
-remember to add tcp://*:2345
+add when calling ./openmalaria
+$ ./openMalaria tcp://*:2345 
+
+Linux
+=====
+docker run --rm -it -v $PWD/examples:/home/examples -v $PWD/code/openmalaria-schema-39.0/:/code/openmalaria bradleygh/openmalariapp
+
+add when calling ./openmalaria
+$ ./openMalaria icp://@<some_string>
+
 
 Using Singluarity instead
 =========================
