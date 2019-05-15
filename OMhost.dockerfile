@@ -11,8 +11,12 @@ RUN cd /code && git clone --branch 0.13.1 https://github.com/QuantStack/xtensor-
 
 RUN cd /code && git clone --branch master https://github.com/bradleygramhansen/pyprob_cpp.git && cd pyprob_cpp && mkdir build && cd build && cmake ../src && cmake --build . && make install
 
+ADD code/openmalaria /code/openmalaria
+RUN cd /code/openmalaria && mkdir build && cd build && cmake ..
+RUN cd /code/openmalaria/build && make -j4
+#RUN cd /code/openmalaria/build && ctest -j4
+
 RUN pip3 install https://download.pytorch.org/whl/cpu/torch-1.0.1.post2-cp36-cp36m-linux_x86_64.whl
 RUN pip3 install torchvision jupyter
 
 RUN cd /code && git clone https://github.com/bradleygramhansen/pyprob.git && cd pyprob && pip3 install .
-

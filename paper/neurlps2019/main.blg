@@ -3,44 +3,60 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: plain.bst
 Database file #1: refs.bib
-You've used 9 entries,
+Repeated entry---line 214 of file refs.bib
+ : @inproceedings{gordon2014probabilistic
+ :                                       ,
+I'm skipping whatever remains of this entry
+Database file #2: malaria.bib
+Warning--I didn't find a database entry for ""
+Warning--empty journal in autino_epidemiology_2012
+Warning--empty year in autino_epidemiology_2012
+Warning--empty year in ferris_openmalaria_2015
+Warning--empty journal in mwendera_challenges_2019
+Warning--empty year in mwendera_challenges_2019
+Warning--empty school in rainforth2017automating
+Warning--empty year in rainforth2017automating
+Warning--empty journal in smith_ensemble_2012
+Warning--empty year in smith_ensemble_2012
+You've used 19 entries,
             2118 wiz_defined-function locations,
-            556 strings with 5797 characters,
-and the built_in function-call counts, 3759 in all, are:
-= -- 364
-> -- 209
-< -- 4
-+ -- 84
-- -- 74
-* -- 274
-:= -- 614
-add.period$ -- 30
-call.type$ -- 9
-change.case$ -- 60
+            617 strings with 8457 characters,
+and the built_in function-call counts, 8387 in all, are:
+= -- 772
+> -- 572
+< -- 6
++ -- 229
+- -- 208
+* -- 686
+:= -- 1418
+add.period$ -- 64
+call.type$ -- 19
+change.case$ -- 154
 chr.to.int$ -- 0
-cite$ -- 9
-duplicate$ -- 140
-empty$ -- 269
-format.name$ -- 74
-if$ -- 791
+cite$ -- 28
+duplicate$ -- 270
+empty$ -- 532
+format.name$ -- 208
+if$ -- 1694
 int.to.chr$ -- 0
-int.to.str$ -- 9
-missing$ -- 12
-newline$ -- 48
-num.names$ -- 18
-pop$ -- 74
+int.to.str$ -- 19
+missing$ -- 21
+newline$ -- 99
+num.names$ -- 38
+pop$ -- 179
 preamble$ -- 1
-purify$ -- 53
+purify$ -- 138
 quote$ -- 0
-skip$ -- 101
+skip$ -- 183
 stack$ -- 0
-substring$ -- 218
-swap$ -- 42
-text.length$ -- 4
+substring$ -- 405
+swap$ -- 66
+text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 30
-warning$ -- 0
-while$ -- 31
-width$ -- 10
-write$ -- 103
+type$ -- 70
+warning$ -- 9
+while$ -- 63
+width$ -- 21
+write$ -- 209
+(There was 1 error message)

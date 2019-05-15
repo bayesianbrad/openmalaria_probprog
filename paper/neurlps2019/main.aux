@@ -16,33 +16,82 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\citation{landau_binder_2014}
-\citation{jackel2002monte}
-\citation{evensen1994sequential}
-\citation{smith2008towards}
-\citation{gordon2014probabilistic,Goodman08church:a}
+\citation{baydin2018efficient}
+\citation{baydin2018efficient}
 \citation{le-2016-inference}
-\citation{world2016world}
+\citation{ferris_openmalaria_2015}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}}
+\citation{bingham2019pyro}
+\citation{rainforth2017automating}
 \citation{baydin2018efficient}
 \newlabel{sec:related}{{1}{2}{Introduction}{section.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Epidemiology Simulators and Probabilistic Programming}{2}{section.2}}
 \newlabel{sec:background}{{2}{2}{Epidemiology Simulators and Probabilistic Programming}{section.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Methodology}{2}{section.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Connecting a Stochastic Simulator to a Probabilistic Programming System}{2}{subsection.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Extending Probabilistic Programming Protocols}{2}{subsection.3.2}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces How to perform posterior inference over a stochastic simulator with }}{2}{algorithm.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Types of Models and Probabilistic Programming Languages}{2}{section.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Methodology}{2}{section.4}}
+\citation{landau_binder_2014}
+\citation{jackel2002monte}
+\citation{evensen1994sequential}
+\citation{smith2008towards}
+\citation{cameron2015defining,autino_epidemiology_2012,smith2008towards,bershteyn2018implementation}
+\citation{mwendera_challenges_2019,ferris_openmalaria_2015}
+\citation{bershteyn2018implementation}
+\citation{smith2008towards}
+\citation{gordon2014probabilistic,staton2016semantics,kozen1979semantics}
+\citation{}
+\citation{}
+\citation{}
+\citation{schaling2011boost}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Simulating Diseases}{3}{section.5}}
+\newlabel{sec:background}{{5}{3}{Simulating Diseases}{section.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Experiments}{3}{section.6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Epidemiology Simulators}{3}{subsection.6.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Hijacking Simulators}{3}{section.7}}
+\newlabel{sec:hijackingsimulators}{{7}{3}{Hijacking Simulators}{section.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Hijacking a simulator}{3}{section*.1}}
+\citation{paszke2017automatic}
+\citation{baydin2018efficient}
+\citation{smith2008towards}
+\citation{baydin2018efficient}
+\citation{cameron2015defining,smith_ensemble_2012}
+\citation{bershteyn2018implementation}
+\citation{smith2008towards}
+\citation{smith_ensemble_2012}
+\newlabel{fig:how}{{7}{4}{Population-based simulators}{section*.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces This flow-chart provides an overview of the process of how our system hijacks a generic population-based epidemiology simulator, such as EMOD, and how we modify the simulator to to hijack the random number generator (RNG).}}{4}{figure.1}}
+\@writefile{toc}{\contentsline {paragraph}{Population-based simulators}{4}{section*.2}}
+\citation{baydin2018efficient}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Case Study: Ifakara (Tanzania)}{5}{section.8}}
+\newlabel{sec:casestudy}{{8}{5}{Case Study: Ifakara (Tanzania)}{section.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Seasonal Entomological Inoculation Rate (EIR) for the Ifakara scenario. Data is averaged over $30$ day periods.}}{5}{figure.2}}
+\newlabel{fig:EIR}{{2}{5}{Seasonal Entomological Inoculation Rate (EIR) for the Ifakara scenario. Data is averaged over $30$ day periods}{figure.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Discussions and Future Work}{5}{section.9}}
 \bibstyle{plain}
-\bibdata{refs}
-\bibcite{baydin2018efficient}{{1}{}{{}}{{}}}
-\bibcite{evensen1994sequential}{{2}{}{{}}{{}}}
-\bibcite{Goodman08church:a}{{3}{}{{}}{{}}}
-\bibcite{gordon2014probabilistic}{{4}{}{{}}{{}}}
-\bibcite{jackel2002monte}{{5}{}{{}}{{}}}
-\bibcite{landau_binder_2014}{{6}{}{{}}{{}}}
-\bibcite{le-2016-inference}{{7}{}{{}}{{}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Add something. Population 10}}{3}{figure.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Add something. Population 100}}{3}{figure.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Results}{3}{section.4}}
-\bibcite{world2016world}{{8}{}{{}}{{}}}
-\bibcite{smith2008towards}{{9}{}{{}}{{}}}
+\bibdata{refs,malaria}
+\bibcite{autino_epidemiology_2012}{{1}{}{{}}{{}}}
+\bibcite{baydin2018efficient}{{2}{}{{}}{{}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Here we run two equivalent models, compare the corresponding trace paths and corresponding path probabilities taken by the thousands of random variables generated internally within the simulators. \textit  {\textbf  {Top:}} The specified model run in EMOD. \textit  {\textbf  {Bottom:}} The specified model in OpenMalaria.}}{6}{figure.3}}
+\newlabel{fig:plotewan}{{3}{6}{Here we run two equivalent models, compare the corresponding trace paths and corresponding path probabilities taken by the thousands of random variables generated internally within the simulators. \textit {\textbf {Top:}} The specified model run in EMOD. \textit {\textbf {Bottom:}} The specified model in OpenMalaria}{figure.3}{}}
+\newlabel{table:asingleaddress}{{8}{6}{Case Study: Ifakara (Tanzania)}{figure.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces An example of an address generated for the model run in the OpenMalaria simulator. We can see that A1 relates to Generating a member of the human population who may or may not be infect with the Malaria disease. We get something similar for EMOD, except this relates to A7 in the EMOD program execution.}}{6}{table.1}}
+\bibcite{bershteyn2018implementation}{{3}{}{{}}{{}}}
+\bibcite{bingham2019pyro}{{4}{}{{}}{{}}}
+\bibcite{cameron2015defining}{{5}{}{{}}{{}}}
+\bibcite{evensen1994sequential}{{6}{}{{}}{{}}}
+\bibcite{ferris_openmalaria_2015}{{7}{}{{}}{{}}}
+\bibcite{gordon2014probabilistic}{{8}{}{{}}{{}}}
+\bibcite{jackel2002monte}{{9}{}{{}}{{}}}
+\bibcite{kozen1979semantics}{{10}{}{{}}{{}}}
+\bibcite{landau_binder_2014}{{11}{}{{}}{{}}}
+\bibcite{le-2016-inference}{{12}{}{{}}{{}}}
+\bibcite{mwendera_challenges_2019}{{13}{}{{}}{{}}}
+\bibcite{paszke2017automatic}{{14}{}{{}}{{}}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces An interpretation table for each of the address of the overall trace generated from the corresponding OpenMalaria model.}}{7}{table.2}}
+\newlabel{table:addresses}{{2}{7}{An interpretation table for each of the address of the overall trace generated from the corresponding OpenMalaria model}{table.2}{}}
+\bibcite{rainforth2017automating}{{15}{}{{}}{{}}}
+\bibcite{schaling2011boost}{{16}{}{{}}{{}}}
+\bibcite{smith2008towards}{{17}{}{{}}{{}}}
+\bibcite{smith_ensemble_2012}{{18}{}{{}}{{}}}
+\bibcite{staton2016semantics}{{19}{}{{}}{{}}}
 \providecommand\NAT@force@numbers{}\NAT@force@numbers

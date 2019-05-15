@@ -1,4 +1,9 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{autino_epidemiology_2012}
+Beatrice Autino, Alice Noris, Rosario Russo, and Francesco Castelli.
+\newblock Epidemiology of malaria in endemic areas.
+\newblock 4(1).
 
 \bibitem{baydin2018efficient}
 Atilim~Gunes Baydin, Lukas Heinrich, Wahid Bhimji, Bradley Gram-Hansen, Gilles
@@ -7,6 +12,29 @@ Atilim~Gunes Baydin, Lukas Heinrich, Wahid Bhimji, Bradley Gram-Hansen, Gilles
   standard model.
 \newblock {\em arXiv preprint arXiv:1807.07706}, 2018.
 
+\bibitem{bershteyn2018implementation}
+Anna Bershteyn, Jaline Gerardin, Daniel Bridenbecker, Christopher~W Lorton,
+  Jonathan Bloedow, Robert~S Baker, Guillaume Chabot-Couture, Ye~Chen, Thomas
+  Fischle, Kurt Frey, et~al.
+\newblock Implementation and applications of emod, an individual-based
+  multi-disease modeling platform.
+\newblock {\em Pathogens and disease}, 76(5):fty059, 2018.
+
+\bibitem{bingham2019pyro}
+Eli Bingham, Jonathan~P Chen, Martin Jankowiak, Fritz Obermeyer, Neeraj
+  Pradhan, Theofanis Karaletsos, Rohit Singh, Paul Szerlip, Paul Horsfall, and
+  Noah~D Goodman.
+\newblock Pyro: Deep universal probabilistic programming.
+\newblock {\em The Journal of Machine Learning Research}, 20(1):973--978, 2019.
+
+\bibitem{cameron2015defining}
+Ewan Cameron, Katherine~E Battle, Samir Bhatt, Daniel~J Weiss, Donal Bisanzio,
+  Bonnie Mappin, Ursula Dalrymple, Simon~I Hay, David~L Smith, Jamie~T Griffin,
+  et~al.
+\newblock Defining the relationship between infection prevalence and clinical
+  incidence of plasmodium falciparum malaria.
+\newblock {\em Nature communications}, 6:8170, 2015.
+
 \bibitem{evensen1994sequential}
 Geir Evensen.
 \newblock Sequential data assimilation with a nonlinear quasi-geostrophic model
@@ -14,22 +42,29 @@ Geir Evensen.
 \newblock {\em Journal of Geophysical Research: Oceans}, 99(C5):10143--10162,
   1994.
 
-\bibitem{Goodman08church:a}
-Noah~D. Goodman, Vikash~K. Mansinghka, Daniel~M. Roy, Keith Bonawitz, and
-  Joshua~B. Tenenbaum.
-\newblock Church: A language for generative models.
-\newblock In {\em In UAI}, pages 220--229, 2008.
+\bibitem{ferris_openmalaria_2015}
+Casey Ferris, Benoit Raybaud, and Gregory Madey.
+\newblock {OpenMalaria} and {EMOD}: A case study on model alignment.
+\newblock In {\em Proceedings of the Conference on Summer Computer Simulation},
+  {SummerSim} '15, pages 1--9. Society for Computer Simulation International.
+\newblock event-place: Chicago, Illinois.
 
 \bibitem{gordon2014probabilistic}
 Andrew~D Gordon, Thomas~A Henzinger, Aditya~V Nori, and Sriram~K Rajamani.
 \newblock Probabilistic programming.
-\newblock In {\em Proceedings of the on Future of Software Engineering}, pages
+\newblock In {\em Proceedings of the Future of Software Engineering}, pages
   167--181. ACM, 2014.
 
 \bibitem{jackel2002monte}
 P.~J{\"a}ckel.
 \newblock {\em Monte Carlo Methods in Finance}.
 \newblock The Wiley Finance Series. Wiley, 2002.
+
+\bibitem{kozen1979semantics}
+Dexter Kozen.
+\newblock Semantics of probabilistic programs.
+\newblock In {\em Foundations of Computer Science, 1979., 20th Annual Symposium
+  on}, pages 101--114. IEEE, 1979.
 
 \bibitem{landau_binder_2014}
 David~P. Landau and Kurt Binder.
@@ -44,10 +79,28 @@ Tuan~Anh Le, Atılım~Güneş Baydin, and Frank Wood.
   Proceedings of Machine Learning Research}, pages 1338--1348, Fort Lauderdale,
   FL, USA, 2017. PMLR.
 
-\bibitem{world2016world}
-World~Health Organization.
-\newblock {\em World malaria report 2015}.
-\newblock World Health Organization, 2016.
+\bibitem{mwendera_challenges_2019}
+Chikondi~A. Mwendera, Christiaan de~Jager, Herbert Longwe, Save Kumwenda,
+  Charles Hongoro, Kamija Phiri, and Clifford~M. Mutero.
+\newblock Challenges to the implementation of malaria policies in malawi.
+\newblock 19(1):194.
+
+\bibitem{paszke2017automatic}
+Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, Zachary
+  DeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer.
+\newblock Automatic differentiation in pytorch.
+\newblock In {\em NIPS-W}, 2017.
+
+\bibitem{rainforth2017automating}
+Tom Rainforth.
+\newblock {\em Automating Inference, Learning, and Design using Probabilistic
+  Programming}.
+\newblock PhD thesis.
+
+\bibitem{schaling2011boost}
+Boris Sch{\"a}ling.
+\newblock {\em The boost C++ libraries}.
+\newblock Boris Sch{\"a}ling, 2011.
 
 \bibitem{smith2008towards}
 T~Smith, N~Maire, A~Ross, M~Penny, N~Chitnis, A~Schapira, A~Studer, B~Genton,
@@ -55,5 +108,19 @@ T~Smith, N~Maire, A~Ross, M~Penny, N~Chitnis, A~Schapira, A~Studer, B~Genton,
 \newblock Towards a comprehensive simulation model of malaria epidemiology and
   control.
 \newblock {\em Parasitology}, 135(13):1507--1516, 2008.
+
+\bibitem{smith_ensemble_2012}
+Thomas Smith, Amanda Ross, Nicolas Maire, Nakul Chitnis, Alain Studer, Diggory
+  Hardy, Alan Brooks, Melissa Penny, and Marcel Tanner.
+\newblock Ensemble modeling of the likely public health impact of a
+  pre-erythrocytic malaria vaccine.
+\newblock 9(1):e1001157.
+
+\bibitem{staton2016semantics}
+Sam Staton, Hongseok Yang, Frank Wood, Chris Heunen, and Ohad Kammar.
+\newblock Semantics for probabilistic programming: higher-order functions,
+  continuous distributions, and soft constraints.
+\newblock In {\em Proceedings of the 31st Annual ACM/IEEE Symposium on Logic in
+  Computer Science}, pages 525--534. ACM, 2016.
 
 \end{thebibliography}
