@@ -63,8 +63,8 @@ xt::xarray<double> forward() {
         // Save changes to the document if any occurred.
         documentLoader.saveDocument();
 
-        if ( !util::CommandLine::option(util::CommandLine::SKIP_SIMULATION) )
-            simulator.start(documentLoader.document().getMonitoring());
+//        if ( !util::CommandLine::option(util::CommandLine::SKIP_SIMULATION) )
+        simulator.start(documentLoader.document().getMonitoring());
 
         // Write scenario checksum, only if simulation completed.
         // Writing it earlier breaks checkpointing.

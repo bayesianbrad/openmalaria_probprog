@@ -188,7 +188,7 @@ const Diagnostic& diagnostics::get( const string& name ){
 
 const Diagnostic& diagnostics::make_deterministic(double minDens){
     string name = "";   // anything not matching an existing name is fine
-    assert( diagnostic_set.count(name) == 0 );  // we shouldn't need to call make_deterministic more than once, so I think this will do
+//    assert( diagnostic_set.count(name) == 0 );  // we shouldn't need to call make_deterministic more than once, so I think this will do
     Diagnostic *diagnostic = new Diagnostic( minDens );
     diagnostic_set.insert( name, diagnostic );
     return *diagnostic;

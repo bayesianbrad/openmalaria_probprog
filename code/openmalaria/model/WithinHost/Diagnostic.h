@@ -75,7 +75,8 @@ public:
     static const Diagnostic& get( const std::string& name );
     
     /** Make a new diagnostic with deterministic density and return a reference. */
-    static const Diagnostic& make_deterministic( double minDens );
+    static const Diagnostic&
+    make_deterministic( double minDens );
 
     /// Static access functions
 
