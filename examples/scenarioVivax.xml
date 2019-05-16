@@ -30,18 +30,18 @@
       <option name="nExpectd" value="true"/>
       <option name="nPatent" value="true"/>
       <option name="totalInfs" value="true"/>
-      <option name="nTransmit" value="true"/>
-      <option name="totalPatentInf" value="true"/>
-      <option name="nTreatments1" value="true"/>
-      <option name="nTreatments2" value="true"/>
-      <option name="nTreatments3" value="true"/>
-      <option name="nUncomp" value="true"/>
-      <option name="nSevere" value="true"/>
-      <option name="nIndDeaths" value="true"/>
-      <option name="nDirDeaths" value="true"/>
-      <option name="annAvgK" value="true"/>
-      <option name="nLiverStageTreatments" value="true"/>
-      <option name="nTreatDiagnostics"/>
+      <!--<option name="nTransmit" value="true"/>-->
+      <!--<option name="totalPatentInf" value="true"/>-->
+      <!--<option name="nTreatments1" value="true"/>-->
+      <!--<option name="nTreatments2" value="true"/>-->
+      <!--<option name="nTreatments3" value="true"/>-->
+      <!--<option name="nUncomp" value="true"/>-->
+      <!--<option name="nSevere" value="true"/>-->
+      <!--<option name="nIndDeaths" value="true"/>-->
+      <!--<option name="nDirDeaths" value="true"/>-->
+      <!--<option name="annAvgK" value="true"/>-->
+      <!--<option name="nLiverStageTreatments" value="true"/>-->
+      <!--<option name="nTreatDiagnostics"/>-->
     </SurveyOptions>
     <surveys diagnostic="standard">
       <surveyTime repeatStep="1y" repeatEnd="1371-1-11">1351-1-6</surveyTime>
