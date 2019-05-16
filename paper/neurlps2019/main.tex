@@ -167,20 +167,27 @@ We, in this work, extend that framework to encompass population-based simulators
 \end{abstract}
 
 \section{Introduction}
-
+\label{sec:intro}
+\bg{The audience is a probabilistic programming audience - so that is what we will target}
 
 \begin{itemize}
 
-\item Outline the objectives
-\item State the importance of interpretability in the inference of the simulator
-\item Our system enables one to understand and interpret the most common paths in a program (simulation).
-\item In highlighting this a practitioner can then go back to the field and explore that parameter/s in more depth.
-\item This facilitates understanding and the construction of more detailed models and data collection strategies
+\item Talk about a goal of probabilistic programming is to simultaneously simulate and perform inference on models conditioned on the observations. Although universal ppls have the ability to do this, they are constrained because the simulator has to be re-written as a program inside that system; this is both infeasible for sufficiently large simulators and inefficient. It would however be much more efficient to turn simulators into probabilistic programs... then talk briefly about the foundations created by baydin et al. (2 paragraphs)
+\item Talk about the large body of simulators out there and briefly talk about the types of simulators
+i.e population-based, event-based, single-object based and so fourth. {1 paragraph}
+\item Talk, high level, about the notion of a posterior in terms of traces either add stuff from tom's thesis or directly cite. (1 paragraph)
+\item Talk about the experiments we perform (high- level)
 
 
 \end{itemize}
 
-\bg{The audience is a probabilistic programming audience - so that is what we will target}
+
+\bg{This is not an intro - it is a collection of statements - will re-write later}
+
+
+Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Since the development happens over several decades, usually without documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
+Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular epidemiology simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. We provide examples of both in Section~\textbf{TO ADD REF}.
+
 
 In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{baydin2018efficient} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP) \cite{le-2016-inference}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
 
@@ -204,118 +211,77 @@ the vast array of existing simulators used throughout the sciences,
 thereby providing wide-ranging impacts across a number of fields.
 
 This paper first gives an overview of existing Malaria simulators (Section \ref{sec:background}), and proceed by introducing the necessary background on the \textit{pyprob} framework and the concept of universal probabilistic programming (Section \ref{sec:hijackingsimulators}). Our approach is then demonstrated and analysed in the context of a Malaria case study (Section \ref{sec:casestudy}). 
-\label{sec:related}
 
+\section{Background}
+\label{sec:backgorund}
 
-\section{Epidemiology Simulators and Probabilistic Programming}
-\label{sec:background}
-This will kind of be like a background section. 
-
-
-  \begin{algorithm}
-   \caption{How to perform posterior inference over a stochastic simulator with 
-   }
-    \begin{algorithmic}[1]
-      \Function{Merge}{$A,p,q,r$}\Comment{Where A - array, p - left, q - middle, r - right}
-
-        \State replace raw samples statements 
-        \State ${n_2} = r - q$
-        \State Create Containerized Environment
-        \For{$i = 1$ to ${n_1}$}
-            \State $L[i] = A[p + i - 1]$
-        \EndFor
-        \For{$j = 1$ to ${n_2}$}
-            \State $R[i] = A[q + j]$
-        \EndFor
-        \State $L[{n_1} + 1] =  \infty $
-        \State $R[{n_2} + 1] =  \infty $
-        \State $i = 1$
-       \EndFunction
-
-\end{algorithmic}
-\end{algorithm}
-
-
-\section{Types of Models and Probabilistic Programming Languages}
-
-To bridge the gap between the statistics and machine learning community to the probabilistic programming community we provide a useful overview to expose our ideas more concretely. 
-
-Probabilistic programming languages, broadly speaking\footnote{For a more comprehensive overview see \cite{rainforth2017automating}}, can be classfied into three categories, each type of langauge extends a particular model space, enabling an increasingly complex set models to be represented as programs, but in doing so the notion of posterior and what it means to do inference over the model, at least in a stastically traditional sense, can change.
-% \begin{figure}
-% \centering
-% \includegraphics[]{../models/types_of_pp.png}
-% \end{figure}
-The first type of langauges are called first-order languages where the priors are well defined and the \textit{joint} program density constructed via the program directly represent the unormalised stastical joint density $p(x,y)$
-\section{Methodology}
- TODO
-
-
-
-Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Since the development happens over several decades, usually without documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular epidemiology simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in\footnote{The framework currently supports 9 popular languages, but there is nothing to stop this being extended to any language of interest.}. In addition to this, we can understand the structure of programs in simulators for both decoding \emph{black-box structures} and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. We provide examples of both in Section~\textbf{TO ADD REF}.
-
-\section{Simulating Diseases}
- \label{sec:background}
-
-% Stochastic simulators are common across a number of domains, statistical physics~\cite{landau_binder_2014}, financial modeling~\cite{jackel2002monte},
-% weather prediction~\cite{evensen1994sequential}, epidemiology~\cite{smith2008towards} and many others. 
-% An advantage of using stochastic simulators is that they provide a level of interpretability not found in modern deep learning settings, as they directly incorporate model structure from carefully reasoned observations and experiments. In addition to this, 
-
+\begin{itemize}
+\item Paragraph on Probabilistic programming
+\item Paragraph on Simulators keep high-level focus on pop sims later
+\item Paragraph on Baydin et al
+\end{itemize}
 In-silico simulators have become a crucial tool in evidence-based decision-making within a large number of disciplines, including statistical physics~\cite{landau_binder_2014}, financial modeling~\cite{jackel2002monte},
 weather prediction~\cite{evensen1994sequential}, epidemiology~\cite{smith2008towards} and many others.
 In many cases, simulation output can augment or even replace real data that may otherwise be costly or even impossible to generate.
 Recent advances in hardware have enabled simulations to model increasingly complex systems.
 Epidemiology studies the prevalence and spreading of diseases across populations. Recent advances in hardware have enabled simulations to model the dynamics of infectious diseases, such as Malaria, in ever greater detail.
 
-\section{Experiments}
-\subsection{Epidemiology Simulators}
-
-Malaria epidemiology is governed by a complex set of drivers, 
-few of which can be understood in isolation \cite{cameron2015defining,autino_epidemiology_2012,smith2008towards,bershteyn2018implementation}.
-These include within-host dynamics, population-specific traits and even local geography.
-Comprehensive modeling of all of these components remains challenging, particularly in a region-specific context. 
-Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{mwendera_challenges_2019,ferris_openmalaria_2015}.
-
-Two the most advanced Malaria simulators, namely EMOD~\cite{bershteyn2018implementation} and OpenMalaria  \cite{smith2008towards}, have proven to be particularly valuable to policymakers.
-OpenMalaria is based on microsimulations of Plasmodium falciparum in humans and was originally developed to simulate the impacts of malaria vaccines within simple villages or districts
-Compared with OpenMalaria, EMOD is able to simulate a variety of additional drivers, including complex geographies complete with migration and a large number of policy interventions
-Both EMOD and OpenMalaria are open source and implemented in C++.
-
-\bg{Add linking stuff now to the toy-example where hopefully we can perform inference and }
+Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
+can be used to express probabilistic models and consequently perform automated inference these. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{}, Variational Inference~(VI)\cite{} and Deep Neural Networks~(DNN)\cite{},  can be used by non-experts in an automated fashion. 
+ 
 
 
-% Simulators provide users with the ability to model complex environments and problems in a black-box way, enabling new insights to be generated and predictions to be made. A simulator typically encodes several years, if not decades, of research and development and so by their very nature are structurally complicated. 
 
+% \section{Types of Models and Probabilistic Programming Languages}
 
-% Within the context of epidemiology simulators we can model the treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made on a set of field observations. Such scenarios in practices would be 
+% To bridge the gap between the statistics and machine learning community to the probabilistic programming community we provide a useful overview to expose our ideas more concretely. 
 
-
-% This enables practitioners to model a wide array of different scenarios at ease.
-% However, since the development happens over several years, or decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
-%
-
-% Two prominent simulators for modeling Malaria are OpenMalaria~\cite{smith2008towards} and Emod~\cite{bershteyn2018implementation}, which are used by practitioners to model several aspects of the Malaria disease.
-
-%  \paragraph*{OpenMalaria} 
-% is an open-source simulator funded by the Gates Foundation to model different aspects of the malaria prevention and treatment cycle for varying population dynamics.
-%  Users specify models in OpenMalaria via a scenario file, in the form of an XML document, which determines the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
-% The scenario file encodes all input and output parameters, some of which we wish to simulate, others remain fixed. 
-
-% \paragraph{EMOD} provides the modularity and structural flexibility necessary for modeling multiple infectious diseases at the within-host and population level. 
-% EMOD can be used to model HIV, Tuberculosis, Malaria and generic diseases, but for the purposes of the comparison, we just focus on Malaria. 
-% To specify models in EMOD a configuration file is written by the user, which is in the form of a JSON and provides similar functionality to OpenMalaria, in terms of what can be specified and the outputs that it produces. 
-
-
-% In both these well used simulators users are accustomed to writing their models as either XML, or JSON files and so it is important that any system built around this framework enables the models to be inputted in the same format, without requiring the users to learn how to use a new set of protocols. Our system facilitates this as we shall discuss in the proceeding sections.  
-
+% Probabilistic programming languages, broadly speaking\footnote{For a more comprehensive overview see \cite{rainforth2017automating}}, can be classfied into three categories, each type of langauge extends a particular model space, enabling an increasingly complex set models to be represented as programs, but in doing so the notion of posterior and what it means to do inference over the model, at least in a stastically traditional sense, can change.
+% % \begin{figure}
+% % \centering
+% % \includegraphics[]{../models/types_of_pp.png}
+% % \end{figure}
+% The first type of langauges are called first-order languages where the priors are well defined and the \textit{joint} program density constructed via the program directly represent the unormalised stastical joint density $p(x,y)$
+% \section{Methodology}
+%  TODO
 
 
 \section{Hijacking Simulators}
-\label{sec:hijackingsimulators}
 
- Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
-can be used to express probabilistic models and consequently perform automated inference these. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{}, Variational Inference~(VI)\cite{} and Deep Neural Networks~(DNN)\cite{},  can be used by non-experts in an automated fashion. 
- 
-\paragraph{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures, which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{schaling2011boost}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator.
+\paragraph{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures, which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{schaling2011boost}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator. \bg{This will be extended}
+
+
+ \label{sec:methods}
+
+  \begin{algorithm}
+   \caption{How to perform posterior inference over a stochastic simulator with 
+   }
+    \begin{algorithmic}[1]
+      \Function{Convert Simulator to a Probabilistic Program}{$A$}\Comment{}
+
+        \State replace raw samples statements $f_{t}(x_{t} | \eta_{t}) $
+        \State Create thin wrapper
+        \State Create Containerized Environment $C_{i}$
+        \State Create Connection
+        \State Run Program
+       \EndFunction
+       \Function{Create thin wrapper}{$f_{t}(x_{t} | \eta_{t})$}
+       \State to add
+       \EndFunction
+       \Function{Create Containerized Environment }{$\Delta_{i}$}\Comment{Where $\Delta_{i}$ is one of $i$-th dependencies}
+       \State to add
+       \EndFunction
+
+
+\end{algorithmic}
+\end{algorithm}
+
+
+% Stochastic simulators are common across a number of domains, statistical physics~\cite{landau_binder_2014}, financial modeling~\cite{jackel2002monte},
+% weather prediction~\cite{evensen1994sequential}, epidemiology~\cite{smith2008towards} and many others. 
+% An advantage of using stochastic simulators is that they provide a level of interpretability not found in modern deep learning settings, as they directly incorporate model structure from carefully reasoned observations and experiments. In addition to this, 
+
+
 
 The PPS and the simulator exchange xTensor objects \url{https://xtensor.readthedocs.io/en/latest/} through TCP or ICP using a generic FlatBuffers \url{http://google.github.io/flatbuffers/} protocol. On the PPS side, sampling is done using the deep learning framework PyTorch \cite{paszke2017automatic}.
 
@@ -365,6 +331,48 @@ The corresponding increase of simulator transparency helps reinstate much needed
  %This is critical in several domains, especially in epidemiology. 
  %We provide examples of (1) in next Section~\ref{sec:casestudy} and discuss the latter in future work as extensions to the the current framework.
 
+\section{Experiments}
+\subsection{Epidemiology Simulators}
+
+Malaria epidemiology is governed by a complex set of drivers, 
+few of which can be understood in isolation \cite{cameron2015defining,autino_epidemiology_2012,smith2008towards,bershteyn2018implementation}.
+These include within-host dynamics, population-specific traits and even local geography.
+Comprehensive modeling of all of these components remains challenging, particularly in a region-specific context. 
+Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{mwendera_challenges_2019,ferris_openmalaria_2015}.
+
+Two the most advanced Malaria simulators, namely EMOD~\cite{bershteyn2018implementation} and OpenMalaria  \cite{smith2008towards}, have proven to be particularly valuable to policymakers.
+OpenMalaria is based on microsimulations of Plasmodium falciparum in humans and was originally developed to simulate the impacts of malaria vaccines within simple villages or districts
+Compared with OpenMalaria, EMOD is able to simulate a variety of additional drivers, including complex geographies complete with migration and a large number of policy interventions
+Both EMOD and OpenMalaria are open source and implemented in C++.
+
+\bg{Add linking stuff now to the toy-example where hopefully we can perform inference and }
+
+
+% Simulators provide users with the ability to model complex environments and problems in a black-box way, enabling new insights to be generated and predictions to be made. A simulator typically encodes several years, if not decades, of research and development and so by their very nature are structurally complicated. 
+
+
+% Within the context of epidemiology simulators we can model the treatment, infection and prevention cycle under a variety of different environmental conditions, enabling predictions to be made on a set of field observations. Such scenarios in practices would be 
+
+
+% This enables practitioners to model a wide array of different scenarios at ease.
+% However, since the development happens over several years, or decades, usually without comprehensive documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
+%
+
+% Two prominent simulators for modeling Malaria are OpenMalaria~\cite{smith2008towards} and Emod~\cite{bershteyn2018implementation}, which are used by practitioners to model several aspects of the Malaria disease.
+
+%  \paragraph*{OpenMalaria} 
+% is an open-source simulator funded by the Gates Foundation to model different aspects of the malaria prevention and treatment cycle for varying population dynamics.
+%  Users specify models in OpenMalaria via a scenario file, in the form of an XML document, which determines the specifics of a particular treatment, or prevention strategy, climatic factors, the demographics of the population and so forth. In addition to this, field observations can be encoded inside of, or externally to the scenario file. 
+% The scenario file encodes all input and output parameters, some of which we wish to simulate, others remain fixed. 
+
+% \paragraph{EMOD} provides the modularity and structural flexibility necessary for modeling multiple infectious diseases at the within-host and population level. 
+% EMOD can be used to model HIV, Tuberculosis, Malaria and generic diseases, but for the purposes of the comparison, we just focus on Malaria. 
+% To specify models in EMOD a configuration file is written by the user, which is in the form of a JSON and provides similar functionality to OpenMalaria, in terms of what can be specified and the outputs that it produces. 
+
+
+% In both these well used simulators users are accustomed to writing their models as either XML, or JSON files and so it is important that any system built around this framework enables the models to be inputted in the same format, without requiring the users to learn how to use a new set of protocols. Our system facilitates this as we shall discuss in the proceeding sections.  
+
+ 
 
 \begin{figure}
 \centering
@@ -465,8 +473,8 @@ The corresponding increase of simulator transparency helps reinstate much needed
 % \end{table}
 % As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
 %\bg{Add performance plot showing memory consumptions of pyprob and our new system.}
-
-\section{Case Study: Ifakara (Tanzania)}
+\subsection{Toy Model}
+\subsection{Real-world Example}
 \label{sec:casestudy}
 
 Ensemble methods are commonly used in statistics in order to combine the predictive power of multiple models \cite{cameron2015defining,smith_ensemble_2012}. To this end, recent work has attempted to characterise the similarities and differences between two of the most advanced Malaria epidemiology simulators, EMOD \cite{bershteyn2018implementation} and OpenMalaria \cite{smith2008towards}. Evaluation is usually done by comparing a number of output parameters across a range of hand-crafted standard scenarios reflecting different geographical locations across Africa~\cite{smith_ensemble_2012}.
