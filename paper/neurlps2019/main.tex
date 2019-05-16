@@ -144,15 +144,13 @@ Paper ID: }
 
 Probabilistic programming provides a way to perform statistical inference over simulations of events in a programmatic way.
 However, with the myriad of probabilistic programming systems (PPSs) and the complexities involved in running 
-each individual system, such as specifying a model in the given language and $\backslash$ or running inference, which means it can be difficult for users to take advantage of the system. 
-In addition to this, even though there exists a myriad of simulators across many scientific domains 
-and within industry, none can be used within existing PPSs without having to re-implement the simulator in the given PPS, something that is not typically feasible, nor practical.  
+each individual system, such as specifying a model in the given language, means that it can be difficult to re-implement the myriad of scientific and industrial simulators within an existing PPSs, something that is not typically feasible, nor practical.  
 However, recent work
 by \cite{baydin2018efficient} demonstrated a pathway for how to turn a particular
-type of simulator, written in a set of 9 languages, into a probabilistic program via the raw random
-number calls.
+type of event-based simulators into a probabilistic program. 
+% via the raw random number calls of the simulator.
  But, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs.
-We, in this work, extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling, financial modeling and so forth. In addition to this, we enable simulators written in 13 different languages to be easily converted in probabilistic programs, which we algorithmically outline. We demonstrate our PPS on a both a toy population simulator and two important malaria population-based simulators called OpenMalaria and EMOD. 
+We, in this work, extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling and financial modeling. In addition to this, we enable simulators written in 13 different languages to be easily converted in probabilistic programs, which we algorithmically outline. We demonstrate inference performed with our PPS on a both a toy population simulator and two important malaria population-based simulators called OpenMalaria and EMOD. 
 
 % Epidemiology simulations have become a fundamental tool in the fight
 % against the epidemics of various infectious diseases like AIDS and
@@ -182,8 +180,14 @@ i.e population-based, event-based, single-object based and so fourth. {1 paragra
 \end{itemize}
 
 
-\bg{This is not an intro - it is a collection of statements - will re-write later}
+Probabilistic programming\cite{gordon2014probabilistic} is paradigm that enables users to write models in a programmatic way. 
+The source code is then transformed into a program density, representing a joint density.
+By having direct access to the source code enables Probabilistic Programming Systems~(PPS)
+to analyse the model code in unique way, enabling posterior inference
+to be performed in an automated way, which makes PPSs flexible and adaptive.
 
+
+\bg{This is not an intro - it is a collection of statements - will re-write later}
 
 Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Since the development happens over several decades, usually without documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
 Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular epidemiology simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. We provide examples of both in Section~\textbf{TO ADD REF}.
