@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-docker build -t bradleygh/openmalariapprun .
+docker build OMhost.Dockerfile -t bradleygh/openmalariapp.
 if [ $? -eq 0 ]; then
-  docker push bradleygh/openmalariapprun
+  docker push bradleygh/openmalariapp
 fi
