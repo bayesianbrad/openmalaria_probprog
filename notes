@@ -51,7 +51,8 @@ How to run Jupyter inside Docker:
 
 For linux
 
-- docker run --rm -it -v $PWD:/home --net=host bradleygh/openmalariapp jupyter notebook --allow-root
+- docker run --rm -it -v $PWD:/home --net=host bradleygh/openmalariapp
+run the following inside the container:  jupyter notebook --allow-root
 
 
 For Mac
@@ -88,7 +89,7 @@ Running the simulator once an experiment has been created
 
 Debugging by modifying code outside Docker, but running inside
 ==============================================================
-docker run --rm -it --net=host -v $PWD/examples:/home/examples -v $PWD/code/openmalaria-schema-39.0/:/code/openmalaria bradleygh/openmalariapp
+docker run --rm -it --net=host -v $PWD/examples:/home/examples -v $PWD/code/openmalaria/:/code/openmalaria bradleygh/openmalariapp
 
 
 When building the prob prog version
@@ -106,14 +107,14 @@ Running OM simulator with Pyprob
 
 Mac
 ===
-docker run --rm -it -p 2345:2345 -v $PWD/examples:/home/examples -v $PWD/code/openmalaria-schema-39.0/:/code/openmalaria bradleygh/openmalariapp
+docker run --rm -it -p 2345:2345 -v $PWD/examples:/home/examples -v $PWD/code/openmalaria/:/code/openmalaria bradleygh/openmalariapp
 
 add when calling ./openmalaria
 $ ./openMalaria tcp://*:2345 
 
 Linux
 =====
-docker run --rm -it -v $PWD/examples:/home/examples -v $PWD/code/openmalaria-schema-39.0/:/code/openmalaria bradleygh/openmalariapp
+docker run --rm -it -v $PWD/examples:/home/examples -v $PWD/code/openmalaria/:/code/openmalaria bradleygh/openmalariapp
 
 add when calling ./openmalaria
 $ ./openMalaria icp://@<some_string>

@@ -231,7 +231,7 @@ namespace OM { namespace Monitoring {
     
     void ContinuousType::registerCallback (string optName, string titles,
             fastdelegate::FastDelegate1<ostream&> outputCb){
-        assert(registered.count(optName) == 0); // name clash/registered twice?
+        // This was ccommented out by bradley to allow for multiple successive traces: assert(registered.count(optName) == 0); // name clash/registered twice?
 	registered[optName] = new Callback1( titles, outputCb );
     }
     void ContinuousType::registerCallback (string optName, string titles,

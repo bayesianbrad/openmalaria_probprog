@@ -418,7 +418,8 @@ struct MeasureByOutId{
 
 void internal::initReporting( const scnXml::Scenario& scenario ){
     defineOutMeasures();        // set up namedOutMeasures
-    assert(reportedMeasures.empty());
+    // **** commented out by Bradley Gram-Hansen to enable multiple simulator runs***
+    // assert(reportedMeasures.empty());
     
     // First we put used measures in this list:
     const scnXml::MonitoringOptions& optsElt = scenario.getMonitoring().getSurveyOptions();
