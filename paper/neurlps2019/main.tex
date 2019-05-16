@@ -150,7 +150,7 @@ by \cite{baydin2018efficient} demonstrated a pathway for how to turn a particula
 type of event-based simulators into a probabilistic program. 
 % via the raw random number calls of the simulator.
  But, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs.
-We, in this work, extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling and financial modeling. In addition to this, we enable simulators written in 13 different languages to be easily converted in probabilistic programs, which we algorithmically outline. We demonstrate inference performed with our PPS on a both a toy population simulator and two important malaria population-based simulators called OpenMalaria and EMOD. 
+In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling and financial modeling. In addition to this, we enable simulators written in 13 different languages to be easily converted in probabilistic programs, which we algorithmically outline. We demonstrate inference performed with our PPS on both a toy population simulator and two important malaria population-based simulators called OpenMalaria and EMOD. 
 
 % Epidemiology simulations have become a fundamental tool in the fight
 % against the epidemics of various infectious diseases like AIDS and
@@ -180,11 +180,15 @@ i.e population-based, event-based, single-object based and so fourth. {1 paragra
 \end{itemize}
 
 
-Probabilistic programming\cite{gordon2014probabilistic} is paradigm that enables users to write models in a programmatic way. 
-The source code is then transformed into a program density, representing a joint density.
-By having direct access to the source code enables Probabilistic Programming Systems~(PPS)
-to analyse the model code in unique way, enabling posterior inference
-to be performed in an automated way, which makes PPSs flexible and adaptive.
+Probabilistic programming\cite{gordon2014probabilistic} is paradigm that enables users to write, and perform inference in, complex probabilistic models in a programmatic, yet efficient and simplified way. 
+The source code of the given model, or equivalently \emph{program}, is then transformed into a program density, representing the joint density of the model.
+By having direct access to the source code we can perform interesting 
+operations within a probabilistic programming system~(PPS),
+such as analysing the model code, which enables statistically correct inference \cite{gram2018hamiltonian} in an automated way \bg{Add citations - black box VI etc} to be performed. 
+In addition to this, as models can be directly expressed in program code, we can encode other structures make us of the full structure of a given language.
+
+One powerful \emph{class} of models are simulators. 
+
 
 
 \bg{This is not an intro - it is a collection of statements - will re-write later}
