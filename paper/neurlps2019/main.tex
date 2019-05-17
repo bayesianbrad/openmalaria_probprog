@@ -36,7 +36,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 % \usepackage[binary-units=true]{siunitx}
-\title{Converting Population-Based Simulators to Probabilistic Programs}
+\title{Hijacking Population-Based Simulators}
 
 % neurlps classification
 % Primary: Applications
@@ -150,7 +150,7 @@ by \cite{baydin2018efficient} demonstrated a pathway for how to turn a particula
 type of event-based simulators into a probabilistic program. 
 % via the raw random number calls of the simulator.
  But, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs.
-In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling and financial modeling. In addition to this, we enable simulators written in 13 different languages to be easily converted in probabilistic programs, which we algorithmically outline. We demonstrate inference performed with our PPS on both a toy population simulator and two important malaria population-based simulators called OpenMalaria and EMOD. 
+In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling and financial modeling. In addition to this, we enable simulators written in 13 different languages to be easily converted in probabilistic programs, which we algorithmically outline. We demonstrate inference performed with our PPS on both a toy population simulator and two important malaria population-based simulators OpenMalaria and EMOD. 
 
 % Epidemiology simulations have become a fundamental tool in the fight
 % against the epidemics of various infectious diseases like AIDS and
@@ -170,7 +170,7 @@ In this work, we extend that framework to encompass population-based simulators,
 
 \begin{itemize}
 
-\item Talk about a goal of probabilistic programming is to simultaneously simulate and perform inference on models conditioned on the observations. Although universal ppls have the ability to do this, they are constrained because the simulator has to be re-written as a program inside that system; this is both infeasible for sufficiently large simulators and inefficient. It would however be much more efficient to turn simulators into probabilistic programs... then talk briefly about the foundations created by baydin et al. (2 paragraphs)
+\item Talk about a goal of probabilistic programming is to simultaneously simulate and perform inference on models conditioned on the observations. Although universal probabilistic programming systems have the ability to do this, they are constrained because the simulator has to be re-written as a program inside that system; this is both infeasible for sufficiently large simulators and inefficient. It would however be much more efficient to turn simulators into probabilistic programs... then talk briefly about the foundations created by baydin et al. (2 paragraphs)
 \item Talk about the large body of simulators out there and briefly talk about the types of simulators
 i.e population-based, event-based, single-object based and so fourth. {1 paragraph}
 \item Talk, high level, about the notion of a posterior in terms of traces either add stuff from tom's thesis or directly cite. (1 paragraph)
@@ -180,21 +180,37 @@ i.e population-based, event-based, single-object based and so fourth. {1 paragra
 \end{itemize}
 
 
-Probabilistic programming\cite{gordon2014probabilistic} is paradigm that enables users to write, and perform inference in, complex probabilistic models in a programmatic, yet efficient and simplified way. 
-The source code of the given model, or equivalently \emph{program}, is then transformed into a program density, representing the joint density of the model.
+Probabilistic programming\cite{gordon2014probabilistic,le2016inference} is a machine learning paradigm that enables users to write, and perform inference in, complex probabilistic models in a programmatic, yet efficient and simplified way. 
+The source code of the given model, or equivalently the \emph{program}, is then transformed into a program density, which can
+be viewed as the joint density of the model.
 By having direct access to the source code we can perform interesting 
-operations within a probabilistic programming system~(PPS),
-such as analysing the model code, which enables statistically correct inference \cite{gram2018hamiltonian} in an automated way \bg{Add citations - black box VI etc} to be performed. 
-In addition to this, as models can be directly expressed in program code, we can encode other structures make us of the full structure of a given language.
-
+operations within a probabilistic programming system~(PPS) in an automated way,
+such as analysing the model code, to perform statistically correct inference \cite{gram2018hamiltonian,goodman2012church,wood2014new}.
+In addition to this, as models can be directly expressed in program code, we can encode other structures to make use of the full structure of a given language,
+which enables users to integrate PPSs into their standard model development process.
 One powerful \emph{class} of models are simulators. 
 
 
+Simulators arise in many industrial \cite{di2015simulator,judd2009numerically,kass1990rapid} and scientific applications~\cite{smith2008towards,bershteyn2018implementation,gleisberg_event_2008} encode years, if not decades, of research and development.
+Thus, Simulators by their very nature are
+information rich and naturally describe complicated joint densities.
+However, in order to write a simulator in a standard probabilistic programming set-up one would have to re-write a simulator in the language of the PPS, which 
+in many cases is not feasible, nor efficient due to both the size 
+and complexity of the simulator code base. 
+However, what if one could arbitrary connect a simulator, written in any
+language and connect it directly to a PPS, without having to re-write
+the simulator in the given PPS?
 
-\bg{This is not an intro - it is a collection of statements - will re-write later}
 
-Simulators encode several years, if not decades, of research and development and so by their very nature are structurally complicated. Since the development happens over several decades, usually without documentation, understanding a code base written with legacy libraries and software is incredibly difficult and an almost impossible task for a non-expert, or expert who has not had access to the previous years of development. 
-Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular epidemiology simulators. Our framework provides a simple solution and makes it easy to transform arbitrary stochastic simulators into probabilistic programs, regardless of the complexity of the simulator and the language that the simulator is written in and for posterior inference. This enables two things. 1) It enables software developers and researchers to understand complicated code bases. 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. This is critical in several domains, and is particularly important in the medical domain. We provide examples of both in Section~\textbf{TO ADD REF}.
+    
+Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular population-based simulators which arise
+in a myriad of domains \bg{add citations}. 
+Our framework provides a simple solution and makes it easy to transform arbitrary stochastic population-based simulators into probabilistic programs, regardless of the complexity of the simulator. 
+Our system supports simulators written in 13 different programming languages and enables the user to perform for posterior inference over the density of the simulator. 
+This enables two things.
+1) It enables software developers and researchers to understand complicated code bases. 
+2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. 
+This is critical in several domains, and is particularly important in the medical domain. We provide examples of both in Section~\textbf{TO ADD REF}.
 
 
 In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{baydin2018efficient} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP) \cite{le-2016-inference}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
@@ -235,7 +251,7 @@ Recent advances in hardware have enabled simulations to model increasingly compl
 Epidemiology studies the prevalence and spreading of diseases across populations. Recent advances in hardware have enabled simulations to model the dynamics of infectious diseases, such as Malaria, in ever greater detail.
 
 Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
-can be used to express probabilistic models and consequently perform automated inference these. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{}, Variational Inference~(VI)\cite{} and Deep Neural Networks~(DNN)\cite{},  can be used by non-experts in an automated fashion. 
+can be used to express probabilistic models and consequently perform automated inference these. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{geyer1992practical}, Variational Inference~(VI)\cite{wainwright2008graphical} and Deep Neural Networks~(DNN)\cite{Goodfellow:2016:DL:3086952},  can be used by non-experts in an automated fashion. 
  
 
 
@@ -255,8 +271,11 @@ can be used to express probabilistic models and consequently perform automated i
 
 
 \section{Hijacking Simulators}
+\label{sec:methods}
 
-\paragraph{Hijacking a simulator} describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures, which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{schaling2011boost}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator. \bg{This will be extended}
+
+\subsection{The Engineering}
+Hijacking a simulator a describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures, which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{schaling2011boost}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator. \bg{This will be extended}
 
 
  \label{sec:methods}
@@ -305,7 +324,9 @@ In order to deal with the shortcomings of \textit{pyprob} in a population-based 
 By extending \textit{pyprob} to handle population-based simulators, the PPS can now track all stochastic random variables that are created within the simulator, which then allows us to generate trace plots and path probabilities associated to the execution paths of the program.
 The corresponding increase of simulator transparency helps reinstate much needed trust between policymakers and evidence-based methods.
 
+\subsection{The Theory}
 
+\bg{Tom add theory stuff here}
 %As stated previously, Simulators are complex systems and should be viewed as black-boxes, thus deciphering the underlying processes occurring within the simulator facilitates the users understanding of how such a system operates and provides a way of interpreting the outputs in a clear way. In addition to this, when using a simulator to make new inferences a user will often want to condition on the output of the simulator, or any new observations gathered. In the standard simulator framework this is not possible, but in 
 %
 %Essentially, from the users perspective, our approach can be viewed as follows the user would first select the simulator that they are going to use, for example EMOD, they would then write their model, in the desired simulator, according to the given simulator specification. The user would then run the simulator. Now comes the hijacking. During the forward run of the simulator all sampling calls from the random number generator are directed through the probabilistic programming system~(PPS), which in addition to the standard output of the simulator now generates a series of result summaries and path probabilities, as we demonstrate in Section~\ref{sec:casestudy}.
