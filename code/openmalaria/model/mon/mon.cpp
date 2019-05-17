@@ -420,7 +420,15 @@ void internal::initReporting( const scnXml::Scenario& scenario ){
     defineOutMeasures();        // set up namedOutMeasures
     // **** commented out by Bradley Gram-Hansen to enable multiple simulator runs***
     // assert(reportedMeasures.empty());
-    
+    if( reportedMeasures.empty())
+    {
+    }
+    else
+    {
+         vector<OutMeasure> reportedMeasures;
+         assert(reportedMeasures.empty());
+
+    }
     // First we put used measures in this list:
     const scnXml::MonitoringOptions& optsElt = scenario.getMonitoring().getSurveyOptions();
     // This should be an upper bound on the number of options we need:

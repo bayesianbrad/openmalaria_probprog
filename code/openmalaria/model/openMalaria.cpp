@@ -50,7 +50,7 @@ xt::xarray<double> forward() {
 
         // scenarioFile = util::CommandLine::parse (argc, argv);   // parse arguments
 
-        util::BoincWrapper::init();     // BOINC init
+        // util::BoincWrapper::init();     // BOINC init
 
         // Load the scenario document:
         scenarioFile = util::CommandLine::lookupResource (scenarioFile);
