@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <om:scenario xmlns:om="http://openmalaria.org/schema/scenario_39" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" analysisNo="233" name="Do" schemaVersion="38" wuID="536305339" xsi:schemaLocation="http://openmalaria.org/schema/scenario_39 scenario_current.xsd">
-  <demography maximumAgeYrs="90" name="Ifakara" popSize="17">
+<!--   <demography maximumAgeYrs="90" name="Ifakara" popSize="17">
     <ageGroup lowerbound="0.0">
       <group poppercent="3.474714994" upperbound="1"/>
       <group poppercent="12.76004028" upperbound="5"/>
@@ -21,6 +21,17 @@
       <group poppercent="0.74167341" upperbound="80"/>
       <group poppercent="0.271863401" upperbound="85"/>
       <group poppercent="0.161614642" upperbound="90"/>
+    </ageGroup>
+  </demography> -->
+    <demography maximumAgeYrs="30" name="Ifakara" popSize="17">
+    <ageGroup lowerbound="0.0">
+      <group poppercent="8.0" upperbound="1"/>
+      <group poppercent="16.0" upperbound="5"/>
+      <group poppercent="19.0" upperbound="10"/>
+      <group poppercent="17.0" upperbound="15"/>
+      <group poppercent="15.0" upperbound="20"/>
+      <group poppercent="13.0" upperbound="25"/>
+      <group poppercent="12.0" upperbound="30"/>
     </ageGroup>
   </demography>
   <monitoring name="NDmo">
@@ -52,13 +63,13 @@
       <group upperbound="30"/>
       <group upperbound="40"/>
       <group upperbound="50"/>
-      <group upperbound="60"/>
-      <group upperbound="99"/>
+<!--       <group upperbound="60"/>
+      <group upperbound="99"/> -->
     </ageGroup>
   </monitoring>
   <interventions name="none"/>
   <healthSystem>
-    <EventScheduler>
+<!--     <EventScheduler>
       <uncomplicated>
         <noTreatment/>
       </uncomplicated>
@@ -70,6 +81,23 @@
         <uncomplicatedCaseDuration>3</uncomplicatedCaseDuration>
         <complicatedCaseDuration>5</complicatedCaseDuration>
         <complicatedRiskDuration>5</complicatedRiskDuration>
+        <dailyPrImmUCTS>0.6</dailyPrImmUCTS>
+        <dailyPrImmUCTS>0.3</dailyPrImmUCTS>
+        <dailyPrImmUCTS>0.1</dailyPrImmUCTS>
+      </ClinicalOutcomes>
+    </EventScheduler> -->
+        <EventScheduler>
+      <uncomplicated>
+        <noTreatment/>
+      </uncomplicated>
+      <complicated>
+        <noTreatment/>
+      </complicated>
+      <ClinicalOutcomes>
+        <maxUCSeekingMemory>2</maxUCSeekingMemory>
+        <uncomplicatedCaseDuration>2</uncomplicatedCaseDuration>
+        <complicatedCaseDuration>3</complicatedCaseDuration>
+        <complicatedRiskDuration>3</complicatedRiskDuration>
         <dailyPrImmUCTS>0.6</dailyPrImmUCTS>
         <dailyPrImmUCTS>0.3</dailyPrImmUCTS>
         <dailyPrImmUCTS>0.1</dailyPrImmUCTS>
@@ -490,7 +518,7 @@
       <EIRDaily origin="monthly">0.0184</EIRDaily>
       <EIRDaily origin="monthly">0.0184</EIRDaily>
       <EIRDaily origin="monthly">0.0184</EIRDaily>
-      <EIRDaily origin="monthly">0.0738</EIRDaily>
+      <!-- <EIRDaily origin="monthly">0.0738</EIRDaily>
       <EIRDaily origin="monthly">0.0738</EIRDaily>
       <EIRDaily origin="monthly">0.0738</EIRDaily>
       <EIRDaily origin="monthly">0.0738</EIRDaily>
@@ -947,7 +975,7 @@
       <EIRDaily origin="monthly">0.1291</EIRDaily>
       <EIRDaily origin="monthly">0.1291</EIRDaily>
       <EIRDaily origin="monthly">0.1291</EIRDaily>
-      <EIRDaily origin="monthly">0.1291</EIRDaily>
+      <EIRDaily origin="monthly">0.1291</EIRDaily> -->
     </nonVector>
   </entomology>
   <model>
