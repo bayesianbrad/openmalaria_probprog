@@ -35,6 +35,11 @@ Ewan Cameron, Katherine~E Battle, Samir Bhatt, Daniel~J Weiss, Donal Bisanzio,
   incidence of plasmodium falciparum malaria.
 \newblock {\em Nature communications}, 6:8170, 2015.
 
+\bibitem{di2015simulator}
+Valentina Di~Pasquale, Salvatore Miranda, Raffaele Iannone, and Stefano Riemma.
+\newblock A simulator for human error probability analysis.
+\newblock {\em Reliability Engineering \& System Safety}, 139:17--32, 2015.
+
 \bibitem{evensen1994sequential}
 Geir Evensen.
 \newblock Sequential data assimilation with a nonlinear quasi-geostrophic model
@@ -49,6 +54,28 @@ Casey Ferris, Benoit Raybaud, and Gregory Madey.
   {SummerSim} '15, pages 1--9. Society for Computer Simulation International.
 \newblock event-place: Chicago, Illinois.
 
+\bibitem{geyer1992practical}
+Charles~J Geyer.
+\newblock Practical markov chain monte carlo.
+\newblock {\em Statistical science}, pages 473--483, 1992.
+
+\bibitem{gleisberg_event_2008}
+T~Gleisberg, Stefan Hoeche, Frank Krauss, Marek Schönherr, Steffen Schumann,
+  Frank Siegert, and J~Winter.
+\newblock Event generation with {SHERPA} 1.1.
+\newblock 2009.
+
+\bibitem{Goodfellow:2016:DL:3086952}
+Ian Goodfellow, Yoshua Bengio, and Aaron Courville.
+\newblock {\em Deep Learning}.
+\newblock The MIT Press, 2016.
+
+\bibitem{goodman2012church}
+Noah Goodman, Vikash Mansinghka, Daniel~M Roy, Keith Bonawitz, and Joshua~B
+  Tenenbaum.
+\newblock Church: a language for generative models.
+\newblock {\em arXiv preprint arXiv:1206.3255}, 2012.
+
 \bibitem{gordon2014probabilistic}
 Andrew~D Gordon, Thomas~A Henzinger, Aditya~V Nori, and Sriram~K Rajamani.
 \newblock Probabilistic programming.
@@ -60,6 +87,18 @@ P.~J{\"a}ckel.
 \newblock {\em Monte Carlo Methods in Finance}.
 \newblock The Wiley Finance Series. Wiley, 2002.
 
+\bibitem{judd2009numerically}
+Kenneth Judd, Lilia Maliar, and Serguei Maliar.
+\newblock Numerically stable stochastic simulation approaches for solving
+  dynamic economic models.
+\newblock Technical report, National Bureau of Economic Research, 2009.
+
+\bibitem{kass1990rapid}
+Michael Kass and Gavin Miller.
+\newblock Rapid, stable fluid dynamics for computer graphics.
+\newblock In {\em ACM Siggraph Computer Graphics}, volume~24, pages 49--57.
+  ACM, 1990.
+
 \bibitem{kozen1979semantics}
 Dexter Kozen.
 \newblock Semantics of probabilistic programs.
@@ -70,6 +109,11 @@ Dexter Kozen.
 David~P. Landau and Kurt Binder.
 \newblock {\em A Guide to Monte Carlo Simulations in Statistical Physics}.
 \newblock Cambridge University Press, 4 edition, 2014.
+
+\bibitem{le2016inference}
+Tuan~Anh Le, Atilim~Gunes Baydin, and Frank Wood.
+\newblock Inference compilation and universal probabilistic programming.
+\newblock {\em arXiv preprint arXiv:1610.09900}, 2016.
 
 \bibitem{le-2016-inference}
 Tuan~Anh Le, Atılım~Güneş Baydin, and Frank Wood.
@@ -90,12 +134,6 @@ Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, Zachary
   DeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer.
 \newblock Automatic differentiation in pytorch.
 \newblock In {\em NIPS-W}, 2017.
-
-\bibitem{rainforth2017automating}
-Tom Rainforth.
-\newblock {\em Automating Inference, Learning, and Design using Probabilistic
-  Programming}.
-\newblock PhD thesis.
 
 \bibitem{schaling2011boost}
 Boris Sch{\"a}ling.
@@ -122,5 +160,17 @@ Sam Staton, Hongseok Yang, Frank Wood, Chris Heunen, and Ohad Kammar.
   continuous distributions, and soft constraints.
 \newblock In {\em Proceedings of the 31st Annual ACM/IEEE Symposium on Logic in
   Computer Science}, pages 525--534. ACM, 2016.
+
+\bibitem{wainwright2008graphical}
+Martin~J Wainwright, Michael~I Jordan, et~al.
+\newblock Graphical models, exponential families, and variational inference.
+\newblock {\em Foundations and Trends{\textregistered} in Machine Learning},
+  1(1--2):1--305, 2008.
+
+\bibitem{wood2014new}
+Frank Wood, Jan~Willem Meent, and Vikash Mansinghka.
+\newblock A new approach to probabilistic programming inference.
+\newblock In {\em Artificial Intelligence and Statistics}, pages 1024--1032,
+  2014.
 
 \end{thebibliography}
