@@ -2,7 +2,7 @@ todo
 ====
 
 Add notes to all the .cpp files that we modify, to state exactly
-what we modified. 
+what we modified.
 
 
 
@@ -110,14 +110,14 @@ Mac
 docker run --rm -it -p 2345:2345 -v $PWD/examples:/home/examples -v $PWD/code/openmalaria/:/code/openmalaria bradleygh/openmalariapp
 
 add when calling ./openmalaria
-$ ./openMalaria tcp://*:2345 
+$ ./openMalaria tcp://*:2345
 
 Linux
 =====
 docker run --rm -it -v $PWD/examples:/home/examples -v $PWD/code/openmalaria/:/code/openmalaria bradleygh/openmalariapp
 
 add when calling ./openmalaria
-$ ./openMalaria icp://@<some_string>
+$ ./openMalaria ipc://@<some_string>
 
 
 Using Singluarity instead
@@ -133,8 +133,7 @@ spython recipe Dockerfile >> Singularity
 
 This will convert the Dockerfile to a singularity file and save the output as Singularity.
 
-We can also make use of pre-built docker containers, without having to install docker, by running 
+We can also make use of pre-built docker containers, without having to install docker, by running
 the following:
 
 singularity pull docker://bradleygh:openmalariapp
-
