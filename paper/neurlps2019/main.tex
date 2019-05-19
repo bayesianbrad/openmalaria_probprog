@@ -9,10 +9,10 @@
 
 % to compile a preprint version, e.g., for submission to arXiv, add add the
 % [preprint] option:
-%     \usepackage[preprint]{neurips_2018}
+\usepackage[preprint]{neurips_2019}
 
 % to compile a camera-ready version, add the [final] option, e.g.:
-     \usepackage[final]{neurips_2019}
+     % \usepackage[final]{neurips_2019}
 
 % to avoid loading the natbib package, add option nonatbib:
 %     \usepackage[nonatbib]{neurips_2018}
@@ -36,7 +36,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 % \usepackage[binary-units=true]{siunitx}
-\title{Hijacking Population-Based Simulators}
+\title{Hijacking Simulators with Universal Probabilistic Programming}
 
 % neurlps classification
 % Primary: Applications
@@ -142,15 +142,14 @@ Paper ID: }
 % In particular, we demonstrate this for the Malaria disease and show how we can 
 % perform interpretable inference in such settings.
 
-Probabilistic programming provides a way to perform statistical inference over simulations of events in a programmatic way.
-However, with the myriad of probabilistic programming systems (PPSs) and the complexities involved in running 
-each individual system, such as specifying a model in the given language, means that it can be difficult to re-implement the myriad of scientific and industrial simulators within an existing PPSs, something that is not typically feasible, nor practical.  
+Probabilistic programming provides a way to perform statistical inference over simulations of events in a programmatic way. Thus, simulators by design are ideal programs for probabilistic programming systems~(PPSs).
+However, within existing PPSs one would have to re-implement the simulator via the PPS language specification, which is inefficient and often not feasible due to the complexity of such scientific and industrial simulators.
 However, recent work
-by \cite{baydin2018efficient} demonstrated a pathway for how to turn a particular
-type of event-based simulators into a probabilistic program. 
+by \cite{baydin2018efficient} demonstrated a pathway to turn a particular
+type of event-based simulator into a probabilistic program. 
 % via the raw random number calls of the simulator.
- But, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs.
-In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling and financial modeling. In addition to this, we enable simulators written in 13 different languages to be easily converted in probabilistic programs, which we algorithmically outline. We demonstrate inference performed with our PPS on both a toy population simulator and two important malaria population-based simulators OpenMalaria and EMOD. 
+ But, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs and as such could not be used in a probabilistic programming framework.
+In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling and financial modeling. We enable simulators written in 13 different languages to be easily converted to probabilistic programs, for which we algorithmically outline how to do and provide examples of. We demonstrate our method on three models and provide n infected population simulator and demonstrate the hijacking on two important malaria population-based simulators OpenMalaria and EMOD. 
 
 % Epidemiology simulations have become a fundamental tool in the fight
 % against the epidemics of various infectious diseases like AIDS and
@@ -168,24 +167,24 @@ In this work, we extend that framework to encompass population-based simulators,
 \label{sec:intro}
 \bg{The audience is a probabilistic programming audience - so that is what we will target}
 
-\begin{itemize}
+% \begin{itemize}
 
-\item Talk about a goal of probabilistic programming is to simultaneously simulate and perform inference on models conditioned on the observations. Although universal probabilistic programming systems have the ability to do this, they are constrained because the simulator has to be re-written as a program inside that system; this is both infeasible for sufficiently large simulators and inefficient. It would however be much more efficient to turn simulators into probabilistic programs... then talk briefly about the foundations created by baydin et al. (2 paragraphs)
-\item Talk about the large body of simulators out there and briefly talk about the types of simulators
-i.e population-based, event-based, single-object based and so fourth. {1 paragraph}
-\item Talk, high level, about the notion of a posterior in terms of traces either add stuff from tom's thesis or directly cite. (1 paragraph)
-\item Talk about the experiments we perform (high- level)
+% \item Talk about a goal of probabilistic programming is to simultaneously simulate and perform inference on models conditioned on the observations. Although universal probabilistic programming systems have the ability to do this, they are constrained because the simulator has to be re-written as a program inside that system; this is both infeasible for sufficiently large simulators and inefficient. It would however be much more efficient to turn simulators into probabilistic programs... then talk briefly about the foundations created by baydin et al. (2 paragraphs)
+% \item Talk about the large body of simulators out there and briefly talk about the types of simulators
+% i.e population-based, event-based, single-object based and so fourth. {1 paragraph}
+% \item Talk, high level, about the notion of a posterior in terms of traces either add stuff from tom's thesis or directly cite. (1 paragraph)
+% \item Talk about the experiments we perform (high- level)
 
 
-\end{itemize}
+% \end{itemize}
 
 
 Probabilistic programming\cite{gordon2014probabilistic,le2016inference} is a machine learning paradigm that enables users to write, and perform inference in, complex probabilistic models in a programmatic, yet efficient and simplified way. 
 The source code of the given model, or equivalently the \emph{program}, is then transformed into a program density, which can
 be viewed as the joint density of the model.
-By having direct access to the source code we can perform interesting 
-operations within a probabilistic programming system~(PPS) in an automated way,
-such as analysing the model code, to perform statistically correct inference \cite{gram2018hamiltonian,goodman2012church,wood2014new}.
+Having direct access to the source code enables probabilistic programming system~(PPS)
+to conduct several processes in an automated fashion, such as 
+automating inference \cite{zhou2019lf,goodman2012church,wood2014new}.
 In addition to this, as models can be directly expressed in program code, we can encode other structures to make use of the full structure of a given language,
 which enables users to integrate PPSs into their standard model development process.
 One powerful \emph{class} of models are simulators. 
@@ -369,6 +368,8 @@ These include within-host dynamics, population-specific traits and even local ge
 Comprehensive modeling of all of these components remains challenging, particularly in a region-specific context. 
 Computational epidemiology simulators have to reflect these complexities and are usually stochastic in nature. This can make simulation output highly non-trivial to interpret, particularly when trying to draw desired inferences coupled with observed data \cite{mwendera_challenges_2019,ferris_openmalaria_2015}.
 
+We first demonstrate our system on a reduced version of the 
+
 Two the most advanced Malaria simulators, namely EMOD~\cite{bershteyn2018implementation} and OpenMalaria  \cite{smith2008towards}, have proven to be particularly valuable to policymakers.
 OpenMalaria is based on microsimulations of Plasmodium falciparum in humans and was originally developed to simulate the impacts of malaria vaccines within simple villages or districts
 Compared with OpenMalaria, EMOD is able to simulate a variety of additional drivers, including complex geographies complete with migration and a large number of policy interventions
@@ -404,63 +405,7 @@ Both EMOD and OpenMalaria are open source and implemented in C++.
  
 
 \begin{figure}
-\centering
- % \scalebox{.5}{
-\begin{tikzpicture}[node distance=1.5cm,
-    every node/.style={fill=white, font=\sffamily}, align=center]
-  % Specification of nodes (position, etc.)
-  % \node (start)             [activityStarts]              {Activity starts};
-  \node (SimulatorSystem)     [activityStarts]          {Simulator System \\ e.g. EMOD};
-   \node (randomprim)      [process, left of=SimulatorSystem, xshift=5.6cm]
-                                                      {Redefine RNG \\ to make \\ externally \\ callable};
-  \node (onStartBlock)      [process, below of=SimulatorSystem]   {Specify Model \\ e.g. XML files};
-  \node (activityRuns)      [activityRuns, below of=onStartBlock]
-                                                      {Run Simulator};
-  \node (onPauseBlock)      [startstop, below of=activityRuns, yshift=-1cm]
-                                                                {Posterior Output};
-  % \node (onStopBlock)       [process, below of=onPauseBlock, yshift=-1cm]
-  %                                                                {};
-  % \node (onDestroyBlock)    [process, below of=onStopBlock, yshift=-1cm] 
-  %                                                             {onDestroy()};
-  \node (onRestartBlock)    [process, right of=activityRuns, xshift=3cm]
-                                                              {PPS hijacks \\ random number \\ generator};
-  \node (ActivityEnds)      [startstop, below of=onRestartBlock, yshift=-1cm]
-                                                        {Result summaries \\ path probabilities};
-  % \node (ActivityDestroyed) [startstop, below of=onDestroyBlock]
-  %                                                   {Activity is shut down};     
-  % Specification of lines between nodes specified above
-  % with aditional nodes for description 
-  % \draw[->]             (start) -- (onCreateBlock);
-  \draw[->]     (SimulatorSystem) -- (onStartBlock);
-  \draw[dashed, <-]  (SimulatorSystem) -- (randomprim);
-  % \draw[->]      (onStartBlock) -- (onResumeBlock);
-  \draw[->]     (onStartBlock) -- (activityRuns);
-  \draw[->]      (activityRuns) -- (onPauseBlock);
-  % \draw[->]      (onPauseBlock) -- node {The activity is no longer visible}
-  %                                  (onStopBlock);
-  % \draw[->]       (onStopBlock) -- node {The activity is shut down by
-  %                                  user or system} (onDestroyBlock);
-  % \draw[->]    (onRestartBlock) -- (activityRuns);
-  \path[->, shift left=.75ex]
-  (onRestartBlock) edge (activityRuns)
-  (activityRuns) edge (onRestartBlock);
-  % \draw[<-]    (activityRuns) -- (onRestartBlock);
-  % \draw[->]       (onStopBlock) -| node[yshift=1.25cm, text width=3cm]
-  %                                  {The activity comes to the foreground}
-  %                                  (onRestartBlock);
-
-  \draw[->]    (onRestartBlock) -- (ActivityEnds);
-  % \draw[->]      (onPauseBlock) -| node(priorityXMemory)
-  %                                  {todo}
-  %                                  (ActivityEnds);
-  % \draw           (onStopBlock) -| (priorityXMemory);
-  % \draw[->]     (ActivityEnds)  |- node [yshift=-2cm, text width=3.1cm]
-  %                                   {User navigates back to the activity}
-  %                                   (SimulatorSystem);
-  % \draw[->] (onPauseBlock.east) -- ++(2.6,0) -- ++(0,2) -- ++(0,2) --                
-  %    node[xshift=1.2cm,yshift=-1.5cm, text width=2.5cm]
-  %    {The activity comes to the foreground}(onResumeBlock.east);
-  \end{tikzpicture}
+  \includegraphics[width=\textwidth]{../plots/system.pdf}
   \label{fig:how}
   \caption{This flow-chart provides an overview of the process of how our system hijacks a generic population-based epidemiology simulator, such as EMOD, and how we modify the simulator to 
   to hijack the random number generator (RNG).}
@@ -502,7 +447,6 @@ Both EMOD and OpenMalaria are open source and implemented in C++.
 % \end{table}
 % As can be seen, writing the new sampling call is cleaner and syntactically simpler. 
 %\bg{Add performance plot showing memory consumptions of pyprob and our new system.}
-\subsection{Toy Model}
 \subsection{Real-world Example}
 \label{sec:casestudy}
 

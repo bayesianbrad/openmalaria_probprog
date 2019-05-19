@@ -3,16 +3,15 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: plain.bst
 Database file #1: refs.bib
-Repeated entry---line 109 of file refs.bib
+Repeated entry---line 116 of file refs.bib
  : @article{geyer1992practical
  :                            ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 273 of file refs.bib
+Repeated entry---line 280 of file refs.bib
  : @inproceedings{gordon2014probabilistic
  :                                       ,
 I'm skipping whatever remains of this entry
 Database file #2: malaria.bib
-Warning--I didn't find a database entry for "gram2018hamiltonian"
 Warning--empty journal in autino_epidemiology_2012
 Warning--empty year in autino_epidemiology_2012
 Warning--empty year in ferris_openmalaria_2015
@@ -23,45 +22,45 @@ Warning--empty journal in mwendera_challenges_2019
 Warning--empty year in mwendera_challenges_2019
 Warning--empty journal in smith_ensemble_2012
 Warning--empty year in smith_ensemble_2012
-You've used 28 entries,
+You've used 29 entries,
             2118 wiz_defined-function locations,
-            670 strings with 10069 characters,
-and the built_in function-call counts, 11806 in all, are:
-= -- 1107
-> -- 764
+            673 strings with 10297 characters,
+and the built_in function-call counts, 12170 in all, are:
+= -- 1138
+> -- 797
 < -- 10
-+ -- 306
-- -- 274
-* -- 921
-:= -- 1981
-add.period$ -- 92
-call.type$ -- 28
-change.case$ -- 214
++ -- 319
+- -- 286
+* -- 950
+:= -- 2050
+add.period$ -- 95
+call.type$ -- 29
+change.case$ -- 223
 chr.to.int$ -- 0
-cite$ -- 38
-duplicate$ -- 399
-empty$ -- 769
-format.name$ -- 274
-if$ -- 2411
+cite$ -- 39
+duplicate$ -- 409
+empty$ -- 786
+format.name$ -- 286
+if$ -- 2479
 int.to.chr$ -- 0
-int.to.str$ -- 28
-missing$ -- 31
-newline$ -- 144
-num.names$ -- 56
-pop$ -- 241
+int.to.str$ -- 29
+missing$ -- 32
+newline$ -- 149
+num.names$ -- 58
+pop$ -- 250
 preamble$ -- 1
-purify$ -- 188
+purify$ -- 196
 quote$ -- 0
-skip$ -- 284
+skip$ -- 291
 stack$ -- 0
-substring$ -- 586
-swap$ -- 104
+substring$ -- 591
+swap$ -- 105
 text.length$ -- 10
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 104
+type$ -- 108
 warning$ -- 10
-while$ -- 94
-width$ -- 30
-write$ -- 307
+while$ -- 96
+width$ -- 31
+write$ -- 317
 (There were 2 error messages)

@@ -173,4 +173,11 @@ Frank Wood, Jan~Willem Meent, and Vikash Mansinghka.
 \newblock In {\em Artificial Intelligence and Statistics}, pages 1024--1032,
   2014.
 
+\bibitem{zhou2019lf}
+Yuan Zhou*, Bradley~J Gram-Hansen*, Tobias Kohn, Tom Rainforth, Hongseok Yang,
+  and Frank Wood.
+\newblock Lf-ppl: A low-level first order probabilistic programming language
+  for non-differentiable models.
+\newblock {\em arXiv preprint arXiv:1903.02482}, 2019.
+
 \end{thebibliography}
