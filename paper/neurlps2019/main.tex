@@ -190,29 +190,33 @@ We enable simulators written in 13 different languages to be easily converted to
 \label{fig:hijacking} 
 \end{wrapfigure}
 
-Probabilistic programming\cite{gordon2014probabilistic,le2016inference} is a machine learning paradigm that enables users to write, and perform inference in, complex probabilistic models in a programmatic, yet efficient and simplified way. 
-The source code of the given model, or equivalently the \emph{program}, is then transformed into a program density, which can
-be viewed as the joint density of the user-specified model.
-Having direct access to the source code enables probabilistic programming systems~(PPSs)
-to conduct several processes in an automated fashion, such as 
-the automation of complex inference procedures\cite{zhou2019lf,goodman2012church,wood2014new}.
-In addition to this, as models can be directly expressed in program code we can encode other structures to make use of the full structure of a given language,
-which enables users to integrate PPSs into their standard model development process, increasing efficiency and reducing model iteration time.
 
+% One powerful \emph{class} of models are simulators. 
+Simulators are useful tools when conducting experiments in the real system 
+is impossible, or impractical and they arise in numerous industrial \cite{di2015simulator,judd2009numerically,kass1990rapid} and scientific applications~\cite{smith2008towards,bershteyn2018implementation,gleisberg_event_2008} . They are rich models and encode years, if not decades, of research and development.
+The \emph{model}, or equivalently \emph{program}, specified by the simulator defines a joint density $p(x,y)$ and the inputs into the simulator denote priors, $p(x)$. 
 
-One powerful \emph{class} of models are simulators. 
-Simulators arise in many industrial \cite{di2015simulator,judd2009numerically,kass1990rapid} and scientific applications~\cite{smith2008towards,bershteyn2018implementation,gleisberg_event_2008} encode years, if not decades, of research and development.
+ def that are difficult to generate represent a large class of generative models, where the simulator itself represents a joint density
+$p(x|y)$  arise in many industrial
 Thus, Simulators by their very nature are
 information rich and naturally describe complicated joint densities.
-However, in order to write a simulator in a standard probabilistic programming set-up one would have to re-write a simulator in the language of the PPS, which 
+However, in order to write a simulator in a standard probabilistic programming set-up one would have to re-write a simulator in the language of the probabilistic programming system (PPS), which 
 in many cases is not feasible, nor efficient due to both the size 
 and complexity of the simulator code base. 
 However, what if one could arbitrary connect a simulator, written in any
 language and connect it directly to a PPS, without having to re-write
 the simulator in the given PPS?
 
+\paragraph{Probabilistic programming}\cite{gordon2014probabilistic,le2016inference} is a machine learning paradigm that enables users to write, and perform inference in, complex probabilistic models in a programmatic, yet efficient and simplified way. 
+The source code of the given model, or equivalently the \emph{program}, is then transformed into a program density, which can
+be viewed as the joint density of the user-specified model.
+Having direct access to the source code enables PPSs
+to conduct several processes in an automated fashion, such as 
+the automation of complex inference procedures\cite{zhou2019lf,goodman2012church,wood2014new}.
+In addition to this, as models can be directly expressed in program code we can encode other structures to make use of the full structure of a given language,
+which enables users to integrate PPSs into their standard model development process, increasing efficiency and reducing model iteration time.
 
-    
+  
 Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient} and extends the framework to encapsulate a more diverse range of simulators, in particular population-based simulators which arise
 in a myriad of domains \bg{add citations}. 
 Our framework provides a simple solution and makes it easy to transform arbitrary stochastic population-based simulators into probabilistic programs, regardless of the complexity of the simulator. 
