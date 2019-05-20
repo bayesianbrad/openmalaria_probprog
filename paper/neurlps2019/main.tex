@@ -181,7 +181,7 @@ We enable simulators written in 13 different languages to be easily converted to
 
 
 % \end{itemize}
-\begin{wrapfigure}{R}{0.45\textwidth}
+\begin{wrapfigure}{R}{0.44\textwidth}
 \centering
 % \includegraphics[width=0.35\textwidth]{../plots/mpenny-pop10/mpenny_10.pdf}
 \includegraphics[width=0.40\textwidth]{../plots/model_lambda/model_posterior.pdf}
@@ -194,12 +194,10 @@ We enable simulators written in 13 different languages to be easily converted to
 % One powerful \emph{class} of models are simulators. 
 Simulators are useful tools when conducting experiments in the real system 
 is impossible, or impractical and they arise in numerous industrial \cite{di2015simulator,judd2009numerically,kass1990rapid} and scientific applications~\cite{smith2008towards,bershteyn2018implementation,gleisberg_event_2008} . They are rich models and encode years, if not decades, of research and development.
-The \emph{model}, or equivalently \emph{program}, specified by the simulator defines a joint density $p(x,y)$ and the inputs into the simulator denote priors, $p(x)$. 
-
- def that are difficult to generate represent a large class of generative models, where the simulator itself represents a joint density
-$p(x|y)$  arise in many industrial
 Thus, Simulators by their very nature are
 information rich and naturally describe complicated joint densities.
+That is the \emph{model}, or equivalently \emph{program}, specified by the simulator defines a joint density $p(x,y)$ and the inputs into the simulator denote priors, $p(x)$. 
+
 However, in order to write a simulator in a standard probabilistic programming set-up one would have to re-write a simulator in the language of the probabilistic programming system (PPS), which 
 in many cases is not feasible, nor efficient due to both the size 
 and complexity of the simulator code base. 
