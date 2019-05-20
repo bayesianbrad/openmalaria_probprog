@@ -35,6 +35,7 @@
 \usepackage{tikz-cd}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{wrapfig}
 % \usepackage[binary-units=true]{siunitx}
 \title{Hijacking Simulators with Universal Probabilistic Programming}
 
@@ -142,15 +143,15 @@ Paper ID: }
 % In particular, we demonstrate this for the Malaria disease and show how we can 
 % perform interpretable inference in such settings.
 
-Probabilistic programming provides a way to perform statistical inference over simulations of events in a programmatic way. Thus, simulators by design are ideal programs for probabilistic programming systems~(PPSs).
+Probabilistic programming provides a way to perform statistical inference over simulations of events in a programmatic way. Thus, by design, simulators are ideal programs for probabilistic programming systems~(PPSs).
+Simulators arise in a number of industrial scientific and industrial domains and encode sophisticated generative models.
 However, within existing PPSs one would have to re-implement the simulator via the PPS language specification, which is inefficient and often not feasible due to the complexity of such scientific and industrial simulators.
-However, recent work
-by \cite{baydin2018efficient} demonstrated a pathway to turn a particular
-type of event-based simulator into a probabilistic program. 
+Recent work by \cite{baydin2018efficient} demonstrated a pathway to turn a particular
+type of event-based simulator into a probabilistic program, without having to re-implement the simulator in the PPS. 
 % via the raw random number calls of the simulator.
- But, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs and as such could not be used in a probabilistic programming framework.
-In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology modeling, multi-agent modeling and financial modeling. 
-We enable simulators written in 13 different languages to be easily converted to probabilistic programs, for which we algorithmically outline how to do and provide examples of. We demonstrate our method on three real-world simulators for epidemiology.
+ However, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs and as such could not be used in a probabilistic programming framework.
+In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology , multi-agent and financial modeling. 
+We enable simulators written in 13 different languages to be easily converted to probabilistic programs, for which we algorithmically outline and provide comprehensive examples of our system applied to a number of real-world population-based simulators.
 
 \todo[inline]{We need to have probabilistic programming in the title to make sure we attract the correct reviewers}
 
@@ -180,19 +181,26 @@ We enable simulators written in 13 different languages to be easily converted to
 
 
 % \end{itemize}
-
+\begin{wrapfigure}{R}{0.45\textwidth}
+\centering
+% \includegraphics[width=0.35\textwidth]{../plots/mpenny-pop10/mpenny_10.pdf}
+\includegraphics[width=0.40\textwidth]{../plots/model_lambda/model_posterior.pdf}
+\includegraphics[width=0.40\textwidth]{../plots/model_lambda/hist_posteriors.png}
+\caption{Hijacking the OpenMalaria simulator}
+\label{fig:hijacking} 
+\end{wrapfigure}
 
 Probabilistic programming\cite{gordon2014probabilistic,le2016inference} is a machine learning paradigm that enables users to write, and perform inference in, complex probabilistic models in a programmatic, yet efficient and simplified way. 
 The source code of the given model, or equivalently the \emph{program}, is then transformed into a program density, which can
-be viewed as the joint density of the model.
-Having direct access to the source code enables probabilistic programming system~(PPS)
+be viewed as the joint density of the user-specified model.
+Having direct access to the source code enables probabilistic programming systems~(PPSs)
 to conduct several processes in an automated fashion, such as 
-automating inference \cite{zhou2019lf,goodman2012church,wood2014new}.
-In addition to this, as models can be directly expressed in program code, we can encode other structures to make use of the full structure of a given language,
-which enables users to integrate PPSs into their standard model development process.
+the automation of complex inference procedures\cite{zhou2019lf,goodman2012church,wood2014new}.
+In addition to this, as models can be directly expressed in program code we can encode other structures to make use of the full structure of a given language,
+which enables users to integrate PPSs into their standard model development process, increasing efficiency and reducing model iteration time.
+
+
 One powerful \emph{class} of models are simulators. 
-
-
 Simulators arise in many industrial \cite{di2015simulator,judd2009numerically,kass1990rapid} and scientific applications~\cite{smith2008towards,bershteyn2018implementation,gleisberg_event_2008} encode years, if not decades, of research and development.
 Thus, Simulators by their very nature are
 information rich and naturally describe complicated joint densities.
@@ -453,6 +461,7 @@ Both EMOD and OpenMalaria are open source and implemented in C++.
 \subsection{Real-world Example}
 \label{sec:casestudy}
 
+\bg{Chris will write up}
 Ensemble methods are commonly used in statistics in order to combine the predictive power of multiple models \cite{cameron2015defining,smith_ensemble_2012}. To this end, recent work has attempted to characterise the similarities and differences between two of the most advanced Malaria epidemiology simulators, EMOD \cite{bershteyn2018implementation} and OpenMalaria \cite{smith2008towards}. Evaluation is usually done by comparing a number of output parameters across a range of hand-crafted standard scenarios reflecting different geographical locations across Africa~\cite{smith_ensemble_2012}.
 
 In the following, we illustrate how our method introduces a novel introspection paradigm. By extracting trace graphs from population-based simulators, policymakers can ask specific questions about properties of the model trace flow. 
@@ -477,45 +486,7 @@ Additionally, by associating nodes in trace graphs representing the same physica
 Comparisons like these could help developers better control model complexity, and even provide an alternative testing and debugging paradigm.
 
 
-% \begin{tikzpicture}
-% \begin{axis}[xlabel={Population size},ylabel={memory consumption (MB)},
-% legend style={at={(0.5,-0.15)},xmin=0,xmax=700,ymin=0,ymax=70, axis lines=center]
-
-
-% \addplot[pyprob,domain=0:1000, color=blue,]{x};
-
-% \addplot[improved,domain=0:1000, color=red,]{10};
-
-% \legend{pyprob, improved}
-% \end{axis}
-% \end{tikzpicture}
-
-
-
-%\begin{figure}
-%\begin{tikzpicture}
-%\begin{axis}[
-%    ybar,
-%    enlargelimits=0.15,
-%    legend style={at={(0.5,-0.15)},
-%      anchor=north,legend columns=-1},
-%      xlabel = {Address},
-%    ylabel={Probabilities},
-%    symbolic x coords={Trace 1, Trace 2, Trace 3},
-%    xtick=data,
-%    nodes near coords,
-%    nodes near coords align={vertical},
-%    ]
-%% \addplot coordinates {(tool8,7) (tool9,9) (tool10,4)};
-%\addplot coordinates {(Trace 1,0.2) (Trace 2,0.5) (Trace 3,0.23)};
-%% \addplot coordinates {(A1,0.2) (A2,0.5) (A3,0.7) (A4,0.9)};
-%% \addplot coordinates {(A1,0.1) (A2,0.1) (A3,0.1) (A4,0.3)};
-%% \legend{used,understood,not understood}
-%\end{axis}
-%\end{tikzpicture}
-%\caption{Trace probabilities. Trace 1 corresponds to A1,A1,A4,... 
-%Trace 2 corresponds to A1,A1,A1,...A2,... These still need correctly calculating.}
-%\end{figure}
+\subsection{Larger Scale-Simulators: OpenMalaria and EMOD}
 
 \begin{figure*}[h!]
   \centering
