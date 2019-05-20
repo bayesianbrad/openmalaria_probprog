@@ -1,0 +1,12 @@
+In this directory run:
+
+$ docker pull bradleygh/openmalaria
+$ docker run --rm -it -v $PWD/examples:/home/examples -v $PWD/code/:/code/ bradleygh/openmalaria
+$ cd /home/examples/
+
+To run any scenario files, ensure that in the dir where the *.xml file exists there is:
+ --- ./openMalaria executable. This is currently in /home/examples/om_scenarios 
+ --- scenario_current.xsd
+ --- <scenario_file>.xml
+
+

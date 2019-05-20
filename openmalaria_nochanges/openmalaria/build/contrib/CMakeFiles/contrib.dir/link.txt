@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcontrib.a  CMakeFiles/contrib.dir/gzstream/gzstream.C.o CMakeFiles/contrib.dir/R_nmath/qnorm.cpp.o
+/usr/bin/ranlib libcontrib.a
