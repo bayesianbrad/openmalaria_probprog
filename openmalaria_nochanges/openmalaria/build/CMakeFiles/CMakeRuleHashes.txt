@@ -1,0 +1,12 @@
+# Hashes of file build rules.
+a4d1db06b2b1c9680412e864fb29f376 schema/CMakeFiles/inlined_xsd
+d9c4bc7ff4718236459d6a30bff98533 schema/demography.cpp
+533c57a435aa78772355c0b3283a20b2 schema/entomology.cpp
+89dccc8c91c845b503bffd66d640c3b0 schema/healthSystem.cpp
+fd34bdecbf60a1bdb4e468ea02ff1734 schema/interventions.cpp
+367ad37b0f7e3a744b0b375305318409 schema/monitoring.cpp
+81f2734c121d177a58256a466bd34154 schema/pharmacology.cpp
+5c27893ea99c95fff01c21e3d251e009 schema/scenario.cpp
+e62652a7a4f43122afb6cd36d26b280c schema/scenario_current.xsd
+af25dfc9d298ba12d1dadf4401583fea schema/util.cpp
+b506624cce3969fc2eebcc8fc905b7cb unittest/tests.cpp

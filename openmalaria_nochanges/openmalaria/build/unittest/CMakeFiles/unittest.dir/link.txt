@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -msse2 -mfpmath=sse -Wall  -rdynamic CMakeFiles/unittest.dir/WHMock.cpp.o CMakeFiles/unittest.dir/tests.cpp.o  -o unittest ../model/libmodel.a ../schema/libschema.a ../contrib/libcontrib.a -lgsl -lgslcblas -lxerces-c -lz -lpthread 

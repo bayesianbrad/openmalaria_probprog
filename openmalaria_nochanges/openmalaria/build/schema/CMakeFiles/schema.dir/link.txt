@@ -1,0 +1,2 @@
+/usr/bin/ar qc libschema.a  CMakeFiles/schema.dir/scenario.cpp.o CMakeFiles/schema.dir/demography.cpp.o CMakeFiles/schema.dir/monitoring.cpp.o CMakeFiles/schema.dir/interventions.cpp.o CMakeFiles/schema.dir/healthSystem.cpp.o CMakeFiles/schema.dir/entomology.cpp.o CMakeFiles/schema.dir/pharmacology.cpp.o CMakeFiles/schema.dir/util.cpp.o
+/usr/bin/ranlib libschema.a

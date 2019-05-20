@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../contrib/gzstream/gzstream.h
+iostream
+-
+fstream
+-
+zlib.h
+-
+
+/code/openmalaria/contrib/R_nmath/qnorm.cpp
+math.h
+-
+limits
+-
+boost/math/special_functions/expm1.hpp
+-
+boost/math/special_functions/fpclassify.hpp
+-
+
+/code/openmalaria/contrib/gzstream/gzstream.C
+gzstream.h
+-
+iostream
+-
+string.h
+-
+
