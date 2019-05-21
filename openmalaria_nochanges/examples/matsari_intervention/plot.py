@@ -3,11 +3,11 @@ import numpy as np
 
 age_pop = None
 age_inf = None
-with open("output_copy.txt", "r") as f:
+with open("output.txt", "r") as f:
     tmp = list(f.readlines())
     vals = list(map(lambda x:float(x.split("	")[-1]), tmp))
-    age_pop = vals[:12]
-    age_inf = vals[12:]
+    age_pop = vals[:13]
+    age_inf = vals[13:]
 
 om = np.array(age_inf) / np.array(age_pop)
 toy1 = np.array([0.1228, 0.1234, 0.1272, 0.1428, 0.1760, 0.2267, 0.1642, 0.1047, 0.0928,
