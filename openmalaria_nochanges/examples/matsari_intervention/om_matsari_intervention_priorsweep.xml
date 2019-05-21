@@ -30,8 +30,8 @@
       <option name="nHost" value="true" />
       <option name="nPatent" value="true" />
     </SurveyOptions>
-    <surveys diagnostic="garki">
-      <surveyTime>0d</surveyTime>
+    <surveys diagnostic="garki"> 
+      <!--<surveyTime>0d</surveyTime>-->
       <surveyTime>70d</surveyTime>
     </surveys>
     <ageGroup lowerbound="0.0">
@@ -606,15 +606,15 @@
         <group lowerbound="15.0" value="0.839587932303" />
         <group lowerbound="20.0" value="1.0" />
         <group lowerbound="20.0" value="1.0" />
-
+        
       </availabilityToMosquitoes>
     </human>
     <parameters interval="5" iseed="0" latentp="3">
-      <parameter include="false" name="'-ln(1-Sinf)'" number="1" value="0.050736" />
-      <parameter include="false" name="Estar" number="2" value="0.03247" />
-      <parameter include="true" name="Simm" number="3" value="0.138161050830301" />
-      <parameter include="true" name="Xstar_p" number="4" value="0.1" />
-      <parameter include="true" name="gamma_p" number="5" value="2.1" />
+      <parameter include="false" name="'-ln(1-Sinf)'" number="1" value="0.050736" /> <!--0.050736-->
+      <parameter include="false" name="Estar" number="2" value="0.01" /> <!--3247-->
+      <parameter include="true" name="Simm" number="3" value="0.05" /><!--0.138161050830301-->
+      <parameter include="true" name="Xstar_p" number="4" value="5.0" /> <!-- -->
+      <parameter include="true" name="gamma_p" number="5" value="2.03692533424484" />
       <parameter include="true" name="sigma2i" number="6" value="10.173598698525799" />
       <parameter include="true" name="CumulativeYstar" number="7" value="35158523.31132510304451" />
       <parameter include="true" name="CumulativeHstar" number="8" value="97.334652723897705" />
