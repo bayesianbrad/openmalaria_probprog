@@ -123,9 +123,15 @@ void diagnostics::init( const Parameters& parameters, const scnXml::Scenario& sc
     if(scenario.getDiagnostics().present()){
         foreach( const scnXml::Diagnostic& diagnostic, scenario.getDiagnostics().get().getDiagnostic() ){
             string name = diagnostic.getName();     // conversion fails without this extra line
-            bool inserted = diagnostic_set.insert( name, new Diagnostic(parameters, diagnostic) ).second;
-            if( !inserted ){
-                throw util::xml_scenario_error( string("diagnostic with this name already set: ").append(diagnostic.getName()) );
+            //diagnostic[name] = new Diagnostic(parameters, diagnostic);
+            auto inserted = diagnostic_set.insert( name, new Diagnostic(parameters, diagnostic) );
+            if( !inserted.second ){
+                //throw util::xml_scenario_error( string("diagnostic with this name already set: ").append(diagnostic.getName()) );
+                 diagnostic_set.erase(inserted.first);
+                 bool inserted = diagnostic_set.insert( name, new Diagnostic(parameters, diagnostic) ).second;
+                 if( !inserted ){
+                      throw util::xml_scenario_error( string("diagnostic with this name already set: ").append(diagnostic.getName()) );
+                 } 
             }
         }
     }
