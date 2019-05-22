@@ -143,16 +143,19 @@ Paper ID: }
 % In particular, we demonstrate this for the Malaria disease and show how we can 
 % perform interpretable inference in such settings.
 
-Probabilistic programming provides a way to perform statistical inference over simulations of events in a programmatic way. Thus, by design, simulators are ideal programs for probabilistic programming systems~(PPSs).
-Simulators arise in a number of industrial scientific and industrial domains and encode sophisticated generative models.
-However, within existing PPSs one would have to re-implement the simulator via the PPS language specification, which is inefficient and often not feasible due to the complexity of such scientific and industrial simulators.
-Recent work by \cite{baydin2018efficient} demonstrated a pathway to turn a particular
-type of event-based simulator into a probabilistic program, without having to re-implement the simulator in the existing PPS. 
+%Probabilistic programming provides a way to perform statistical inference over simulations of events in a programmatic way. Thus, by design, simulators are ideal programs for probabilistic programming systems~(PPSs).
+%Simulators arise in a number of industrial scientific and industrial domains and encode sophisticated generative models.
+%However, within existing PPSs one would have to re-implement the simulator via the PPS language specification, which is inefficient and often not feasible due to the complexity of such scientific and industrial simulators.
+%Recent work by \cite{baydin2018efficient} demonstrated a pathway to turn a particular
+%type of event-based simulator into a probabilistic program, without having to re-implement the simulator in the existing PPS. 
 % via the raw random number calls of the simulator.
- However, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs and as such could not be used within a probabilistic programming framework.
-In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology, multi-agent and financial modeling and provide the relevant
+% However, this still meant that a large class of critically important population-based simulators could not be turned into probabilistic programs and as such could not be used within a probabilistic programming framework.
+%In this work, we extend that framework to encompass population-based simulators, a very large class of simulators that are used extensively across epidemiology, multi-agent and financial modeling and provide the relevant
 theoretical underpinnings. 
-We enable simulators written in 13 different languages to be easily converted to probabilistic programs, for which we algorithmically outline and provide comprehensive examples of our system applied to a number of real-world population-based simulators.
+%We enable simulators written in 13 different languages to be easily converted to probabilistic programs, for which we algorithmically outline and provide comprehensive examples of our system applied to a number of real-world population-based simulators.
+
+Stochastic population-based simulators play an important role in many industrial and scientific settings. Many problems surrounding such simulators involve solving the “inverse problem”, which consists of finding the simulator parameters that generate output that is closest to a given set of field observations.
+The framework of probabilistic programming naturally allows to express and solve such inverse problems. Unfortunately, application of existing tools requires refactoring of existing simulators within specialised probabilistic programming frameworks. This is usually infeasible given the size and complexity of existing simulators. Recent work by Baydin et al now enables existing simulators to be treated as a probabilistic program without extensive modification. We, in this paper, extend these exciting developments in two ways: First, we develop a mathematical formalism that allows us to succinctly define posterior densities of programs generated from stochastic population-based simulators. We then illustrate the applicability of Baydin et al’s approach by hijacking a series of important stochastic population-based Malaria epidemiology models. Our approach is capable of finding suitable model parameters much more efficiently than currently used approaches in the literature and refines . 
 
 % \todo[inline]{We need to have probabilistic programming in the title to make sure we attract the correct reviewers}
 
