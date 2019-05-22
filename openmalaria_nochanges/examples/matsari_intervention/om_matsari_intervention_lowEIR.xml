@@ -613,7 +613,7 @@
       <parameter include="false" name="'-ln(1-Sinf)'" number="1" value="0.050736" />
       <parameter include="false" name="Estar" number="2" value="0.03247" />
       <parameter include="true" name="Simm" number="3" value="0.138161050830301" />
-      <parameter include="true" name="Xstar_p" number="4" value="1.385853233699891" />
+      <parameter include="true" name="Xstar_p" number="4" value="0.1" />
       <parameter include="true" name="gamma_p" number="5" value="2.1" />
       <parameter include="true" name="sigma2i" number="6" value="10.173598698525799" />
       <parameter include="true" name="CumulativeYstar" number="7" value="35158523.31132510304451" />

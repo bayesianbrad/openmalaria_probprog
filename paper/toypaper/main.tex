@@ -36,6 +36,21 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{wrapfig}
+
+\newcommand{\n}[1]{\ensuremath{n_{#1}}}
+\newcommand{\rv}[1]{\ensuremath{{#1}_{1:n_{#1}}}}
+\newcommand{\rvv}[1]{\ensuremath{{#1}_{1:n_{#1'}}}}
+\newcommand{\model}[1]{\ensuremath{\mathcal{M}{(#1)}}}
+\newcommand{\simu}[1]{\ensuremath{\Omega(\model{#1})}}
+\newcommand{\micro}[2]{\ensuremath{\phi_{#1}(#2)}}
+\newcommand{\pdf}[1]{\ensuremath{\mathcal{P}_{d}(#1)}}
+\newcommand{\pmf}[1]{\ensuremath{\mathcal{P}_{m}(#1)}}
+\newcommand{\add}[1]{\ensuremath{A_{#1}}}
+\newcommand{\adds}[2]{\ensuremath{A_{#1}_{#2}}}
+\newcommand{\expect}[1]{\ensuremath{\mathbb{E}[#1]}}
+\newcommand{\trace}[1]{\ensuremath{\mathcal{T}_{#1}}}
+\newcommand{\traces}[2]{\ensuremath{\textit{tr}^{#1}_{#2}}}
+\newcommand{\stoc}[2]{\ensuremath{f^{#1}_{#2}(\rvv{x})}}
 % \usepackage[binary-units=true]{siunitx}
 \title{Hijacking Simulators with Universal Probabilistic Programming}
 
@@ -199,29 +214,32 @@ But, for all the benefits of using simulations there exist two challenging probl
 \item As the development process takes place over several years the code base becomes convoluted, making it increasingly challenging to understand the structure of the joint density and the internal operations within the simulator, diminishing the interpretability that the simulator once provided. 
 \end{itemize}
 
-\begin{wrapfigure}{R}{0.44\textwidth}
-\centering
-% \includegraphics[width=0.35\textwidth]{../plots/mpenny-pop10/mpenny_10.pdf}
-\includegraphics[width=0.40\textwidth]{../plots/model_lambda/model_posterior.pdf}
-\includegraphics[width=0.40\textwidth]{../plots/model_lambda/hist_posteriors.png}
-\caption{An example of the posterior output of population-based simulator after hijacking. \textit{Top}: Represents the posterior execution traces of the simulator, inside the the probabilistic programming 
-system. Each address $A_{i}$ correspond to a physical process within the simulator, we describe these addresses and their structures in more details in Section~\ref{sec:casestudy}.
-\textit{Bottom}: Represents the histograms generated after posterior inference for the parameters of interest, in this case those parameters are represented by addresses $A_{2}$ to $A_{6}$, conditioned on some observations. 
-The grey dashed lines represent the ground truth.}
-\label{fig:hijacking} 
-\end{wrapfigure}
-One such machine learning paradigm that has the ability to resolve these issues is \emph{Probabilistic programming}\cite{gordon2014probabilistic,le2016inference}. 
+One such machine learning paradigm that has the ability to resolve these issues is \emph{Probabilistic programming}\cite{gordon2014probabilistic,milch2005blog,van2018introduction,tran2017deep}. 
 Probabilistic programming enables users to write, condition on and perform inference in, complex probabilistic models in a programmatic, yet efficient and simplified way. 
 The source code of the given model, or equivalently the \emph{program}, is transformed into a program density, which can
 be viewed as the joint density of the user-specified model, \emph{the simulator} in this instance.
 Having direct access to the source code enables PPSs to conduct several processes automatically, such as 
-the automation of complex statistical inference procedures\cite{zhou2019lf,goodman2012church,wood2014new}, which enables us to efficiently calibrate
+the automation of complex statistical inference procedures\cite{zhou2019lf,goodman2012church,wood2014new,rainforth2017automating}, which enables us to efficiently calibrate
 model parameters, and we can also track how the internals of the program change during
-run time, enabling a full analysis of the program structure and traces generated, which provides greater interpretability, see Figure~\ref{fig:hijacking}.
+run time, enabling a full analysis of the program structure and traces generated\cite{milch2005blog}, which provides greater interpretability, see Figure~\ref{fig:hijacking}.
 In addition to this, as models are directly expressed in program code we can encode other structures to make use of the full structure of a given language, whether that is \texttt{python, C++} or 
 any other language,
 which enables users to integrate PPSs into their standard model development process, increasing efficiency and reducing model iteration time.
 
+\begin{wrapfigure}{R}{0.44\textwidth}
+\vspace{-20pt}
+\centering
+% \includegraphics[width=0.35\textwidth]{../plots/mpenny-pop10/mpenny_10.pdf}
+\includegraphics[width=0.40\textwidth]{../plots/model_lambda/model_posterior.pdf}
+\includegraphics[width=0.40\textwidth]{../plots/model_lambda/hist_posteriors.png}
+% \vspace{-10pt}
+\caption{An example of the posterior output of population-based simulator after hijacking. \textit{Top}: Represents the posterior execution traces of the simulator, inside the the probabilistic programming 
+system. Each address $A_{i}$ correspond to a physical process within the simulator, we describe these addresses and their structures in more details in Section~\ref{sec:casestudy}.
+\textit{Bottom}: Represents the histograms generated after posterior inference for the parameters of interest, in this case those parameters are represented by addresses $A_{2}$ to $A_{6}$, conditioned on some observations. 
+The grey dashed lines represent the ground truth.}
+\vspace{-25pt}
+\label{fig:hijacking} 
+\end{wrapfigure}
 For all the brilliance of probabilistic programming, if one did want to run an existing simulator in a standard probabilistic programming set-up one would have to entirely re-write the simulator in the language of the PPS.
 This in many cases is not feasible, nor efficient due to both the size 
 and complexity of the existing simulator code base. 
@@ -230,33 +248,31 @@ language and directly connect it to a PPS, without having to re-write
 the simulator in the given PPS?
 
   
-\paragraph{Related work} Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient}. 
+\paragraph{Related work} Our method of hijacking simulators builds on the work of~\cite{baydin2018efficient,casado2017improvements}. 
 They demonstrated how this could be done for event-based simulators, but there methods neglected a large class of population-based simulators that model interactions 
-between populations, that are utilized for modeling epidemics, multi-agent systems and financial economics  \bg{add citations}. 
+
+between populations, that are utilized for modeling epidemics, multi-agent systems and financial economics \cite{raberto2001agent,landau_binder_2014,hartig2011statistical,smith2008towards,bershteyn2018implementation}. 
 Our framework provides a solution and makes it easy to transform arbitrary stochastic population-based simulator, in addition to the event-based simulators, into probabilistic programs, regardless of the complexity of the simulator. 
 Our system supports simulators written in 13 different programming languages and enables the user to perform posterior inference over the density of the simulator, conditioned on what data the user has access too, including 
-simulator output. We provide a theoretical justification for our approach and many examples.
+simulator output. 
+We provide a theoretical justification for our approach and many examples.
 % This enables two things.
 % 1) It enables software developers and researchers to understand complicated code bases. 
-% 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user of the inference results understands what physical events led to inference outcome. 
+% 2) It provides interpretable inference results that provide policy makers with predictions that are truly interpretable, in the sense that the end-user, of the inference results understands what physical events led to inference outcome. 
 % This is critical in several domains, and is particularly important in the medical domain. We provide examples of both in Section~\textbf{TO ADD REF}.
 
 
 % In this paper, we introduce a novel method that allows one to shed light on the inner workings of a large class of population-based stochastic simulators. We achieve this by extending the work of \citep{baydin2018efficient} by interpreting such population-based simulators as probabilistic generative models within the framework of universal probabilistic programming (UPP) \cite{le-2016-inference}. To this end, we \emph{hijack} existing simulators by overriding their internal random number generators.  Specifically, by replacing the existing low-level random number generator in a simulator with a call to a purpose-built UPP ``controller'', which can thus control, track and manipulate the stochasticity of the simulator.
 
 
-
-
-%Moreover, though our focus is on hijacking epidemiology simulators, our general approach and framework can be applied more widely to a general class of stochastic simulators.
+% Moreover, though our focus is on hijacking epidemiology simulators, our general approach and framework can be applied more widely to a general class of stochastic simulators.
 
 % In time, we hope our approach will play a critical role in
 % bringing recent advancements in probabilistic programming to bear on
 % the vast array of existing simulators used throughout the sciences,
 % thereby providing wide-ranging impacts across a number of fields.
 
-This paper first gives an overview of existing Malaria simulators (Section \ref{sec:background}), and proceed by introducing the necessary background on the \textit{pyprob} framework and the concept of universal probabilistic programming (Section \ref{sec:hijackingsimulators}). Our approach is then demonstrated and analysed in the context of a Malaria case study (Section \ref{sec:casestudy}). 
-
-% \section{Background}
+ % \section{Background}
 % \label{sec:backgorund}
 
 % \begin{itemize}
@@ -273,9 +289,6 @@ This paper first gives an overview of existing Malaria simulators (Section \ref{
 % Probabilistic programming~\cite{gordon2014probabilistic,staton2016semantics,kozen1979semantics} 
 % can be used to express probabilistic models and consequently perform automated inference these. Once a probabilistic model has been expressed in a probabilistic programming language, a wide range of inference techniques, such as Markov Chain Monte Carlo (MCMC)\cite{geyer1992practical}, Variational Inference~(VI)\cite{wainwright2008graphical} and Deep Neural Networks~(DNN)\cite{Goodfellow:2016:DL:3086952},  can be used by non-experts in an automated fashion. 
  
-
-
-
 % \section{Types of Models and Probabilistic Programming Languages}
 
 % To bridge the gap between the statistics and machine learning community to the probabilistic programming community we provide a useful overview to expose our ideas more concretely. 
@@ -303,18 +316,42 @@ Epidemiology studies the prevalence and spreading of diseases across populations
 Hijacking a simulator a describes the process by which a simulator's random number generators are replaced by calls to external sampling procedures, which are controlled by a probabilistic programming system (PPS). In practice, this amounts to performing a small number of surgical incisions into the simulator's source code in order to replace built-in calls to random number generators. E.g., given a simulator written in C++/Boost\cite{schaling2011boost}, a Gaussian distribution object \textit{boost::normal} is replaced with the corresponding \textit{pyprob\_cpp} distribution object, namely \textit{pyprob\_cpp::distributions::Normal}. Sampling from this distribution is then done by requesting the PPS to send a sample back to the simulator. \bg{This will be extended}
 
 
- \label{sec:methods}
-
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+\hline
+Symbol & Meaning  \\
+\hline
+\n{x} & Number of latent variables \\
+\n{y} & Number of input observations \\
+\n{y’} & Number of output observations, generated simulator values \\
+\rv{x} & The latent parameters \\
+\rv{y} & The input observed parameters \\
+\rv{y’} & The output observed parameters \\
+\model{\cdot} & Model - i.e .xml file \\
+\simu{\cdot} & Simulator \\
+\micro{k}{\cdot} & $k$-th Micro-simulation \\
+\pdf{\cdot} & probability density function \\
+\pmf{\cdot} & probability mass function \\
+\add{i} & Address $i$ \\
+\expect{\cdot} & Expectation (first moment) \\
+\trace{j} & The $j$-th collapsed Trace \\
+\traces{i}{j} & A single, un-collapsed Trace for the $i$th trace. ``A program trace’' \\
+\stoc{h}{i} & A stochastic process at step $h$ for \add{i} \\
+\hline
+\end{tabular}
+\end{center}
   \begin{algorithm}
-   \caption{How to perform posterior inference over a stochastic simulator with 
-   }
-    \begin{algorithmic}[1]
-      \Function{Convert Simulator to a Probabilistic Program}{$A$}\Comment{}
-
-        \State replace raw samples statements $f_{t}(x_{t} | \eta_{t}) $
-        \State Create thin wrapper
-        \State Create Containerized Environment $C_{i}$
-        \State Create Connection
+  \small
+   \caption{Hijacking a stochastic simulator for an arbitrary machine}
+    \begin{algorithmic}\small
+      \Function{Simulator to a Probabilistic Program}{Simulator $\Omega(\cdot)$, Model input to simulator \model{\cdot}, PPS sampling primitive $f_t()$, Message passing protocol (PPX) $h_t()$, Random variable $x_{sim}$, PPS $\mathcal{P}$ }
+       \State  $ x_{sim} \rightarrow f_{t}(x_{sim}) $\Comment{Replace raw sample statements}
+       \State $\simu{f_{t}(x^{t}_{sim})} \rightarrow  h_{t}(\simu{f_{t}(x^{t}_{sim})}) \rightarrow \mathcal{P}(f_{t}(x^{t}_{sim}))$ \Comment{An API between the simulator enables raw RNG to be passed through the PPS}
+        
+        \Function{Create Containerized Environment}{$C(\Delta)$}
+        \For{$\delta$ in $\Delta$}
+        \State Add dependency $\delta$
+        \EndFor
         \State Run Program
        \EndFunction
        \Function{Create thin wrapper}{$f_{t}(x_{t} | \eta_{t})$}
@@ -322,6 +359,7 @@ Hijacking a simulator a describes the process by which a simulator's random numb
        \EndFunction
        \Function{Create Containerized Environment }{$\Delta_{i}$}\Comment{Where $\Delta_{i}$ is one of $i$-th dependencies}
        \State to add
+       \EndFunction
        \EndFunction
 
 
@@ -512,6 +550,12 @@ Comparisons like these could help developers better control model complexity, an
   \label{fig:plotewan}
 \end{figure*}
 
+\begin{figure*}
+  \centering
+  \includegraphics[width=\textwidth]{../plots/mastsari/mastsari_prior_trace_structure.pdf}
+  \caption{Prior trace probabilities of the Mastsari model.}
+  \label{fig:priortracemastsari}
+\end{figure*}
 
 \begin{table}[h!]
 \footnotesize
