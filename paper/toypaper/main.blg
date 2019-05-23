@@ -1,0 +1,66 @@
+This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: main.aux
+The style file: plain.bst
+Database file #1: refs.bib
+Repeated entry---line 116 of file refs.bib
+ : @article{geyer1992practical
+ :                            ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 280 of file refs.bib
+ : @inproceedings{gordon2014probabilistic
+ :                                       ,
+I'm skipping whatever remains of this entry
+Database file #2: malaria.bib
+Warning--empty journal in autino_epidemiology_2012
+Warning--empty year in autino_epidemiology_2012
+Warning--empty year in ferris_openmalaria_2015
+Warning--empty journal in gleisberg_event_2008
+Warning--empty year in gleisberg_event_2008
+Warning--can't use both volume and number fields in kass1990rapid
+Warning--empty journal in mwendera_challenges_2019
+Warning--empty year in mwendera_challenges_2019
+Warning--empty journal in smith_ensemble_2012
+Warning--empty year in smith_ensemble_2012
+You've used 29 entries,
+            2118 wiz_defined-function locations,
+            673 strings with 10297 characters,
+and the built_in function-call counts, 12170 in all, are:
+= -- 1138
+> -- 797
+< -- 10
++ -- 319
+- -- 286
+* -- 950
+:= -- 2050
+add.period$ -- 95
+call.type$ -- 29
+change.case$ -- 223
+chr.to.int$ -- 0
+cite$ -- 39
+duplicate$ -- 409
+empty$ -- 786
+format.name$ -- 286
+if$ -- 2479
+int.to.chr$ -- 0
+int.to.str$ -- 29
+missing$ -- 32
+newline$ -- 149
+num.names$ -- 58
+pop$ -- 250
+preamble$ -- 1
+purify$ -- 196
+quote$ -- 0
+skip$ -- 291
+stack$ -- 0
+substring$ -- 591
+swap$ -- 105
+text.length$ -- 10
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 108
+warning$ -- 10
+while$ -- 96
+width$ -- 31
+write$ -- 317
+(There were 2 error messages)

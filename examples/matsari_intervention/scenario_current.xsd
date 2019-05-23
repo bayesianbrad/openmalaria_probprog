@@ -1,5 +1,11 @@
 <xs:schema targetNamespace="http://openmalaria.org/schema/scenario_39" xmlns:om="http://openmalaria.org/schema/scenario_39" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<<<<<<< HEAD
    
+=======
+  
+  
+  
+>>>>>>> 0d7d8b824a4789de8ffc7134f57a893d8f6d0405
   
   
   <xs:element name="scenario">
@@ -5892,4 +5898,8 @@
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
+<<<<<<< HEAD
 </xs:schema>
+=======
+</xs:schema>
+>>>>>>> 0d7d8b824a4789de8ffc7134f57a893d8f6d0405
