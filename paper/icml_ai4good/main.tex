@@ -411,8 +411,8 @@ After a variable has been sampled, it is sent to the PPS using \textit{pyprob\_c
 Finally, the entry point to the simulator, i.e. \textit{main} in C++, is replaced by a special \textit{forward} call, in this case \textit{pyprob\_cpp::forward}.
 This allows the PPS to generate rollouts from the simulator remotely. A pictorial overview of this process is depicted in Figure~\ref{fig:how}.
 
-\paragraph{Population-based simulators} In contrast to the setup used by \cite{baydin2018efficient}, who interface a particle physics simulator that creates a single trace per \textit{forward} call, a population-based simulator creates a trace per population member. This means that e.g. in EMOD, a standard scenario simulation rollout over the span of $3$ years  
-with a population of size $n=5000$ \cite{smith2008towards} will generate about $ \SI{4}{\tera\byte}$ of raw trace data. Unlike with \citep{baydin2018efficient}, this amount of data cannot possibly be kept in RAM, which makes \textit{a posteriori} trace analysis very inefficient. 
+\paragraph{Population-based simulators} create a trace per population member, in contrast to event-based simulators that create only a single trace per \textit{forward} call~\cite{baydin2018efficient}. This means that e.g. in OpenMalaria, a standard scenario simulation rollout over the span of $3$ years  
+with a population of size $n=5000$ \cite{smith2008towards} will generate about \textit{four terabytes} of raw trace data. Unlike with \citep{baydin2018efficient}, this amount of data cannot possibly be kept in RAM, which makes \textit{a posteriori} trace analysis very inefficient. 
 In order to deal with the shortcomings of \textit{pyprob} in a population-based simulator context, we therefore extend the framework to be able to do trace analysis on the fly.
 
 By extending \textit{pyprob} to handle population-based simulators, the PPS can now track all stochastic random variables that are created within the simulator, which then allows us to generate trace plots and path probabilities associated to the execution paths of the program.
