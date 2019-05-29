@@ -1,4 +1,4 @@
-\begin{thebibliography}{21}
+\begin{thebibliography}{24}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -64,6 +64,11 @@ Ferris, C., Raybaud, B., and Madey, G.
 \newblock URL \url{http://dl.acm.org/citation.cfm?id=2874916.2874952}.
 \newblock event-place: Chicago, Illinois.
 
+\bibitem[Geyer(1992)]{geyer1992practical}
+Geyer, C.~J.
+\newblock Practical markov chain monte carlo.
+\newblock \emph{Statistical science}, pp.\  473--483, 1992.
+
 \bibitem[Gordon et~al.(2014)Gordon, Henzinger, Nori, and
   Rajamani]{gordon2014probabilistic}
 Gordon, A.~D., Henzinger, T.~A., Nori, A.~V., and Rajamani, S.~K.
@@ -90,6 +95,11 @@ Landau, D.~P. and Binder, K.
 \newblock Cambridge University Press, 4 edition, 2014.
 \newblock \doi{10.1017/CBO9781139696463}.
 
+\bibitem[Le et~al.(2016)Le, Baydin, and Wood]{le2016inference}
+Le, T.~A., Baydin, A.~G., and Wood, F.
+\newblock Inference compilation and universal probabilistic programming.
+\newblock \emph{arXiv preprint arXiv:1610.09900}, 2016.
+
 \bibitem[Le et~al.(2017)Le, Baydin, and Wood]{le-2016-inference}
 Le, T.~A., Baydin, A.~G., and Wood, F.
 \newblock Inference compilation and universal probabilistic programming.
@@ -115,11 +125,12 @@ Paszke, A., Gross, S., Chintala, S., Chanan, G., Yang, E., DeVito, Z., Lin, Z.,
 \newblock Automatic differentiation in pytorch.
 \newblock In \emph{NIPS-W}, 2017.
 
-\bibitem[Refugees(2017)]{refugees_2030}
-Refugees, U. N. H. C.~f.
-\newblock The 2030 agenda for sustainable development.
-\newblock 2017.
-\newblock URL \url{https://www.refworld.org/docid/57b6e3e44.html}.
+\bibitem[Ranganath et~al.(2014)Ranganath, Gerrish, and
+  Blei]{ranganath2014black}
+Ranganath, R., Gerrish, S., and Blei, D.
+\newblock Black box variational inference.
+\newblock In \emph{Artificial Intelligence and Statistics}, pp.\  814--822,
+  2014.
 
 \bibitem[Sch{\"a}ling(2011)]{schaling2011boost}
 Sch{\"a}ling, B.
@@ -159,6 +170,12 @@ Staton, S., Yang, H., Wood, F., Heunen, C., and Kammar, O.
 \newblock The sustainable development goals report 2018.
 \newblock 2018.
 \newblock URL \url{https://doi.org/10.18356/7d014b41-en}.
+
+\bibitem[UN(2017)]{unitednations}
+UN, U.~N.
+\newblock The 2030 agenda for sustainable development.
+\newblock 2017.
+\newblock URL \url{https://www.refworld.org/docid/57b6e3e44.html}.
 
 \bibitem[{WHO}(2015)]{who_global_2015}
 {WHO}.
