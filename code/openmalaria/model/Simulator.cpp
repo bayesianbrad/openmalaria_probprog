@@ -43,6 +43,10 @@
 #include <fstream>
 #include <gzstream/gzstream.h>
 
+// added by Bradley - non OM team
+#include <xtensor/xadapt.hpp>
+#include <pyprob_cpp.h>
+
 
 namespace OM {
     using Monitoring::Continuous;
@@ -146,8 +150,13 @@ void Simulator::start(const scnXml::Monitoring& monitoring){
     
     // Make sure warmup period is at least as long as a human lifespan, as the
     // length required by vector warmup, and is a whole number of years.
+
+
+
     SimTime humanWarmupLength = sim::maxHumanAge();
     if( humanWarmupLength < sim::transmission().minPreinitDuration() ){
+        // added by Bradley - non OM team - Turns pyprob tracking off
+        pyprob_cpp::setLocal(bool 1)
         cerr << "Warning: human life-span (" << humanWarmupLength.inYears();
         cerr << ") shorter than length of warm-up requested by" << endl;
         cerr << "transmission model ("
@@ -157,7 +166,13 @@ void Simulator::start(const scnXml::Monitoring& monitoring){
         humanWarmupLength = sim::transmission().minPreinitDuration();
     }
     humanWarmupLength = SimTime::fromYearsI( static_cast<int>(ceil(humanWarmupLength.inYears())) );
-    
+
+    /* Bradley: We may need to an additional if statement in the above condition
+       to look for the last run of warm up as we will require the value of that sample
+     */
+    // added by Bradley - non OM team - Turns pyprob tracking back on
+    pyprob_cpp::setLocal(bool 0)
+
     totalSimDuration = humanWarmupLength  // ONE_LIFE_SPAN
         + sim::transmission().expectedInitDuration()
         // plus MAIN_PHASE: survey period plus one TS for last survey
