@@ -8,7 +8,6 @@ RUN cd /code && git clone --branch 0.4.16 https://github.com/QuantStack/xtl.git 
 RUN cd /code && git clone --branch 0.17.4 https://github.com/QuantStack/xtensor.git && cd xtensor && cmake . && make install
 RUN cd /code && git clone --branch 0.3.0  https://github.com/QuantStack/xtensor-io.git && cd xtensor-io && cmake . && make install
 RUN cd /code && git clone --branch 0.13.1 https://github.com/QuantStack/xtensor-blas.git && cd xtensor-blas && cmake . && make install
-
 RUN cd /code && git clone --branch master https://github.com/bradleygramhansen/pyprob_cpp.git && cd pyprob_cpp && mkdir build && cd build && cmake ../src && cmake --build . && make install
 
 ADD code/openmalaria /code/openmalaria
