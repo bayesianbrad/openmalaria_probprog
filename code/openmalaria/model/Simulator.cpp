@@ -152,11 +152,11 @@ void Simulator::start(const scnXml::Monitoring& monitoring){
     // length required by vector warmup, and is a whole number of years.
 
 
-
+    bool local = false;
+    pyprob_cpp::setLocal(local);
     SimTime humanWarmupLength = sim::maxHumanAge();
     if( humanWarmupLength < sim::transmission().minPreinitDuration() ){
         // added by Bradley - non OM team - Turns pyprob tracking off
-        pyprob_cpp::setLocal(bool 1)
         cerr << "Warning: human life-span (" << humanWarmupLength.inYears();
         cerr << ") shorter than length of warm-up requested by" << endl;
         cerr << "transmission model ("
@@ -171,7 +171,8 @@ void Simulator::start(const scnXml::Monitoring& monitoring){
        to look for the last run of warm up as we will require the value of that sample
      */
     // added by Bradley - non OM team - Turns pyprob tracking back on
-    pyprob_cpp::setLocal(bool 0)
+    bool new_local = false;
+    pyprob_cpp::setLocal(new_local);
 
     totalSimDuration = humanWarmupLength  // ONE_LIFE_SPAN
         + sim::transmission().expectedInitDuration()
