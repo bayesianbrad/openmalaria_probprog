@@ -39,7 +39,7 @@
 #include "util/random.h"
 #include "util/StreamValidator.h"
 #include "schema/scenario.h"
-
+#include <iostream>
 #include <fstream>
 #include <gzstream/gzstream.h>
 
@@ -152,11 +152,9 @@ void Simulator::start(const scnXml::Monitoring& monitoring){
     // length required by vector warmup, and is a whole number of years.
 
 
-    bool local = false;
-    pyprob_cpp::setLocal(local);
+
     SimTime humanWarmupLength = sim::maxHumanAge();
     if( humanWarmupLength < sim::transmission().minPreinitDuration() ){
-        // added by Bradley - non OM team - Turns pyprob tracking off
         cerr << "Warning: human life-span (" << humanWarmupLength.inYears();
         cerr << ") shorter than length of warm-up requested by" << endl;
         cerr << "transmission model ("
@@ -167,14 +165,8 @@ void Simulator::start(const scnXml::Monitoring& monitoring){
     }
     humanWarmupLength = SimTime::fromYearsI( static_cast<int>(ceil(humanWarmupLength.inYears())) );
 
-    /* Bradley: We may need to an additional if statement in the above condition
-       to look for the last run of warm up as we will require the value of that sample
-     */
-    // added by Bradley - non OM team - Turns pyprob tracking back on
-    bool new_local = false;
-    pyprob_cpp::setLocal(new_local);
 
-    totalSimDuration = humanWarmupLength  // ONE_LIFE_SPAN
+     totalSimDuration = humanWarmupLength  // ONE_LIFE_SPAN
         + sim::transmission().expectedInitDuration()
         // plus MAIN_PHASE: survey period plus one TS for last survey
         + mon::finalSurveyTime() + SimTime::oneTS();
@@ -192,9 +184,11 @@ void Simulator::start(const scnXml::Monitoring& monitoring){
     // set once, since we exit after a checkpoint triggered this way.
     SimTime testCheckpointTime = util::CommandLine::getNextCheckpointTime( sim::now() );
     SimTime testCheckpointDieTime = testCheckpointTime;        // kill program at same time
-    
+
     // phase loop
     while (true){
+
+
         // loop for steps within a phase
         while (sim::now() < simPeriodEnd){
             util::BoincWrapper::reportProgress(sim::now().raw(), totalSimDuration.raw());
@@ -225,9 +219,18 @@ void Simulator::start(const scnXml::Monitoring& monitoring){
             // This should be called before humans contract new infections in the simulation step.
             // This needs the whole population (it is an approximation before all humans are updated).
             sim::transmission().vectorUpdate ();
-            
+
+            bool local = true;
+            bool debug =  true;
+            pyprob_cpp::setLocal(local, debug);
+             // added by Bradley - non OM team - Turns pyprob tracking off
             sim::humanPop().update1(humanWarmupLength);
-            
+            /* Bradley: We may need to an additional if statement in the above condition
+               to look for the last run of warm up as we will require the value of that sample
+             */
+            // added by Bradley - non OM team - Turns pyprob tracking back on
+            bool new_local = true;
+            pyprob_cpp::setLocal(new_local,debug);
             // Doesn't matter whether non-updated humans are included (value isn't used
             // before all humans are updated).
             sim::transmission().update();

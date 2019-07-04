@@ -238,7 +238,7 @@ void reportStatMSF( Measure measure, size_t species, double val );
 /// Report some value (floating point) by genotype to the current survey.
 void reportStatMSGF( Measure measure, size_t species, size_t genotype, double val );
 
-/// Query whether an output measure is used.
+/// Sample whether an output measure is used.
 /// This function is not fast, so it is recommended to cache the result.
 bool isUsedM( Measure measure );
 

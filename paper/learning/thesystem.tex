@@ -1,0 +1,115 @@
+% !TEX root = notes.tex
+
+\tikzset{
+    state/.style={
+           rectangle,
+           rounded corners,
+           draw=black, very thick,
+           minimum height=2em,
+           inner sep=2pt,
+           text centered,
+           },
+}
+
+
+\begin{tikzpicture}[->,>=stealth']
+
+ % Position of Sample 
+ % Use previously defined 'state' as layout (see above)
+ % use tabular for content to get columns/rows
+ % parbox to limit width of the listing
+ \node[state,
+ text width=3cm, 	% max text width
+ yshift=0cm, 		% move 2cm in y
+ node distance=0cm, 	% distance to Sample
+ anchor=center] (Sample) 
+ {\begin{tabular}{l}{
+  \textbf{Sample}\\
+  \parbox{4cm}{
+    \small{Program call:\\
+    \emph{Program}.\texttt{forward()}}
+  }
+ \end{tabular}};
+  
+ \node[state,    	% layout (defined above)
+ text width=3cm, 	% max text width
+ yshift=-2cm, 		% move 2cm in y
+ below of=Sample, 	% Position is to the right of Sample
+ node distance=0cm, 	% distance to Sample
+ anchor=center] (OBSERVE) 	% posistion relative to the center of the 'box'
+{%
+\begin{tabular}{l} 	% content
+ \textbf{Observe}\\
+ \parbox{4cm}{
+  \small{Program call:\\
+  \emph{Program}.\texttt{forward()}}
+}
+\end{tabular}};
+
+ % State: PyProb with different content
+ \node[state,    	% layout (defined above)
+  text width=3cm, 	% max text width
+  yshift=0cm, 		% move 2cm in y
+  right of=Sample, 	% Position is to the right of Sample
+  node distance=6.5cm, 	% distance to Sample
+  anchor=center] (PyProb) 	% posistion relative to the center of the 'box'
+ {%
+ \begin{tabular}{l} 	% content
+  \textbf{System}\\ %system sample
+  \parbox{4cm}{Pyprob processes\\ \texttt{sample}}
+ \end{tabular}
+ };
+ 
+ % STATE System
+ \node[state,
+  below of=PyProb,
+  yshift=-1cm,
+  anchor=center,
+  text width=3cm] (System) 
+ {%
+ \begin{tabular}{l}
+  \textbf{System}\\
+  \parbox{4cm}{Pyprob processes \\\texttt{observe}}
+ \end{tabular}
+ };
+
+ % STATE EPC
+ \node[state,
+  right of=PyProb,
+  yshift = -0cm,
+  node distance=5cm,
+  anchor=center] (EPC) 
+ {%
+ \begin{tabular}{l}
+  \textbf{Program density}\\
+  \parbox{4cm}{P(\mathcal{T}= $x_{1:n_x}| \lambda)$}
+ \end{tabular}
+ };
+
+
+  % STATE OUTPUT
+  \node[state,
+  right of=System,
+  yshift = 0cm,
+  node distance=5cm,
+  anchor=center] (OUTPUT) 
+ {%
+ \begin{tabular}{l}
+  \textbf{Program Output}\\
+  \parbox{4cm}{$\Omega = \{P(x_{1:n_{x}}), w\}$}
+ \end{tabular}
+ };
+
+ % draw the paths and and print some Text below/above the graph
+ \path (Sample) 	edge[bend left=20]  node[anchor=south,above]{$f_{a_{j}} ; \eta_{j}$}(PyProb)
+ (OBSERVE)     	edge[bend right=20] node[anchor=south,above]{$g_{b_{i}},\phi_i , y_i $} (System)
+ (PyProb)       	edge [bend left=20] node[anchor=south,above]{$g_{b_{i}}(y_i, \phi_i)$} (EPC)
+ (PyProb)       edge [bend left=9] node[anchor=west, above]{$x_{i}$ \emph{returned}} (OBSERVE)
+ (System)       	edge [bend right=10]                                          (EPC)
+ (EPC)              edge                                                    (OUTPUT)
+ (System)  	edge   node[anchor=north,above]{\emph{Control}} (OBSERVE);
+%  (System)  	edge[loop below]    node[anchor=north,below]{$SC_n\neq 0$} (System)
+%  (System)  	edge                node[anchor=left,right]{$SC_n = 0$} (PyProb);
+
+\end{tikzpicture}
+
