@@ -1,4 +1,4 @@
-/* This file is part of OpenMalaria.
+cd ../* This file is part of OpenMalaria.
  * 
  * Copyright (C) 2005-2015 Swiss Tropical and Public Health Institute
  * Copyright (C) 2005-2015 Liverpool School Of Tropical Medicine

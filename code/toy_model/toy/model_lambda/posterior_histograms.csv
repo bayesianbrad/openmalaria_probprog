@@ -1,0 +1,10 @@
+address_id, count, name, controlled, replaced, observable, observed, address_base
+A1, 1001, , True, False, False, False, 118__forward__pop_age_days__Uniform
+A2, 1001, S_inf, True, False, True, False, 154__forward__S_inf__Beta
+A3, 1001, E_crit, True, False, True, False, 176__forward__E_crit__Gamma
+A4, 1001, S_imm, True, False, True, False, 202__forward__S_imm__Beta
+A5, 1001, Xpcrit, True, False, True, False, 224__forward__X_p_crit__Normal
+A6, 1001, gamma_p, True, False, True, False, 246__forward__gamma_p__Gamma
+A7, 70000, nInfections, True, False, True, False, 480__forward__h__Poisson
+A8, 1000, prevalance, False, False, False, False, 696__forward__?__None
+A9, 1, prevalance, False, False, False, False, 636__forward__?__None
