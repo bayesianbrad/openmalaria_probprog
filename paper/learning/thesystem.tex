@@ -75,39 +75,42 @@
 
  % STATE EPC
  \node[state,
-  right of=PyProb,
-  yshift = -0cm,
+  right of=System,
+  yshift = 1cm,
   node distance=5cm,
   anchor=center] (EPC) 
  {%
  \begin{tabular}{l}
   \textbf{Program density}\\
-  \parbox{4cm}{P(\mathcal{T}= $x_{1:n_x}| \lambda)$}
+  \parbox{5cm}{P(\mathcal{T}= $x_{1:n_x}| \lambda)$\\
+  \{$x_{1:n_{x}}\}$,$w= \prod^{n_{y}}_{i=1}g_b_i (y_i | \psi_i)}$}
  \end{tabular}
  };
 
 
   % STATE OUTPUT
   \node[state,
-  right of=System,
-  yshift = 0cm,
+  above of=EPC,
+  yshift = -1cm,
   node distance=5cm,
   anchor=center] (OUTPUT) 
  {%
  \begin{tabular}{l}
   \textbf{Program Output}\\
-  \parbox{4cm}{$\Omega = \{P(x_{1:n_{x}}), w\}$}
+  \parbox{5cm}{$\Omega = \{P_{r}(x_{1:n_{x}}), w\}$}
  \end{tabular}
  };
 
  % draw the paths and and print some Text below/above the graph
  \path (Sample) 	edge[bend left=20]  node[anchor=south,above]{$f_{a_{j}} ; \eta_{j}$}(PyProb)
  (OBSERVE)     	edge[bend right=20] node[anchor=south,above]{$g_{b_{i}},\phi_i , y_i $} (System)
- (PyProb)       	edge [bend left=20] node[anchor=south,above]{$g_{b_{i}}(y_i, \phi_i)$} (EPC)
- (PyProb)       edge [bend left=9] node[anchor=west, above]{$x_{i}$ \emph{returned}} (OBSERVE)
- (System)       	edge [bend right=10]                                          (EPC)
+ (System)       	edge [bend right=20] node[anchor=south,below]{$g_{b_{i}}(y_i, \phi_i)$} (EPC)
+ (PyProb)       edge [bend left=9] node[anchor=west, above]{$x_{i}$} (Sample)
+ (PyProb)       edge [bend left=9] node[anchor=west, above]{$x_{i}$} (EPC)
+%  (System)       	edge [bend left=10]                                          (EPC)
  (EPC)              edge                                                    (OUTPUT)
- (System)  	edge   node[anchor=north,above]{\emph{Control}} (OBSERVE);
+ (System)  	edge [bend right=10]  node[anchor=north,above]{\emph{Control}} (OBSERVE)
+ (Sample)   edge [bend left= 20] (OUTPUT) ;
 %  (System)  	edge[loop below]    node[anchor=north,below]{$SC_n\neq 0$} (System)
 %  (System)  	edge                node[anchor=left,right]{$SC_n = 0$} (PyProb);
 
