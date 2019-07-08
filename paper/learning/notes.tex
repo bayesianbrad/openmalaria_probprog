@@ -37,9 +37,11 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{wrapfig}
-\usepackage{amsmath}
-
-\usetikzlibrary{arrows,automata}
+\usepackage{amsmath,amsthm}
+\usepackage{amssymb}
+\tikzset{>=latex}
+\usetikzlibrary{bayesnet}
+\usetikzlibrary{arrows,shapes,automata}
 \usetikzlibrary{positioning}
 \newcommand{\n}[1]{\ensuremath{n_{#1}}}
 \newcommand{\rv}[1]{\ensuremath{{#1}_{1:n_{#1}}}}
@@ -269,6 +271,29 @@ could get dramatic speed increases over standard importance sampling.}
 Due to the current set-up performing Random-walk Metropolis Hastings (RMH) is not feasible 
 as the rejection sampling blocks within the simulator mean that we cannot correctly perform RMH
 as we do not have a functional form for all parts of the simulator \textbf{Note: Re Word}
+
+
+\section{An Example: Modelling Parasite Densities in Simulation}
+
+\subsection{The Model}
+
+
+\begin{figure}[ht!]
+  \centering
+  \label{fig:parasite}
+  \includegraphics[width=0.5\textwidth]{parasite_model.pdf}
+  \caption{The DAG of the Parasite model.}
+\end{figure}
+
+
+
+\begin{figure}[ht!]
+  \label{fig:amortized_sampling}
+  \includegraphics[width=0.5\textwidth,height=0.5\textheight]{amoritized_rejection.pdf}
+  \caption{Using PyProb we can locate all regions of inefficient sampling 
+  and replace those points in the code with learnt functions that represent
+  the distributions of the rejection sampling statements. }
+\end{figure}
 \bibliographystyle{plain}
 \bibliography{refs}
 
