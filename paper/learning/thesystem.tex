@@ -23,12 +23,13 @@
  yshift=0cm, 		% move 2cm in y
  node distance=0cm, 	% distance to Sample
  anchor=center] (Sample) 
- {\begin{tabular}{l}{
+{%
+\begin{tabular}{l} 	% content
   \textbf{Sample}\\
   \parbox{4cm}{
-    \small{Program call:\\
-    \emph{Program}.\texttt{forward()}}
-  }
+   \small{Program call:\\
+   \emph{Program}.\texttt{forward()}}
+ }
  \end{tabular}};
   
  \node[state,    	% layout (defined above)
@@ -82,8 +83,8 @@
  {%
  \begin{tabular}{l}
   \textbf{Program density}\\
-  \parbox{5cm}{P(\mathcal{T}= $x_{1:n_x}| \lambda)$\\
-  \{$x_{1:n_{x}}\}$,$w= \prod^{n_{y}}_{i=1}g_b_i (y_i | \psi_i)}$}
+  \parbox{5cm}{P($\mathcal{T}= x_{1:n_x}| \lambda)$\\
+  \{$x_{1:n_{x}}\}$,$w= \prod^{n_{y}}_{i=1} g_{b_i}(y_i | \psi_i)$}
  \end{tabular}
  };
 
