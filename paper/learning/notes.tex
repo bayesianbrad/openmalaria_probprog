@@ -165,7 +165,7 @@ construct a proposal that is is dependent on those. In this sampling scheme our 
     0
   \end{cases}
 \end{equation}
-where $\mathcal{B}(\cdot)$ is satisfied by the simulator and $f_a_i(\cdot)$ represents a
+where $\mathcal{B}(\cdot)$ is satisfied by the simulator and $f_{a_i}(\cdot)$ represents a
 raw random sample, $\eta$ is a subset of the variables in-scope at the point of sampling
 and $n_{x}$ is the number of latent variables.
  This is true in all inference engines used in this hijacking framework.
@@ -192,7 +192,7 @@ program raw samples and observations can be defined as follows:
   \label{eq:posterior}
   p(\mathcal{T}=x_{1:n_x}| \lambda)=
   \begin{cases}
-  \prod_{i=1}^{n_x} f_{a_i}(x_i | \eta) \prod_{j=1}^{n_y} g_{b_j}(y_j | \phi) \texttt{if} \mathbal{B(x_{1:n_x})} = 1\\
+  \prod_{i=1}^{n_x} f_{a_i}(x_i | \eta) \prod_{j=1}^{n_y} g_{b_j}(y_j | \phi) \hspace{0.1cm} \texttt{if} \mathcal{B}(x_{1:n_x}) = 1\\
   0
   \end{cases}
 \end{equation}
@@ -211,17 +211,17 @@ $h(\cdot)$ is just a deterministic function.
 
 As the importance sampler updates the weights according to the following formula:
 \begin{equation}
-  w( x_{1:n_x}) = \prod^{n_x}_{i=1}\frac{f_a_i(x_i | \eta_i)}{q_i(x_i |f_a_i, \eta_i)} \prod^{n_y}_{j=1} g_b_j(y_j | \phi_j)
+  w(x_{1:n_x}) = \prod^{n_x}_{i=1}\frac{f_{a_i}(x_i | \eta_i)}{q_i(x_i |f_{a_i}, \eta_i)} \prod^{n_y}_{j=1} g_{b_j}(y_j | \phi_j)
 \end{equation}
 
 When the number of observations is fixed, the combined weight is equal to $w(x_{1:n_x}) = \prod^{n_y}_{j=1} w_j $. 
 To generate the weight up to each observe we can define $K(j)$ to be a function that returns the least $i$ before hitting an observe $j$.
 This enables us to write the $j$-th weight as follows:
 \begin{equation}
-  w_j(x1:K(j)) = g_b_j(y_j | \psi_j) \prod^{K(j)}_{K(j-1)+1} v_i
+  w_j(x1:K(j)) = g_{b_j}(y_j | \psi_j) \prod^{K(j)}_{K(j-1)+1} v_i
 \end{equation}
-where we define $v_j = \frac{f_a_j(x_j | \eta_j)}{q_j(x_j |f_a_j, \eta_j)}$ \textbf{Note: Ask Tom why the proposal is also dependent
-on $f_a_i$. }
+where we define $v_j = \frac{f_{a_j}(x_j | \eta_j)}{q_j(x_j |f_{a_j}, \eta_j)}$ \textbf{Note: Ask Tom why the proposal is also dependent
+on $f_{a_i}$. }
 
 Taking these definitions we can construct a target density over the 
 latents that is proportional to the products of \texttt{sample} and \texttt{observe}
@@ -254,11 +254,11 @@ could get dramatic speed increases over standard importance sampling.}
             \For{$m = 1:M$}
               \State $w^{m} = 1  $
               \For{$k = K(t-1)+1:K(t)$}
-                \State $x^m_k \sim q_k(x^m_k) f^m_{a_k,\eta^m_{j}}$
+                \State $x^m_k \sim q_k(x^m_k | f_{a^{m}_{k}},\eta^{m}_{j})$
                 \State $w^m_t \gets w^t_m v_j^m(x_k^m)$
                 \EndFor
             \EndFor
-          \State $w^m_t \gets w^m_t g_bt^m(y_t^m | \psi^m_t)$
+          \State $w^m_t \gets w^m_t g_{b_{t}^m}(y_t^m | \psi^m_t)$
           \State $\{x^{1:m}_{1:t}\}$ $\gets$ \texttt{resample}( $\{x^{1:m}_{1:t}\}$,  $\{w^{1:m}_{1:t}\}$ )
         \EndFor
         \EndProcedure
@@ -277,6 +277,48 @@ as we do not have a functional form for all parts of the simulator \textbf{Note:
 
 \subsection{The Model}
 
+The parasite model by Smith el al.~\cite{smith2006relationship} is a simple stochastic 
+model for determining the number of infections within a given population demographic.
+The models hypothesised in ~\cite{smith2006relationship} were found, 
+after extensive testing and development, to not characterise well the number 
+of infections among different demographics, especially those under 15 years old. 
+By using probabilistic programming we can immediately understand 
+the expressiveness of the proposed model and can exact important insights for 
+extending the proposed models, which increases ones ability to develop 
+improved models to estimate parasite densities, given 
+our observations of the seasonal entomological inoculation rate (EIR).
+In addition to this we can greatly reduce the computational costs, whilst
+improving model comprehension and expressivity.  
+Although a statistical model is not formally defined within~\cite{smith2006relationship}
+we define the unknown \emph{disease dynamics} parameters with a set of latent variables$\{x_{i}\}^{N}$
+and construct the model as follows: 
+
+\begin{align}
+  \mu_i &= N \\ % pop size
+  % disease dynamics
+  S_{\infty} &\sim \mathcal{N}(\mu_\infty, \sigma^{2}_\infty) \\
+  E_{crit} &\sim \mathcal{N}(\mu_{crit}, \sigma^{2}_{crit}) \\
+  S_{imm} &\sim \mathcal{N}(\mu_{imm}, \sigma^{2}_{imm}) \\
+  X_{p_{crit}} &\sim \mathcal{N}(\mu_{p_{crit}}, \sigma^{2}_{p_{crit}}) \\
+  \gamma_p &\sim \mathcal{N}(\mu_{p}, \sigma^{2}_{p}) \\
+  \rho_i & \sim \mathcal{U}(\mathbb{L}_i , \mathbb{U}_i) \\
+  % integration for parasite densities in different demographics
+  for \hspace{0.1cm} t &= 1:t_{max}: \\
+  E_a &= \frac{E_{{max}_t}}{A_{max}} \times h_{\mu_{SA}}() \\
+  X_p &= E_a + X_p \\
+  S_1 &= S_{\infty} + \frac{(1 - S_\infty) }{1 + \frac{E_a}{E_{crit}}} \\
+  S_2 &= S_{imm} + \frac{1 - S_{imm}}{1 + (\frac{X_p}{X_p_{crit}})^{\gamma_p}}\\
+  %Probability of survival function
+  S_p &= S_1 \times S_2 \\
+  \lambda &= S_p \times E_a \\
+  % Number of infections generated in unit time per individual sampled from poisson
+  h &\sim Pos(\lambda) \\
+  \texttt{if} \hspace{0.1cm} h > 0: \\
+  \hspace{2.3cm} n_{infect} = 1
+  % % end for - add prevelance construction below
+  % \mathcal{P}rev &= 
+\end{align}
+
 
 \begin{figure}[ht!]
   \centering
@@ -287,13 +329,14 @@ as we do not have a functional form for all parts of the simulator \textbf{Note:
 
 
 
-\begin{figure}[ht!]
+\begin{figure}[hb!]
   \label{fig:amortized_sampling}
   \includegraphics[width=0.5\textwidth,height=0.5\textheight]{amoritized_rejection.pdf}
   \caption{Using PyProb we can locate all regions of inefficient sampling 
   and replace those points in the code with learnt functions that represent
   the distributions of the rejection sampling statements. }
 \end{figure}
+
 \bibliographystyle{plain}
 \bibliography{refs}
 
