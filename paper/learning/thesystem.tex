@@ -11,7 +11,7 @@
            },
 }
 
-
+\begin{figure}
 \begin{tikzpicture}[->,>=stealth']
 
  % Position of Sample 
@@ -116,4 +116,11 @@
 %  (System)  	edge                node[anchor=left,right]{$SC_n = 0$} (PyProb);
 
 \end{tikzpicture}
-
+\caption{An overview of the hijacking system. $x_i$ represent latent variables. $f_{a_i}$ represent raw sample calls,
+$g_{b_j}$ represent conditioning statements. $\mathcal{T}$ corresponds to the program trace. $w$ represents the collective weights. 
+$r$ represents run number. $n_x$ represents the number of latent variables and $n_y$ represents the number of
+observations, which will always be fixed, but is model dependent. $\lambda$ represents all the other variables generated 
+by running the simulator \texttt{.forward()}.
+}
+\label{fig:systemoverview}
+\end{figure}

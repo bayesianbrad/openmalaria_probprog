@@ -140,17 +140,32 @@ However, by combining hijacking and amortizing parts of the simulator, in partic
 loops, we can not only correctly perform inference in such models, as the rejection sampling loops are 
 now replaced with learnt functions, but we can also perform inference much more efficiently. 
 This is because the rejection sampling loops are now replaced with learnt functions which enables us to correctly
-construct the density and as they are amortized evaluation is cheap and only has to be performed once per call.
-This both reduces memory consumption and running time. 
+construct the density and as they are amortized, evaluation is cheap and only has to be performed once per call.
+This significantly reduces memory consumption and running time. 
 
-As updates are made sequentially MCMC methods typically are not-well suited this type of recursive
+
+Without the amortization procedure, as updates are made sequentially MCMC methods are typically not-well suited this type of recursive
 estimation problem. 
 As each time we get a new data point $y_{t+1}$ we have to run new MCMC simulations 
 for $P(x_{0:t_1}| y_{0:t+1})$, we also cannot directly reuse the samples $\{x^{i}_{0:t}\}$. 
-Likewise, importance sampling is not well suited either, as we cannot reuse the samples and weights for a time $t$ $\{x^{i}_{0:t}, \tilde{w}^{i}_{t}\}^{N}_{i=1}$ 
-to sample from $(x_{0:t_1}| y_{0:t+1})$.
- However, as we can only run the simulator $\texttt{forward()}$ we cannot return back to a previous state and re-run. So adapting existing inference techniques 
- is the only viable option. 
+However, as we can only run the simulator $\texttt{forward()}$ we cannot return back to a previous state and re-run. 
+So adapting existing inference techniques is the only viable option. 
+MCMC methods can be effective with a well designed amortized inference procedure (\textbf{Note: This is not guaranteed}).
+Non-MCMC based methods such as importance sampling (IS) and sequential monte carlo (SMC), may also be
+sensible inference engines, although we shall discuss the limitations within the simulator context in the proceeding sections.  
+
+However, to implement this in practice we are required to do the following:
+ \begin{itemize}
+    \item Create a sensible training procedure
+    \item Have 2 additional functions implemented within pyprob
+    \begin{enumerate} \item 1) That stores only the necessary raw samples from the desired rejection sampling addresses to be used for training.
+                       \item 2) A function at \emph{test time} that replaces those given addresses with a learnt surrogate.
+    \end{enumerate}
+    \item Finer grained control over the actual latent variables of interest, to avoid unnecessary memory consumption and ensure that inference problems remain tractable.
+  \end{itemize}
+There is no doubt that implementing some fo these features will be more invasive to the underlying simulator code than previously
+just hijacking the raw-random number draws, but, it would enable us to attack difficulties in the inference procedures that are
+currently not amenable to the current approach.
 
  \input{thesystem.tex}
 \section{Limitations with different inference engines}  
@@ -220,12 +235,11 @@ This enables us to write the $j$-th weight as follows:
 \begin{equation}
   w_j(x1:K(j)) = g_{b_j}(y_j | \psi_j) \prod^{K(j)}_{K(j-1)+1} v_i
 \end{equation}
-where we define $v_j = \frac{f_{a_j}(x_j | \eta_j)}{q_j(x_j |f_{a_j}, \eta_j)}$ \textbf{Note: Ask Tom why the proposal is also dependent
-on $f_{a_i}$. }
+where we define $v_j = \frac{f_{a_j}(x_j | \eta_j)}{q_j(x_j |f_{a_j}, \eta_j)}$
 
 Taking these definitions we can construct a target density over the 
 latents that is proportional to the products of \texttt{sample} and \texttt{observe}
-statements \textbf{Note: Add update posterior here}
+statements \textbf{Note: Add update posterior here}.
 Thus, given the proposal $q(x_{1:K(t)})$ we define the importance weight as:
 \begin{multline}
   w(x_{1:t}) = \prod^{t}_{j=1} w_j (x_{1:K(j)}) = \\
@@ -235,6 +249,9 @@ Thus, given the proposal $q(x_{1:K(t)})$ we define the importance weight as:
   0
  \end{cases}
 \end{multline}
+
+One problem with importance sampling is in its ability to scale and condition upon multiple observations. |
+Choosing a \emph{good} prior remains challenging. 
 
 \subsection{Sequential Monte Carlo}
 Given multiple observations, we can ake the inference more computationally efficient 
@@ -265,18 +282,29 @@ could get dramatic speed increases over standard importance sampling.}
     \end{algorithmic}
 \end{algorithm}
 
+To implement SMC in the current set-up we round require a forking method and the 
 
 \subsection{Random-walk Metropolis Hastings}
 
 Due to the current set-up performing Random-walk Metropolis Hastings (RMH) is not feasible 
 as the rejection sampling blocks within the simulator mean that we cannot correctly perform RMH
-as we do not have a functional form for all parts of the simulator \textbf{Note: Re Word}
+as we do not have a functional form for all parts of the simulator to construct a target density
+that we can evaluate. \textbf{Note:
+Ask tom what:  one can sometimes achieve improvements by instead using the type of the distribution object 
+associated with $x_m$ (what does this first part mean?) 
+ to automatically construct a valid random walk proposal that allows for improved
+ hill climbing behavior on the individual updates. }. 
 
 
 \section{An Example: Modelling Parasite Densities in Simulation}
-
-\subsection{The Model}
-
+% \begin{wrapfigure}{r}{0.4\textwidth}
+  \begin{figure}[h!]
+    \centering
+    \label{fig:parasite}
+    \includegraphics[width=0.4\textwidth]{parasite_model.pdf}
+    \caption{The DAG of the Parasite model.}
+  % \end{wrapfigure}
+  \end{figure}
 The parasite model by Smith el al.~\cite{smith2006relationship} is a simple stochastic 
 model for determining the number of infections within a given population demographic.
 The models hypothesised in ~\cite{smith2006relationship} were found, 
@@ -313,30 +341,42 @@ and construct the model as follows:
   \lambda &= S_p \times E_a \\
   % Number of infections generated in unit time per individual sampled from poisson
   h &\sim Pos(\lambda) \\
-  \texttt{if} \hspace{0.1cm} h > 0: \\
-  \hspace{2.3cm} n_{infect} = 1
+  \texttt{if} &\hspace{0.1cm} h > 0: \\
+  \hspace{2.3cm} &n_{infect} = 1 \\
+  \text{TODO: add prevelance construction below}
   % % end for - add prevelance construction below
   % \mathcal{P}rev &= 
 \end{align}
 
+\textbf{TODO: Add some of the plots generated from this model and an accompanying analysis to them.}
 
-\begin{figure}[ht!]
-  \centering
-  \label{fig:parasite}
-  \includegraphics[width=0.5\textwidth]{parasite_model.pdf}
-  \caption{The DAG of the Parasite model.}
-\end{figure}
-
-
-
-\begin{figure}[hb!]
+\begin{wrapfigure}{l}{0.5\textwidth}
   \label{fig:amortized_sampling}
   \includegraphics[width=0.5\textwidth,height=0.5\textheight]{amoritized_rejection.pdf}
+  \vspace{-50pt}
   \caption{Using PyProb we can locate all regions of inefficient sampling 
   and replace those points in the code with learnt functions that represent
-  the distributions of the rejection sampling statements. }
-\end{figure}
+  the distributions of the rejection sampling statements. $Z_{i}$ represents the marginal and 
+  by learning surrogate functions for each of the rejection sampling loops.
+  In doing so we can learn approximate raw sample distributions $f(x_{i} | \eta)$ for each
+  rejection sampling loop. This means that we can evaluate the function at each part in the simulator, enabling
+  us to construct a target density that can be evaluated when using MCMC inference schemes such as RMH.
+    }
+  \end{wrapfigure}
 
+\section{Additional TODOs}
+
+
+\begin{itemize}
+\item Before implementing such tools into the simulator, spend time looking for simpler stochastic simulators 
+that can be hijacked but have target densities that can be constructed analytically. 
+\item If we are not utilizing the additional information stored in the trace, which is only used during the inference compilation
+training procedure, then we do not need it all, as for importance sampling we only require the weights after each \texttt{forward()}
+update. 
+\item If we cannot find any pre-existing simulators that are amenable to this approach then, we need to create our own, with
+a rejection sampling loop, that can be exploited by the new machinery. This would enable us to debug, provide a simple example 
+for the paper and understand the feasibility of the entire approach. 
+\end{itemize}
 \bibliographystyle{plain}
 \bibliography{refs}
 
