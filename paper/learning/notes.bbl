@@ -1,0 +1,45 @@
+\begin{thebibliography}{1}
+
+\bibitem{baydin2018efficient}
+Atilim~Gunes Baydin, Lukas Heinrich, Wahid Bhimji, Bradley Gram-Hansen, Gilles
+  Louppe, Lei Shao, Kyle Cranmer, Frank Wood, et~al.
+\newblock Efficient probabilistic inference in the quest for physics beyond the
+  standard model.
+\newblock {\em arXiv preprint arXiv:1807.07706}, 2018.
+
+\bibitem{beier1994plasmodium}
+John~C Beier, Charles~N Oster, Fred~K Onyango, James~D Bales, James~A Sherwood,
+  Peter~V Perkins, David~K Chumo, Davy~V Koech, Richard~E Whitmire, Clifford~R
+  Roberts, et~al.
+\newblock Plasmodium falciparum incidence relative to entomologic inoculation
+  rates at a site proposed for testing malaria vaccines in western kenya.
+\newblock {\em The American journal of tropical medicine and hygiene},
+  50(5):529--536, 1994.
+
+\bibitem{maire2006model}
+Nicolas Maire, Thomas Smith, Amanda Ross, Seth Owusu-Agyei, Klaus Dietz, and
+  Louis Molineaux.
+\newblock A model for natural immunity to asexual blood stages of plasmodium
+  falciparum malaria in endemic areas.
+\newblock {\em The American journal of tropical medicine and hygiene},
+  75(2\_suppl):19--31, 2006.
+
+\bibitem{smith2006mathematical}
+Thomas Smith, Gerry~F Killeen, Nicolas Maire, Amanda Ross, Louis Molineaux,
+  Fabrizio Tediosi, Guy Hutton, J{\"u}rg Utzinger, Klaus Dietz, and Marcel
+  Tanner.
+\newblock Mathematical modeling of the impact of malaria vaccines on the
+  clinical epidemiology and natural history of plasmodium falciparum malaria:
+  Overview.
+\newblock {\em The American journal of tropical medicine and hygiene},
+  75(2\_suppl):1--10, 2006.
+
+\bibitem{smith2006relationship}
+Thomas Smith, Nicolas Maire, Klaus Dietz, Gerry~F Killeen, Penelope Vounatsou,
+  Louis Molineaux, and Marcel Tanner.
+\newblock Relationship between the entomologic inoculation rate and the force
+  of infection for plasmodium falciparum malaria.
+\newblock {\em The American journal of tropical medicine and hygiene},
+  75(2\_suppl):11--18, 2006.
+
+\end{thebibliography}

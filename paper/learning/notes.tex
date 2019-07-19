@@ -39,6 +39,7 @@
 \usepackage{wrapfig}
 \usepackage{amsmath,amsthm}
 \usepackage{amssymb}
+\usepackage{cancel}
 \tikzset{>=latex}
 \usetikzlibrary{bayesnet}
 \usetikzlibrary{arrows,shapes,automata}
@@ -307,7 +308,7 @@ associated with $x_m$ (what does this first part mean?)
   \end{figure}
 The parasite model by Smith el al.~\cite{smith2006relationship} is a simple stochastic 
 model for determining the number of infections within a given population demographic.
-The models hypothesised in ~\cite{smith2006relationship} were found, 
+The models hypothesized in ~\cite{smith2006relationship} were found, 
 after extensive testing and development, to not characterise well the number 
 of infections among different demographics, especially those under 15 years old. 
 By using probabilistic programming we can immediately understand 
@@ -317,52 +318,210 @@ improved models to estimate parasite densities, given
 our observations of the seasonal entomological inoculation rate (EIR).
 In addition to this we can greatly reduce the computational costs, whilst
 improving model comprehension and expressivity.  
+
+
+\paragraph{Common features of the models}
+The models used are all discrete time micro-simulations of malaria in humans, 
+based on the published model used in[1], which we refer to as the base model.
+The model for infection of the vector as a function of parasite densities[2] 
+(and hence for the effect of vaccination on onward transmission), the case-management model[3], 
+the model of vaccination by pre-erythrocytic vaccines[4], the models for clinical outcomes and mortality[5,6], 
+and the basic design of the scenarios used for predicting impacts[3,7] all correspond to the previous descriptions,
+ which are accompanied by detailed rationales for the formulations used.  
+
+For all models, the number of infections  introduced in individual $i$ in five-day time step $t$, is distributed as:
+\begin{equation}
+  h(i,t) \sim \textit{Pos}(\lambda(i,t))
+\end{equation}
+where the expected number $\lambda(i,t) = S(i,t)E_a(i,t)$ and $S(i,t)$ is the suseptability
+(proportion of inoculations that result in infections) and and $E_{a}(i,t)$ is the expected number of entomological inoculations, adjusted for age and individual factors.
+
+
+\paragraph{Base model}
 Although a statistical model is not formally defined within~\cite{smith2006relationship}
 we define the unknown \emph{disease dynamics} parameters with a set of latent variables$\{x_{i}\}^{N}$
 and construct the model as follows: 
 
-\begin{align}
-  \mu_i &= N \\ % pop size
-  % disease dynamics
-  S_{\infty} &\sim \mathcal{N}(\mu_\infty, \sigma^{2}_\infty) \\
-  E_{crit} &\sim \mathcal{N}(\mu_{crit}, \sigma^{2}_{crit}) \\
-  S_{imm} &\sim \mathcal{N}(\mu_{imm}, \sigma^{2}_{imm}) \\
-  X_{p_{crit}} &\sim \mathcal{N}(\mu_{p_{crit}}, \sigma^{2}_{p_{crit}}) \\
-  \gamma_p &\sim \mathcal{N}(\mu_{p}, \sigma^{2}_{p}) \\
-  \rho_i & \sim \mathcal{U}(\mathbb{L}_i , \mathbb{U}_i) \\
-  % integration for parasite densities in different demographics
-  for \hspace{0.1cm} t &= 1:t_{max}: \\
-  E_a &= \frac{E_{{max}_t}}{A_{max}} \times h_{\mu_{SA}}() \\
-  X_p &= E_a + X_p \\
-  S_1 &= S_{\infty} + \frac{(1 - S_\infty) }{1 + \frac{E_a}{E_{crit}}} \\
-  S_2 &= S_{imm} + \frac{1 - S_{imm}}{1 + (\frac{X_p}{X_p_{crit}})^{\gamma_p}}\\
-  %Probability of survival function
-  S_p &= S_1 \times S_2 \\
-  \lambda &= S_p \times E_a \\
-  % Number of infections generated in unit time per individual sampled from poisson
-  h &\sim Pos(\lambda) \\
-  \texttt{if} &\hspace{0.1cm} h > 0: \\
-  \hspace{2.3cm} &n_{infect} = 1 \\
-  \text{TODO: add prevelance construction below}
-  % % end for - add prevelance construction below
-  % \mathcal{P}rev &= 
-\end{align}
+In the base model $E_{a}(i,t) = E_{max}(t) \frac{A(a(i,t))}{A_{max}}$ where $E_{max}(t)$ refers to the usual measure of the EIR computed from human bait collections on adults $A(\cdot)$ and , the availability to mosquitoes,
+ is assumed to be proportional to average body surface area and to depend only on age $a(i,t)$.
+The function used to compute $A(a(i,t))$ increases with age up to age 20 years where it reaches a value of $A_{max}$.
+
+To capture observed relationships between infection and measured entomological exposure, the susceptibility is then:
+\begin{equation}
+  S(i,t) = (S_{\infty} + \frac{1 - S_{\infty}}{1 + \frac{E_a(i,t)}{E^{*}}})(S_{imm} + \frac{1 - S_{imm}}{1 + (\frac{X_p(i,t)}{X_{p}^{*}})^{\gamma_p}})
+\end{equation}
+where $S_{imm}, X^{*}_{p} E^*, \gamma_p, S_\infty$ are latent variables
+and $X_p(i,t) = \int^{t}_{-a(i,t)} E_{a}(i,\tau) d\tau$
+Fitting this model to data of~\cite{beier1994plasmodium} using their method learns the values $S_{\infty} = 0.049$ and $E^* = 0.032$ 
+inoculations/person-night. 
+The model for each individual infection $j$ in host $i$ comprises a time series of parasite densities.
+  In a naïve host the expectation of the logarithm of the density of the infection at time point $\tau$
+in the course of the infection, $\ln(y_0(i,j,\tau))$, is taken from a statistical description of parasite densities
+in malaria therapy patients~\cite{maire2006model}. 
+In the presence of previous exposure and co-infection, the expected log density for each concurrent infection is: 
+\begin{equation}
+  E(\ln(y(i,j,\tau))) = D_{y}(i,t)D_{m}(i,t)D_{h}(i,t)\ln(y_0(i,j,\tau)) + \ln(\frac{D_x}{M(i,t)} + 1 - D_x))
+\end{equation}
+where $M(i,t)$ is the total multiplicity of infection and 
+\begin{equation}
+  D_{y}(i,t) = \frac{1}{1 + \frac{X_y(i,j,t)}{X^{*}_{y}}}
+\end{equation}
+where $X_y(i,j,t) = \sum^{t}_{t-a}Y(i,t) - \sum^{t}_{t_{0,j}} y(i,j,\tau)$ (note that a continuous time approximation to this
+is given in the original publications~\cite{smith2006mathematical,maire2006model}
+and hence measures the cumulative parasite load, and  \textbf{TODO: To finish}
+  % \begin{align}
+%   \mu_i &= N \\ % pop size
+%   % disease dynamics
+%   S_{\infty} &\sim \mathcal{N}(\mu_\infty, \sigma^{2}_\infty) \\
+%   E_{crit} &\sim \mathcal{N}(\mu_{crit}, \sigma^{2}_{crit}) \\
+%   S_{imm} &\sim \mathcal{N}(\mu_{imm}, \sigma^{2}_{imm}) \\
+%   X_{p_{crit}} &\sim \mathcal{N}(\mu_{p_{crit}}, \sigma^{2}_{p_{crit}}) \\
+%   \gamma_p &\sim \mathcal{N}(\mu_{p}, \sigma^{2}_{p}) \\
+%   \rho_i & \sim \mathcal{U}(\mathbb{L}_i , \mathbb{U}_i) \\
+%   % integration for parasite densities in different demographics
+%   for \hspace{0.1cm} t &= 1:t_{max}: \\
+%   E_a &= \frac{E_{{max}_t}}{A_{max}} \times h_{\mu_{SA}}() \\
+%   X_p &= E_a + X_p \\
+%   S_1 &= S_{\infty} + \frac{(1 - S_\infty) }{1 + \frac{E_a}{E_{crit}}} \\
+%   S_2 &= S_{imm} + \frac{1 - S_{imm}}{1 + (\frac{X_p}{X_p_{crit}})^{\gamma_p}}\\
+%   %Probability of survival function
+%   S_p &= S_1 \times S_2 \\
+%   \lambda &= S_p \times E_a \\
+%   % Number of infections generated in unit time per individual sampled from poisson
+%   h &\sim Pos(\lambda) \\
+%   \texttt{if} &\hspace{0.1cm} h > 0: \\
+%   \hspace{2.3cm} &n_{infect} = 1 \\
+%   \text{TODO: add prevelance construction below}
+%   % % end for - add prevelance construction below
+%   % \mathcal{P}rev &= 
+% \end{align}
 
 \textbf{TODO: Add some of the plots generated from this model and an accompanying analysis to them.}
 
-\begin{wrapfigure}{l}{0.5\textwidth}
-  \label{fig:amortized_sampling}
-  \includegraphics[width=0.5\textwidth,height=0.5\textheight]{amoritized_rejection.pdf}
-  \vspace{-50pt}
-  \caption{Using PyProb we can locate all regions of inefficient sampling 
-  and replace those points in the code with learnt functions that represent
-  the distributions of the rejection sampling statements. $Z_{i}$ represents the marginal and 
-  by learning surrogate functions for each of the rejection sampling loops.
-  In doing so we can learn approximate raw sample distributions $f(x_{i} | \eta)$ for each
-  rejection sampling loop. This means that we can evaluate the function at each part in the simulator, enabling
-  us to construct a target density that can be evaluated when using MCMC inference schemes such as RMH.
-    }
-  \end{wrapfigure}
+\section{Amortized Rejection Sampling}
+
+One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
+programming framework is that they rely heavily on rejection sampling 
+to generate samples from the target density. Not only is rejection sampling 
+computational inefficient, [especially if criteria in which samples are generated
+has been poorly calibrated] (may leave out this statement as it may make a reviewer
+question why would amortization work any better.), but it creates complications for inference.
+As the rejection sampling loops provide no explicit form of the target density,
+we can not simply evaluate the density and leverage statistically and computationally
+efficient algorithms such as MCMC sampling. This inhibits our ability to transform an arbitrary
+stochastic simulator into a probabilistic programming framework~\cite{baydin2018efficient}. 
+To this end, we derive both a mathematical and engineering based framework to facilitate 
+the amortization of rejection sampling loops in arbitrary simulators, which provides a path
+way to both leverage a larger, more efficient class of inference methods and convert arbitrary
+stochastic simulators into probabilistic programs systems.
+
+
+\begin{figure}
+  % \begin{minipage}[c]{0.67\textwidth}
+  \includegraphics[]{amoritized_rejection.pdf}
+  % \end{minipage}\hfill
+  % \begin{minipage}[c]{0.3\textwidth}
+    \caption{Using PyProb we can locate all regions of inefficient sampling 
+    and replace those points in the code with learnt functions that represent
+    the distributions of the rejection sampling statements. $Z_{i}$ represents the marginal and 
+    by learning surrogate functions for each of the rejection sampling loops.
+    In doing so we can learn approximate raw sample distributions $f(x_{i} | \eta)$ for each
+    rejection sampling loop. This means that we can evaluate the function at each part in the simulator, enabling
+    us to construct a target density that can be evaluated when using MCMC inference schemes such as RMH.}
+    \label{fig:amortized_sampling}
+  % \end{minipage}
+\end{figure}
+
+\section{Details}
+
+We do this by  Replacing the rejection sampling loops with 
+learnt functions from an amortized inference procedure Figure~\ref{fig:amortized_sampling}.
+This then enables us to replace rejection sampling loops with amortized functions that 
+are quick to evaluate, provide a functional form to the density and significantly reduce 
+memory over-heads, as compared to~\cite{baydin2018efficient}, due to not having to track the 
+thousands of raw sample calls $f_{a_i}$ generated in standard simulators. 
+
+Consider the following program, that is representative of a simple stochastic simulator
+and two types of rejection sampler:
+
+
+\noindent
+\begin{tabular}{|p{3.6cm}|p{3.6cm}|p{3.6cm}|}
+\hline
+Stochastic Simulator  & Rejection Sampler 1 & Rejection Sampler 2 \\
+\hline
+\begin{lstlisting}[mathescape=true]
+    def f():
+      $z_{1} \sim \mathcal{N}(0,1)$
+      $z_{2} \gets R_{1}(z_1, 1)$
+      $z_{3} \sim \mathcal{U}(0,2)$
+      $z_{4} \gets R_{2}(z_2,z_3, 1)$
+    return $g(z_{1:4})$
+\end{lstlisting}&
+\begin{lstlisting}[mathescape=true]
+def $R_1(z_1)$:
+  $x \sim \mathcal{N}(z_1,1)$
+  if $x > 0$:
+    return $x$
+  else:
+    return $R_{1}(z_1)$
+\end{lstlisting}&
+\begin{lstlisting}[mathescape=true]
+def $R_2(z_2, z_3)$:
+  $y \gets 0$
+  while $y < z_2$:
+    $y \sim \mathcal{N}(z_3,1)$
+  end
+  return $y$
+\end{lstlisting}\\
+\hline
+$P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z_{2},z_{3})$ \\
+\hline
+\end{tabular} 
+
+Here the rejection sampling functions take an additional argument $1$, or $0$,
+to specify whether or not we want to collect samples to train, $1$, else replace with 
+the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
+the unknown densities that we wish to learn through an amortized approach. 
+
+However, in order todo this, we must correctly specify our variational objective.
+
+\section{Constructing the Objective}
+
+The framework we present in this section is generally applicable to stochastic simulator 
+environemnt, where there exists rejection sampling loops. 
+
+We start by noting that the prior, defined in the context of the outter samples is 
+defined as: 
+\begin{equation}
+  p(x) = 
+  \begin{cases}
+    \prod^{n_{x}}_{j=1} f_{a_j}(x_j ; \psi_j) if \mathcal{B}(x) = 1 \\
+    0
+  \end{cases}
+\end{equation}
+We start with the information projection we construct the variational objective as follows:
+\begin{align}
+  J(\eta) = \mathbb{E}_{p(x)}[KL(p(x) || q(x; \eta))] \\
+   = \int p(x') [\int p(x)\ln\left(\frac{p(x)}{q(x;\eta)}\right) dx]dx' \\
+  %  \int p(x')dx' \gets 1 \\
+  %  &= \mathbb{E}_{p(x)}[\ln(p(x))]  - \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\
+  %  &= \ln(1) -  \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\ % I do not agree with this line
+  %  &= -\mathbb{E}_{p(x)}[\ln(q(x;\eta))] \\
+  %  &= -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\ln(q_{a_j}(x_j;\eta))] \\
+   \text{Let } a_{j} \in \{1, \ldots, L\} , S_{R} \subset \{1, \ldots, L\} \\
+   = \cancelto{\text{no dependence on } \eta}{\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \notin S_{R}}\ln(p(x))]}-\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \in S_{R}}\ln(q_{a_j}(x_j;\eta))]\\
+\end{align}
+
+Thus, to define the objective for each subproblem $r  \in S_{R}$ as:
+\begin{equation}
+  J_{r}(\eta_r) = -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\mathbb{I}(a_j = r)\ln(q_r(x_j;\eta_r, \phi_j))]
+\end{equation}
+
+where during training we extract samples from each forward run and train each rejection sampler
+separately. 
+
+
 
 \section{Additional TODOs}
 
@@ -377,7 +536,9 @@ update.
 a rejection sampling loop, that can be exploited by the new machinery. This would enable us to debug, provide a simple example 
 for the paper and understand the feasibility of the entire approach. 
 \end{itemize}
-\bibliographystyle{plain}
+
 \bibliography{refs}
+\bibliographystyle{plain}
+
 
 \end{document}
