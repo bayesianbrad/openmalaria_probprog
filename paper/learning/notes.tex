@@ -501,9 +501,9 @@ defined as:
   \end{cases}
 \end{equation}
 We start with the information projection we construct the variational objective as follows:
-\begin{align}
-  J(\eta) = \mathbb{E}_{p(x)}[KL(p(x) || q(x; \eta))] \\
-   = \int p(x') [\int p(x)\ln\left(\frac{p(x)}{q(x;\eta)}\right) dx]dx' \\
+\begin{align*}
+  J(\eta) = KL(p(x) || q(x; \eta)) \\
+   = \int p(x)\ln\left(\frac{p(x)}{q(x;\eta)}\right) dx \\
   %  \int p(x')dx' \gets 1 \\
   %  &= \mathbb{E}_{p(x)}[\ln(p(x))]  - \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\
   %  &= \ln(1) -  \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\ % I do not agree with this line
@@ -511,7 +511,7 @@ We start with the information projection we construct the variational objective 
   %  &= -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\ln(q_{a_j}(x_j;\eta))] \\
    \text{Let } a_{j} \in \{1, \ldots, L\} , S_{R} \subset \{1, \ldots, L\} \\
    = \cancelto{\text{no dependence on } \eta}{\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \notin S_{R}}\ln(p(x))]}-\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \in S_{R}}\ln(q_{a_j}(x_j;\eta))]\\
-\end{align}
+\end{align*}
 
 Thus, to define the objective for each subproblem $r  \in S_{R}$ as:
 \begin{equation}
