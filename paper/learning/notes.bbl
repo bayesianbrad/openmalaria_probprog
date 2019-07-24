@@ -24,6 +24,11 @@ Nicolas Maire, Thomas Smith, Amanda Ross, Seth Owusu-Agyei, Klaus Dietz, and
 \newblock {\em The American journal of tropical medicine and hygiene},
   75(2\_suppl):19--31, 2006.
 
+\bibitem{rezende2015variational}
+Danilo~Jimenez Rezende and Shakir Mohamed.
+\newblock Variational inference with normalizing flows.
+\newblock {\em arXiv preprint arXiv:1505.05770}, 2015.
+
 \bibitem{smith2006mathematical}
 Thomas Smith, Gerry~F Killeen, Nicolas Maire, Amanda Ross, Louis Molineaux,
   Fabrizio Tediosi, Guy Hutton, J{\"u}rg Utzinger, Klaus Dietz, and Marcel
@@ -41,5 +46,11 @@ Thomas Smith, Nicolas Maire, Klaus Dietz, Gerry~F Killeen, Penelope Vounatsou,
   of infection for plasmodium falciparum malaria.
 \newblock {\em The American journal of tropical medicine and hygiene},
   75(2\_suppl):11--18, 2006.
+
+\bibitem{smith2008estimation}
+Thomas~A Smith.
+\newblock Estimation of heterogeneity in malaria transmission by stochastic
+  modelling of apparent deviations from mass action kinetics.
+\newblock {\em Malaria journal}, 7(1):12, 2008.
 
 \end{thebibliography}

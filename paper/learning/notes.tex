@@ -368,7 +368,66 @@ where $M(i,t)$ is the total multiplicity of infection and
 \end{equation}
 where $X_y(i,j,t) = \sum^{t}_{t-a}Y(i,t) - \sum^{t}_{t_{0,j}} y(i,j,\tau)$ (note that a continuous time approximation to this
 is given in the original publications~\cite{smith2006mathematical,maire2006model}
-and hence measures the cumulative parasite load, and  \textbf{TODO: To finish}
+and hence measures the cumulative parasite load, where
+\begin{equation}
+  D_{y}(i,t) = \frac{1}{1 + \frac{X_{h}(i,t)}{X^{*}_h}}
+\end{equation}
+where $X_h(i,t) = \sum^{t}_{t-a}h(i,\tau) - 1$, the number of inoculations since birth, excluding
+the one under consideration, which measures the inocula experienced by the host
+up to the time point under consideration. 
+\begin{equation}
+  D_{m}(i,t) = 1 - \alpha_m \exp(-\frac{0.693a(i,t)}{a^{*}_m})
+\end{equation}
+which measures the effect of maternal immunity. 
+$X^{*}_{y}$, $X^{*}_h$, $D_x$, $a^*_{m}$ and $\alpha_m$ are essentially 
+latent variables to be learnt given the field data. 
+
+\paragraph{Mass action model of the force of infection}
+The base model assumes that susceptibility is a sigmoidal function of the exposure, which conflicts
+with the usual mass action assumption for infectious disease transmission.
+However, if entomological exposure is over-dispersed, 
+infection-exposure relationships similar to those observed in the field 
+can be reconciled with mass action principles, thus providing explanation
+for the observed non-linear relationship between infection and entomological exposure
+and hence a more justifiable representation of the infection process than that used
+in the base model~\cite{smith2008estimation}. 
+We simulate this by including random variation in the availability of the human host to mosquitoes.
+This variation comprises an individual-specific component which is captured by defining
+for each simulated human a baseline availability, $A_b(i)$, which is sampled at birth using:
+\begin{equation}
+  \log(A_b(i)) \sim \mathcal{N}(-\frac{\sigma_b^{2}}{2}, \sigma^{2}_b)
+\end{equation}
+
+so that $A_b(i)$ is log-normally distributed with arithmetic mean 1. 
+The age adhusted EIR at time $t$, adjusted to the individual is then:
+\begin{equation}
+  E_{b}(i,t) = E_{max}(t)A_b(t)\frac{A(a(i,t))}{A_{max}}
+\end{equation}
+Additional log normal variation is introduced at each time step in the simulation 
+to make the expected number of entomological inoculations a function
+both of the individual and of log-normal noise measured by the
+variance parameter, $\sigma^2_n$ :
+\begin{equation}
+  \ln(E_{a}(i,t)) \sim Normal(\ln(E_{b}(i,t) - \frac{\sigma^2_n, \sigma^2_n}))
+\end{equation}
+The susceptibility in these models is independent of EIR, i.e.:
+\begin{equation}
+  S(i,t( = S_{\infty}(S_{imm} + \frac{1 - S_{imm}}{1 + (\frac{X_p(i,t)}{X_{p}^{*}})^{\gamma_p}})
+\end{equation}
+
+Three different parameterisations, XML files, of this model were considered in [8] (E0063,R0065 and R0068).
+In each case, the overall variability in $E_{a}(i,t)$ was constrained to the same total,
+estimated by fitting to the data of~\cite{beier1994plasmodium}.
+A probabilistic programming approach to determining these paramteters would
+have provided a way to leverage state of the art inference algorithms that 
+enable conditioning on arbitrary models. 
+The parameters learnt from the original approach taken by the Malaria community 
+generated values of $\sigma_b^2 = 0.5, 0.3$ and $0.05$ for each model respectively, corresponding
+to $\sigma^2_n = 0.187, 0.567$ and $0.704$. 
+\textbf{TODO: To finish - Add prob prog example + plots}
+
+\paragraph{Models of decay of natural immunity}
+\textbf{To complete}
   % \begin{align}
 %   \mu_i &= N \\ % pop size
 %   % disease dynamics
@@ -485,6 +544,34 @@ the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_
 the unknown densities that we wish to learn through an amortized approach. 
 
 However, in order todo this, we must correctly specify our variational objective.
+
+\section{Density estimation using Normalising flows}
+Notes from models that define an explicit,  
+tractable density are highly effective, 
+because they permit the use of an optimization algorithm directly on the log-likelihood of the training data.
+However,  the  family  of  models  that provide  a  tractable  density  is  limited,
+with  different  families  having  different disadvantage.
+The rejection sampling loops, if proposed correctly, provide a way of generating 
+samples from some density, but do not provide a way of constructing the target density (\textbf{Bradley: Ask Tom, is this true?}). 
+Within event and population-based simulators, the rejection sampling loops have been designed with care,
+to ensure that they are representative to the events that they are simulating. So we can, with confidence,
+assume that they are representative of some density. 
+However, to utilise powerful inference engines, we must be able to construct the 
+full density of the program. 
+
+One recent technique for density estimation, in the amortized inference setting,
+is normalising flows combined with variation inference~\cite{rezende2015variational}.
+Flow-based methods work by leveraging a simple property of differential geometry applied 
+to random variables. 
+That being the change of variables.
+Let $f(\epsilon)$ be a differentiable transform of noise $\epsilon \sim \pi(\epsilon)$, which models 
+some process to generate some data $y = f(\epsilon)$. 
+Then the probability density of $y$ under the flow is
+obtained by a change of variables: 
+\begin{equation}
+p(y) = \pi(f^{-1}(y)) \left|\det \frac{\partial f^{-1}}{\partial y}\right|
+\end{equation}
+
 
 \section{Constructing the Objective}
 
