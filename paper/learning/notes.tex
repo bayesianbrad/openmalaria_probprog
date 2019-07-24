@@ -543,9 +543,17 @@ to specify whether or not we want to collect samples to train, $1$, else replace
 the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
 the unknown densities that we wish to learn through an amortized approach. 
 
+\begin{figure}
+  \centering
+  \includegraphics{rs_plots.png}
+  \caption{ Simulated densities for rejection sampling block 1, \emph{blue} and rejection
+  sampling block 2, \emph{orange}.}
+  \label{fig:rs_simulated}
+\end{figure}
 However, in order todo this, we must correctly specify our variational objective.
+\section{ An overview of Amortized Inference schemes}
 
-\section{Density estimation using Normalising flows}
+\subsection{Density estimation using Normalising flows}
 Notes from models that define an explicit,  
 tractable density are highly effective, 
 because they permit the use of an optimization algorithm directly on the log-likelihood of the training data.
@@ -572,13 +580,21 @@ obtained by a change of variables:
 p(y) = \pi(f^{-1}(y)) \left|\det \frac{\partial f^{-1}}{\partial y}\right|
 \end{equation}
 
+where the $y$'s are generated from the rejection sampling loops. 
+
+\begin{itemize}
+  \item Do we need to know the base distribution that the RS block is sampling from? i.e there maybe be multiple $\pi(\epsilon)$ in each 
+  RS block. 
+  \item Is it right to say here that $y$ is the output of the RS block, we do not know $f$ here. 
+  \item We need to learn $f(.)$
+\end{itemize}
 
 \section{Constructing the Objective}
 
 The framework we present in this section is generally applicable to stochastic simulator 
-environemnt, where there exists rejection sampling loops. 
+environment, where there exists rejection sampling loops. 
 
-We start by noting that the prior, defined in the context of the outter samples is 
+We start by noting that the prior, defined in the context of the outer samples is 
 defined as: 
 \begin{equation}
   p(x) = 
