@@ -596,14 +596,12 @@ the probability density of the new random variable $z\prime$ under the flow init
 \begin{equation}
 r(z\prime) = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi^{-1}}{\partial z'}\right| = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi}{\partial z\prime}\right|^{-1} 
 \end{equation}
-However, since 
-where the $y$'s are generated from the rejection sampling loops. 
 
 \begin{itemize}
-  \item Do we need to know the base distribution that the RS block is sampling from? i.e there maybe be multiple $\pi(\epsilon)$ in each 
+  \item Do we need to know the base distribution that the RS block is sampling from? i.e there maybe be multiple $r(z)$ in each 
   RS block. 
-  \item Is it right to say here that $y$ is the output of the RS block, we do not know $f$ here. 
-  \item We need to learn $f(.)$
+  \item Is it right to say here that $z\prime$ is the output of the RS block, we do not know $\pi$ here, or is $r(z)$ the raw sample $f_{a_i}$ and $\pi$ the distribution specified by the rejection sampling loop? 
+  \item We need to learn $\pi(.)$
 \end{itemize}
 
 \section{Constructing the Objective}
