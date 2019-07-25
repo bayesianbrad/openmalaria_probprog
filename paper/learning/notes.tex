@@ -553,6 +553,22 @@ the unknown densities that we wish to learn through an amortized approach.
 However, in order todo this, we must correctly specify our variational objective.
 \section{ An overview of Amortized Inference schemes}
 
+\begin{itemize}
+  \item Whilst the variational posterior we choose as our proposal has a functional form 
+  and can be sampled, the functional form of the rejection sampling loops is not explicitly known,
+  which leads to problems when calculating the $KL$-divergence. 
+  \item There are two approaches that we can take to calculating some divergence metric. 
+  \item 1) Using something like a non-parametric divergence estimator that makes use of Renyi and $L_{2}$ divergences (see \cite{basseville2013divergence} for details)
+  \item 2) Use some form of kernel density to estimation to approximate the functional form of the rejection sampling 
+  block, which can be used in place. From which we learn a variational approximation characterized by a trained network that we can sample from quickly. 
+  \item An issue with approach 2) is that if I can approximate the density in functional form aren't there more efficient methods that we can use? (\textbf{Ask tom})
+  \item Or, if assuming that the rejection sampling block can be arbitrary dimension, are we first learning a flow to represent that density and then learn a variational approximation of something that we can easily sample from. 
+  \item But, this is very much the idea behind normalising flows, take a simple distribution that you can sample and then map it to the ``complicated'' density. 
+  \item Stein Variational inference may be quite nice to use here~\cite{feng2017learning}, but it does make explicit assumptions in requiring the densities to be differentiable. 
+  \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399}
+\end{itemize}
+  \subsection{Using variants of VAEs}
+
 \subsection{Density estimation using Normalising flows}
 Notes from models that define an explicit,  
 tractable density are highly effective, 
@@ -572,14 +588,15 @@ is normalising flows combined with variation inference~\cite{rezende2015variatio
 Flow-based methods work by leveraging a simple property of differential geometry applied 
 to random variables. 
 That being the change of variables.
-Let $f(\epsilon)$ be a differentiable transform of noise $\epsilon \sim \pi(\epsilon)$, which models 
-some process to generate some data $y = f(\epsilon)$. 
-Then the probability density of $y$ under the flow is
-obtained by a change of variables: 
+Let $z \sim r(z)$ where $r(z)$ represents the posterior defined by the rejection
+sampling loop, and define $\pi$ to be a smooth and invertible function.
+When $\pi$ acts $z$ we transform the random variable from one domain, to another. 
+Thus, if $z\prime = \pi(z)$ then we can construct the density of  
+the probability density of the new random variable $z\prime$ under the flow initiated by $\pi$: 
 \begin{equation}
-p(y) = \pi(f^{-1}(y)) \left|\det \frac{\partial f^{-1}}{\partial y}\right|
+r(z\prime) = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi^{-1}}{\partial z'}\right| = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi}{\partial z\prime}\right|^{-1} 
 \end{equation}
-
+However, since 
 where the $y$'s are generated from the rejection sampling loops. 
 
 \begin{itemize}

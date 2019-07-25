@@ -1,4 +1,10 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{basseville2013divergence}
+Michele Basseville.
+\newblock Divergence measures for statistical data processing—an annotated
+  bibliography.
+\newblock {\em Signal Processing}, 93(4):621--633, 2013.
 
 \bibitem{baydin2018efficient}
 Atilim~Gunes Baydin, Lukas Heinrich, Wahid Bhimji, Bradley Gram-Hansen, Gilles
@@ -15,6 +21,12 @@ John~C Beier, Charles~N Oster, Fred~K Onyango, James~D Bales, James~A Sherwood,
   rates at a site proposed for testing malaria vaccines in western kenya.
 \newblock {\em The American journal of tropical medicine and hygiene},
   50(5):529--536, 1994.
+
+\bibitem{feng2017learning}
+Yihao Feng, Dilin Wang, and Qiang Liu.
+\newblock Learning to draw samples with amortized stein variational gradient
+  descent.
+\newblock {\em arXiv preprint arXiv:1707.06626}, 2017.
 
 \bibitem{maire2006model}
 Nicolas Maire, Thomas Smith, Amanda Ross, Seth Owusu-Agyei, Klaus Dietz, and
@@ -52,5 +64,11 @@ Thomas~A Smith.
 \newblock Estimation of heterogeneity in malaria transmission by stochastic
   modelling of apparent deviations from mass action kinetics.
 \newblock {\em Malaria journal}, 7(1):12, 2008.
+
+\bibitem{8588399}
+C.~{Zhang}, J.~{Bütepage}, H.~{Kjellström}, and S.~{Mandt}.
+\newblock Advances in variational inference.
+\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  41(8):2008--2026, Aug 2019.
 
 \end{thebibliography}
