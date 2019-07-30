@@ -3,8 +3,7 @@
     "batch_size": 16,
     "x dim": 1,
     "r(x) dim":2,
-    "r_dim": 512,
-    "h_dim": 512,
+    "r_dim": 1
     "lr": 4e-5,
     "epochs": 100,
     "dataset": "points"

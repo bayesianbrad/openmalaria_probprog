@@ -30,4 +30,16 @@ class DensityEstimatorTrainer():
         self.optmizer = optmizer
         self.steps = 0
 
-    def train(self, ):
+    def train(self, epochs, data):
+        """
+        Method to train the density estimator. 
+
+        :param: epochs :type: int :descrp: Number of epochs to train for.
+        :param: data :type: torch.Tensor  :descrp: The data to pass through the network. 
+
+        :return: Trained model
+        """
+
+        for epoch in range(epochs):
+            epoch_loss = 0
+            for 
