@@ -59,7 +59,7 @@ def gen_samples(total_samples=1000, n_outputs=4, simulator=sim):
     n_samples = int(total_samples/10)
     samples_1 = torch.zeros(n_samples,n_outputs)
     samples_2 = torch.zeros(n_samples,n_outputs)
-    samples_3 =torch.zeros(n_samples,n_outputs)
+    samples_3 = torch.zeros(n_samples,n_outputs)
     samples_4 = torch.zeros(n_samples,n_outputs)
     samples_5 = torch.zeros(n_samples,n_outputs)
     samples_6 = torch.zeros(n_samples,n_outputs)
@@ -82,7 +82,7 @@ def gen_samples(total_samples=1000, n_outputs=4, simulator=sim):
             torch.save(samples_2, 'samples_2_{}.pt'.format(i))
             torch.save(samples_3, 'samples_3_{}.pt'.format(i))
             torch.save(samples_4, 'samples_4_{}.pt'.format(i))
-            torch.save(samples_5,'samples_5_{}.pt'.format(i))
+            torch.save(samples_5, 'samples_5_{}.pt'.format(i))
             torch.save(samples_6, 'samples_6_{}.pt'.format(i))
             torch.save(samples_7, 'samples_7_{}.pt'.format(i))
             torch.save(samples_8, 'samples_8_{}.pt'.format(i))
@@ -103,3 +103,55 @@ def gen_samples(total_samples=1000, n_outputs=4, simulator=sim):
     end = time.time()
     total_time = end - start
     print(' Time taken is {} for {} samples'.format(total_time, n_samples))
+
+from torch.utils.data import Dataset, DataLoader
+class RejectionDataset(Dataset):
+    def __init__(self, split):
+        self.a = torch.load("patha/..")[:100] if split == 'train' else torch.load("path/..")[100:]
+        self.b = torch.load("pathb/..")[:100] if split == 'train' else torch.load("path/..")[100:]
+
+    def __getitem__(self, idx):
+        return self.a[idx], self.b[idx]
+
+from torch import optim
+train_loader = DataLoader(RejectionDataset(split='train'), batch_size=128, shuffle=True)
+test_loader = DataLoader(RejectionDataset(split='test'), batch_size=128, shuffle=True)
+
+epochs = 10
+loss_fn = torch.nn.MSELoss()
+optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, amsgrad=True)
+
+model.to(device)
+import torch.distributions as dist
+
+
+for epoch in range(epochs):
+    model.train()
+    train_iterations = len(train_loader)
+    for i, (a, b) in enumerate(train_loader):
+        a, b = a.to(device), b.to(device)
+        proposal = dist.Normal(*model(a))
+        pred = proposal.rsample()
+
+        optimizer.zero_grad()
+        _loss = loss_fn(b, pred)
+        _loss.backward()
+        optimizer.step()
+
+        b_loss += loss.item()
+        if args.print_freq > 0 and i % args.print_freq == 0:
+            print("iteration {:04d}/{:d}: loss: {:6.3f}".format(i, iterations,
+                                                                loss.item() / args.batch_size))
+        print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, ...))
+
+    model.eval()
+    b_loss = 0
+    test_iterations = len(test_loader)
+    with torch.no_grad():
+        for i, (a,b) in enumerate(test_loader):
+            a, b = a.to(device), b.to(device)
+            proposal = dist.Normal(*model(a))
+            pred = proposal.rsample()
+            _loss = loss_fn(b, pred)
+            b_loss += loss.item()
+        print('Test loss: {:.4f}\n'.format(b_loss.item()/test_iterations))
