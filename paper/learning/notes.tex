@@ -428,32 +428,7 @@ to $\sigma^2_n = 0.187, 0.567$ and $0.704$.
 
 \paragraph{Models of decay of natural immunity}
 \textbf{To complete}
-  % \begin{align}
-%   \mu_i &= N \\ % pop size
-%   % disease dynamics
-%   S_{\infty} &\sim \mathcal{N}(\mu_\infty, \sigma^{2}_\infty) \\
-%   E_{crit} &\sim \mathcal{N}(\mu_{crit}, \sigma^{2}_{crit}) \\
-%   S_{imm} &\sim \mathcal{N}(\mu_{imm}, \sigma^{2}_{imm}) \\
-%   X_{p_{crit}} &\sim \mathcal{N}(\mu_{p_{crit}}, \sigma^{2}_{p_{crit}}) \\
-%   \gamma_p &\sim \mathcal{N}(\mu_{p}, \sigma^{2}_{p}) \\
-%   \rho_i & \sim \mathcal{U}(\mathbb{L}_i , \mathbb{U}_i) \\
-%   % integration for parasite densities in different demographics
-%   for \hspace{0.1cm} t &= 1:t_{max}: \\
-%   E_a &= \frac{E_{{max}_t}}{A_{max}} \times h_{\mu_{SA}}() \\
-%   X_p &= E_a + X_p \\
-%   S_1 &= S_{\infty} + \frac{(1 - S_\infty) }{1 + \frac{E_a}{E_{crit}}} \\
-%   S_2 &= S_{imm} + \frac{1 - S_{imm}}{1 + (\frac{X_p}{X_p_{crit}})^{\gamma_p}}\\
-%   %Probability of survival function
-%   S_p &= S_1 \times S_2 \\
-%   \lambda &= S_p \times E_a \\
-%   % Number of infections generated in unit time per individual sampled from poisson
-%   h &\sim Pos(\lambda) \\
-%   \texttt{if} &\hspace{0.1cm} h > 0: \\
-%   \hspace{2.3cm} &n_{infect} = 1 \\
-%   \text{TODO: add prevelance construction below}
-%   % % end for - add prevelance construction below
-%   % \mathcal{P}rev &= 
-% \end{align}
+
 
 \textbf{TODO: Add some of the plots generated from this model and an accompanying analysis to them.}
 
@@ -491,9 +466,49 @@ stochastic simulators into probabilistic programs systems.
   % \end{minipage}
 \end{figure}
 
+\section{Rejection Sampling}
+
+Rejection samplers are heavily used when designing simulators, due to their ease of use and ability to model 
+any arbitrary distribution on $\mathbb{R}^{D}$, with a sufficiently well designed rejection sampling scheme~\cite{MEYER20083408,martino2012improved,casella} and have 
+their origins in 1940 - 1950's, during the development of other prominent Monte carlo techniques at Los Alamos. 
+
+In the standard setting we let $X$ be a random variable whose density is $p(x)$ that we cannot easily 
+sample from, but can evaluate. Using a random variable $Z$, whose density is $g(z)$  that we can efficiently
+sample from, then we can generate a sample $X$ by sampling $Z$ and accept $Z$ with probability
+$p_{accept} = \frac{p(x)}{Mg(x)}$, which we can do until acceptance. 
+M is constant that has a finite bound, $M \in (1, \infty)$, on the likelihood ratio $\frac{p(x)}{g(x)}$ over the 
+support of $X$. $M$ must also satify the following inequality $p(x) \leq M g(x)  \forall x$. 
+This implies that the support of $Z$ must also contained the support of $X$, that is
+$g(x) > 0$ whenever $p(x)>0$. 
+The standard algorithm is defined as follows:
+\begin{algorithm}
+  \small
+   \caption{Rejection Sampling}
+    \begin{algorithmic}\small
+       \State {At iteration $i$ s.t $i \geq 1$}
+       \State $X_{i} \sim g(X_{i})$ 
+       \State $U_{i} \sim \mathcal{U}(0,1)$
+       \If{$U_{i} \leq M \frac{f(X_i)}{g(X_{i})}$}
+       \State{ accept $X_i \sim f$}
+       \Else
+       \State{$i \gets i + 1$, repeat}
+       \EndIf
+\end{algorithmic}
+\end{algorithm}
+
+As useful rejection sampling is, it has many short comings. 
+In particular, to simulate proposals for certain distributions,
+such as truncated normal distributions, regardless of the easy to sample from proposal
+chosen the computational running time of such rejection statements can be shown to have an
+expectation equal to infinity. Thus, the ability to learn and replace such rejection
+sampling blocks with learnt surrogate functions, that are expressive enough to 
+reciprocate the behavior of the rejection sampling block buys the user two things. 
+A) It reduces the computational complexity of the simulator. 
+B) As we now have a direct functional form of the density, we can correctly leverage
+more computationally and sample efficient inference schemes. 
 \section{Details}
 
-We do this by  Replacing the rejection sampling loops with 
+We do this by  Replacing the rejection sampling blocks with 
 learnt functions from an amortized inference procedure Figure~\ref{fig:amortized_sampling}.
 This then enables us to replace rejection sampling loops with amortized functions that 
 are quick to evaluate, provide a functional form to the density and significantly reduce 
@@ -550,9 +565,10 @@ the unknown densities that we wish to learn through an amortized approach.
   sampling block 2, \emph{orange}.}
   \label{fig:rs_simulated}
 \end{figure}
-However, in order todo this, we must correctly specify our variational objective.
-\section{ An overview of Amortized Inference schemes}
+However, in order to do this, we must correctly specify our variational objective.
 
+\section{ An overview of Amortized Inference schemes}
+\textbf{Bradley: Todo: Tom has provided me with all the information to conduct this approach}
 \begin{itemize}
   \item Whilst the variational posterior we choose as our proposal has a functional form 
   and can be sampled, the functional form of the rejection sampling loops is not explicitly known,
@@ -567,7 +583,15 @@ However, in order todo this, we must correctly specify our variational objective
   \item Stein Variational inference may be quite nice to use here~\cite{feng2017learning}, but it does make explicit assumptions in requiring the densities to be differentiable. 
   \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399}
 \end{itemize}
-  \subsection{Using variants of VAEs}
+
+\subsection{Using a simple Neural Network regressor}
+
+As a first approach, we use a regressor to learn a function to map
+between the input / output pairs that are outputted from the rejection
+sampling blocks with in the simulator. 
+
+\paragraph{Architecture} For each rejection sampling block we learn a proposal $q(z_1, \ldots, z_i | \eta)$
+\subsection{Using variants of VAEs}
 
 \subsection{Density estimation using Normalising flows}
 Notes from models that define an explicit,  
@@ -657,6 +681,35 @@ for the paper and understand the feasibility of the entire approach.
 
 \bibliography{refs}
 \bibliographystyle{plain}
+\appendix
+
+\section{The unconditional acceptance probability}
+
+Given a collection of i.i.d random variables $\{X_{i}\}_{i = 1:n}$ with 
+cumulative density function (CDF) $F_{X}$. Then by the Glivenko-Cantelli theorem~\cite{tucker1959generalization} 
+we can define the empirical distribution function for $x \in \mathbb{R}$ as:
+\begin{equation}
+  F_{n}(x) = \frac{1}{n}\sum^{n}_{i=1} \mathbb{I}_{[X_{i}, \infty)}(x)
+\end{equation}
+And for any fixed $x \in \mathbb{R}$, the Strong law of large numbers ensures that 
+$F_{n}(x) \rightarrow F_{X}(x)$ as $n \rightarrow \infty$ as 
+\begin{equation}
+\mathbb{E}[\mathbb{I}_{[X_{i},\infty)}(x)] = 
+ P[\mathbb{I}_{X_{i},\infty)}(x) = 1] = P[X_{i}\leq x] = F_(X)(x)
+\end{equation}
+where $\mathbb{I}_{A}(x)$  is the indicator function for a set $A$. 
+
+\begin{align}
+  \text{Prob}(U \leq \frac{p_{X}(z)}{Mg_{Z}(z)} = \mathbb{E}_()
+\end{align}
+\section{Law of total expectations}
+
+If $X$ is a random variable whose expected value is $\mathbb{E}[X]$ and $Z$ is a random variable on the same probability space
+then: \begin{equation}
+  \label{eq:lawoftotalexp}
+  \mathbb{E}[X] = \mathbb{E}_{p(z)}[\mathbb{E}_{p(x|z)}[X | Z]]
+\end{equation}
+That is, the expected value of $X$ given $Z$ is the same as the expectation of $X$.
 
 
 \end{document}
