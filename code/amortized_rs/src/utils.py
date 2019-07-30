@@ -104,18 +104,29 @@ def gen_samples(total_samples=1000, n_outputs=4, simulator=sim):
     total_time = end - start
     print(' Time taken is {} for {} samples'.format(total_time, n_samples))
 
+
+
 from torch.utils.data import Dataset, DataLoader
 class RejectionDataset(Dataset):
-    def __init__(self, split):
-        self.a = torch.load("patha/..")[:100] if split == 'train' else torch.load("path/..")[100:]
-        self.b = torch.load("pathb/..")[:100] if split == 'train' else torch.load("path/..")[100:]
+    def __init__(self, split, l_data, train_percentage):
+
+        _a = torch.load("patha/..")
+        n_split = (len(_a)*train_percentage//l_data)*l_data
+
+        self.a = torch.load("patha/..")[:n_split] if split == 'train' else torch.load("path/..")[n_split:]
+        self.b = torch.load("pathb/..")[:n_split] if split == 'train' else torch.load("path/..")[n_split:]
+        perm = torch.randperm(len(self.a))
+        self.a, self.b = self.a[perm], self.b[perm]
+        self.l_data = l_data
 
     def __getitem__(self, idx):
-        return self.a[idx], self.b[idx]
+        start_idx = idx*self.l_data
+        end_idx = start_idx + self.l_data
+        return self.a[start_idx:end_idx], self.b[start_idx:end_idx]
 
 from torch import optim
-train_loader = DataLoader(RejectionDataset(split='train'), batch_size=128, shuffle=True)
-test_loader = DataLoader(RejectionDataset(split='test'), batch_size=128, shuffle=True)
+train_loader = DataLoader(RejectionDataset(split='train', l_data=128, train_percentage=0.8), batch_size=128, shuffle=True)
+test_loader = DataLoader(RejectionDataset(split='test', l_data=128, train_percentage=0.8), batch_size=128, shuffle=True)
 
 epochs = 10
 loss_fn = torch.nn.MSELoss()
