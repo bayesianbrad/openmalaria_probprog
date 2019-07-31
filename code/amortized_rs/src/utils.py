@@ -1,16 +1,22 @@
 
 import torch
+from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import sys
 import math
 import time
 import os
 import sys
+import warnings
+import torch.multiprocessing as mp
+from torch.multiprocessing import cpu_count
+import random
+from time import strftime
+from rejection_samplers import frepeat
+from joblib import Parallel, delayed
+from tqdm import tqdm
 
-
-
-
-def load_samples(samples_per_file=95000, saved_entries=4, PATH="/samples_with_inputs/", learning=True):
+def load_samples(samples_per_file=95000, saved_entries=4, PATH=None, learning=True):
     """
      This function assumes that the samples must be concatenated and are saved in a folder specified by
      PATH. If you want the data back in learning form i.e training, validation and test specify `learning = True`.
@@ -23,7 +29,7 @@ def load_samples(samples_per_file=95000, saved_entries=4, PATH="/samples_with_in
     count = 0
     with os.scandir(PATH) as files:
         for file in files:
-            temp = torch.load(PATH + file.name)
+            temp = torch.load(os.path.join(PATH,file.name))
             # indexing starts at 1, because the first entry of all samples is 0. 
             if count == 0:
                 samples = temp[1:samples_per_file,:]
@@ -38,82 +44,151 @@ def load_samples(samples_per_file=95000, saved_entries=4, PATH="/samples_with_in
         nvalidation_samples = int(0.8*total_samples)
         train_samples = samples[:ntrain_samples,:]
         validation_samples = samples[ntrain_samples:nvalidation_samples,:]
-        test_samples = samples[nvalidation_samples:end,:]
+        test_samples = samples[nvalidation_samples:total_samples-1,:]
         return train_samples, validation_samples, test_samples
     
     else:
         return samples
 
-def gen_samples(total_samples=1000, n_outputs=4, simulator=sim):
+def gen_samples_parallel(total_samples=1000, nOutputs=4, simulator=None, UNIQUE_ID=None, Save_PATH=None, nCheckpoint=10):
+    """
+    A function to generate samples for different simulators loops.
+
+    :param: total_samples :type: int :descrip: How many samples to generate in total
+    :param: n_outputs :type: int :descrip: Defines the number of outputs, outputted by the simulator.
+    :param: simulator :type: class :descrip: Takes an instantiation of a class that defines a simulator. Ensure the name 
+            of the main simulator function in the class is called `<class_name>.f()`. 
+    
+    :return saves samples to directory in which code is called
+    TODO: add Path argument later on.
+    """
+    if not UNIQUE_ID:
+        UNIQUE_ID = str(random.randint(0,1000000)) + '_' + strftime("%Y-%m-%d_%H-%M")
+    
+    samples = torch.zeros(total_samples,nOutputs)
+    nCpus = cpu_count()  
+    start = time.time()
+    sim = simulator()
+    def run(sim):
+        return sim.f()
+
+    results = Parallel(n_jobs=nCpus)(delayed(run)(sim) for i in tqdm(range(total_samples)))
+    
+    print('samples collected ')
+    k = 0
+    for result in results:
+        samples[k,:] = result
+        k += 1
+    
+    end = time.time()
+    total_time = end - start
+    print(' Time taken is {} for {} samples for UNIQUE_ID: {}'.format(total_time, total_samples,UNIQUE_ID))
+    return samples
+
+def gen_samples_non_parallel(total_samples=1000, n_outputs=4, simulator=None, PATH='results/', UNIQUE_ID=None):
     """
     A function to generate samples for different simulators loops. 
+    Due to the infinite expected computation time of some while loops, it is highly 
+    probably that we will trigger a stack overflow attack. 
 
     :param: total_samples :type: int :descrip: How many samples to generate in total
     :param: n_outputs :type: int :descrip: Defines the number of outputs, outputted by the simulator.
     :param: function :type: class :descrip: Takes an instantiation of a class that defines a simulator. Ensure the name 
             of the main simulator function in the class is called `<class_name>.f()`. 
     
-    :return saves samples to directory in which code is called
-    TODO: add Path argument later on.
+    :return saves samples to a folder in the directory in which code is called, called results
     """
-    n_samples = int(total_samples/10)
-    samples_1 = torch.zeros(n_samples,n_outputs)
-    samples_2 = torch.zeros(n_samples,n_outputs)
-    samples_3 = torch.zeros(n_samples,n_outputs)
-    samples_4 = torch.zeros(n_samples,n_outputs)
-    samples_5 = torch.zeros(n_samples,n_outputs)
-    samples_6 = torch.zeros(n_samples,n_outputs)
-    samples_7 = torch.zeros(n_samples,n_outputs)
-    samples_8 = torch.zeros(n_samples,n_outputs)
-    samples_9 = torch.zeros(n_samples,n_outputs)
-    samples_10 = torch.zeros(n_samples,n_outputs)
-
-    # # could write as list comprehension
-    # num_cores = mp.cpu_count()
-
-    # results = Parallel(n_jobs=num_cores)(delayed(f)() for i in range(n_samples))
-    # print(results)
-    # index = [i for i in range(1,11)]
+    samples = torch.zeros(total_samples,n_outputs)
+    if not UNIQUE_ID:
+        UNIQUE_ID = str(random.randint(0,1000000)) + '_' + strftime("%Y-%m-%d_%H-%M")
+    if simulator:
+        sim = simulator()
     start = time.time()
-    for i in range(n_samples):
+    for i in range(total_samples):
         if i % 5000 == 0 and i != 0:
             print('{} samples'.format(i))
-            torch.save(samples_1, 'samples_1_{}.pt'.format(i))
-            torch.save(samples_2, 'samples_2_{}.pt'.format(i))
-            torch.save(samples_3, 'samples_3_{}.pt'.format(i))
-            torch.save(samples_4, 'samples_4_{}.pt'.format(i))
-            torch.save(samples_5, 'samples_5_{}.pt'.format(i))
-            torch.save(samples_6, 'samples_6_{}.pt'.format(i))
-            torch.save(samples_7, 'samples_7_{}.pt'.format(i))
-            torch.save(samples_8, 'samples_8_{}.pt'.format(i))
-            torch.save(samples_9, 'samples_9_{}.pt'.format(i))
-            torch.save(samples_10,'samples_10_{}.pt'.format(i))
-                
-        samples_1[i,:] = sim.f()
-        samples_2[i,:] = sim.f()
-        samples_3[i,:] = sim.f()
-        samples_4[i,:] = sim.f()
-        samples_5[i,:] = sim.f()
-        samples_6[i,:] = sim.f()
-        samples_7[i,:] = sim.f()
-        samples_8[i,:] = sim.f()
-        samples_9[i,:] = sim.f()
-        samples_10[i,:] = sim.f()
+            torch.save(samples, 'Gensamples_{}_{}.pt'.format(i,UNIQUE_ID))
+        if i == total_samples - 1:
+            print('{} samples'.format(i))
+            torch.save(samples, 'Gensamples_{}_{}.pt'.format(i,UNIQUE_ID))           
+        samples[i,:] = sim.f()
 
     end = time.time()
     total_time = end - start
-    print(' Time taken is {} for {} samples'.format(total_time, n_samples))
+    print(' Time taken is {} for {} samples'.format(total_time, total_samples))
+
+def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutputs=4, indx_latents=None, simulator=None, UNIQUE_ID=None, Save_PATH='results/'):
+    """
+    For each datum in your data set, this function loads the simulator and 
+    creates a dataset from the rejection samplers corresponding to batch size. 
+
+    :param: data :type: torch.tensor :descrip: Can either pass the tensor directly through, or PATH. 
+    :param: PATH :type: str :descrip: Path to data, in the form of torch tensor. 
+    :param: batch_size :type: int :descrip: How many copies of the original input to run through the simulator. 
+    ;param indx_latents :type: list :descrip: A list of ints of which column the latent variables are stored in. 
+
+    :return: dataset :type: torch.tensor :descrip: for batch training. 
+    """
+
+    # if data:
+    #     data = data
+
+    if PATH:
+        data = torch.load(PATH)
+    
+    if not UNIQUE_ID:
+        UNIQUE_ID = str(random.randint(0,1000000)) + '_' + strftime("%Y-%m-%d_%H-%M")
+    
+    if not os.path.exists(Save_PATH):
+        os.makedirs(Save_PATH)
+    
+
+    nCpus = cpu_count()
+    genSamples = torch.zeros(totalSamples*batch_size,nOutputs)
+    origSamples = data
+    print('Debug')
+    print(origSamples)
+    print(origSamples.size)
+    print(origSamples[2,0],origSamples[2,2])
+    def run(i,batch_size, origSamples, simulator):
+        newSamples=  torch.zeros(batch_size, nOutputs)
+        sim = simulator(origSamples[i,0],origSamples[i,2])
+        for j in range(batch_size):
+            newSamples[j,:] = sim.f()
+        return newSamples
+    
+    start = time.time()
+    results = Parallel(n_jobs=nCpus)(delayed(run)(i, batch_size,origSamples,simulator) for i in tqdm(range(totalSamples)))
+    print(' Batched samples collected')
+    print('='*50)
+    k = 0
+    l = 0
+    for result in results:
+        genSamples[l:batch_size+k*batch_size,:] = result
+        k += 1
+        l += batch_size 
+    
+    end = time.time()
+    totalTime = end - start
+
+    samplePath =  Save_PATH + 'BatchSamples_{}_{}.pt'.format(UNIQUE_ID)
+    torch.save(genSamples, samplePath)
+    print(' Time taken is {} for {} samples'.format(totalTime, totalSamples))
+    print('='*50)
+    print(' Batched Samples saved to {}'.format(samplePath))
 
 
 
-from torch.utils.data import Dataset, DataLoader
+
+        
 class RejectionDataset(Dataset):
-    def __init__(self, split, l_data, train_percentage):
+    def __init__(self, split, l_data, train_percentage, *args, **kwargs):
+        
+        if self.PATHA:
+            _a = torch.load(a)
+            n_split = (len(_a)*train_percentage//l_data)*l_data
 
-        _a = torch.load("patha/..")
-        n_split = (len(_a)*train_percentage//l_data)*l_data
-
-        self.a = torch.load("patha/..")[:n_split] if split == 'train' else torch.load("path/..")[n_split:]
+            self.a = torch.load(self.a)[:n_split] if split == 'train' else torch.load("path/..")[n_split:]
         self.b = torch.load("pathb/..")[:n_split] if split == 'train' else torch.load("path/..")[n_split:]
         perm = torch.randperm(len(self.a))
         self.a, self.b = self.a[perm], self.b[perm]
@@ -123,46 +198,3 @@ class RejectionDataset(Dataset):
         start_idx = idx*self.l_data
         end_idx = start_idx + self.l_data
         return self.a[start_idx:end_idx], self.b[start_idx:end_idx]
-
-from torch import optim
-train_loader = DataLoader(RejectionDataset(split='train', l_data=128, train_percentage=0.8), batch_size=128, shuffle=True)
-test_loader = DataLoader(RejectionDataset(split='test', l_data=128, train_percentage=0.8), batch_size=128, shuffle=True)
-
-epochs = 10
-loss_fn = torch.nn.MSELoss()
-optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, amsgrad=True)
-
-model.to(device)
-import torch.distributions as dist
-
-
-for epoch in range(epochs):
-    model.train()
-    train_iterations = len(train_loader)
-    for i, (a, b) in enumerate(train_loader):
-        a, b = a.to(device), b.to(device)
-        proposal = dist.Normal(*model(a))
-        pred = proposal.rsample()
-
-        optimizer.zero_grad()
-        _loss = loss_fn(b, pred)
-        _loss.backward()
-        optimizer.step()
-
-        b_loss += loss.item()
-        if args.print_freq > 0 and i % args.print_freq == 0:
-            print("iteration {:04d}/{:d}: loss: {:6.3f}".format(i, iterations,
-                                                                loss.item() / args.batch_size))
-        print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, ...))
-
-    model.eval()
-    b_loss = 0
-    test_iterations = len(test_loader)
-    with torch.no_grad():
-        for i, (a,b) in enumerate(test_loader):
-            a, b = a.to(device), b.to(device)
-            proposal = dist.Normal(*model(a))
-            pred = proposal.rsample()
-            _loss = loss_fn(b, pred)
-            b_loss += loss.item()
-        print('Test loss: {:.4f}\n'.format(b_loss.item()/test_iterations))
