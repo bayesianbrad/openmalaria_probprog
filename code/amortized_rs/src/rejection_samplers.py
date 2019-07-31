@@ -14,7 +14,7 @@ class f():
         # the following is used to avoid tail recursion  - simple solution and stops stack overflow 
         # You can not use this trick straight forwardly if you wish to access multiple core / threads. 
         while z2 == math.inf:
-    #         print(' while loop triggered')
+            print(' while loop triggered')
             z2 = self.R1(z1)
         z3 = Uniform(0,2).sample()
         z4 = self.R2(z2,z3)
@@ -49,8 +49,7 @@ class frepeat():
         # the following is used to avoid tail recursion  - simple solution and stops stack overflow 
         # You can not use this trick straight forwardly if you wish to access multiple core / threads. 
         while z2 == math.inf:
-            print(' while loop triggered')
-            z2 = R1(self.z1)
+            z2 = self.R1(self.z1)
         z4 = self.R2(z2,self.z3)
         return torch.tensor([self.z1,z2,self.z3,z4])
 
@@ -58,7 +57,7 @@ class frepeat():
         temp = Normal(z1,1).sample()
         if temp.data > 0:
             return temp
-        elif i == 1000:
+        elif i == 10:
             return math.inf
         else:
             i = i+1
