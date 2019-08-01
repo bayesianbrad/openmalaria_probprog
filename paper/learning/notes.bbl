@@ -34,6 +34,11 @@ Yihao Feng, Dilin Wang, and Qiang Liu.
   descent.
 \newblock {\em arXiv preprint arXiv:1707.06626}, 2017.
 
+\bibitem{greenberg2019automatic}
+David~S Greenberg, Marcel Nonnenmacher, and Jakob~H Macke.
+\newblock Automatic posterior transformation for likelihood-free inference.
+\newblock {\em arXiv preprint arXiv:1905.07488}, 2019.
+
 \bibitem{maire2006model}
 Nicolas Maire, Thomas Smith, Amanda Ross, Seth Owusu-Agyei, Klaus Dietz, and
   Louis Molineaux.
@@ -53,6 +58,12 @@ Renate Meyer, Bo~Cai, and François Perron.
   polynomials of degree 2.
 \newblock {\em Computational Statistics and Data Analysis}, 52(7):3408 -- 3423,
   2008.
+
+\bibitem{rainforth2017automating}
+Thomas William~Gamlen Rainforth.
+\newblock {\em Automating inference, learning, and design using probabilistic
+  programming}.
+\newblock PhD thesis, University of Oxford, 2017.
 
 \bibitem{rezende2015variational}
 Danilo~Jimenez Rezende and Shakir Mohamed.
