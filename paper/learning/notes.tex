@@ -130,20 +130,45 @@ that can be taken within the given probabilistic model.
 This is because each member of the population has 
 a bounded, but large number of decisions to make. 
 In addition to this, each member of the population can interact
-with other members of the population.
-To model a single population member quantum-based methods leveraging 
-linear superposition and entanglement provide an ability to explore multiple paths simultaneously maintaining 
-the whole program, \emph{state}, in one iteration.
- Unfortunately, analytically writing the functional 
-form of the state is, in this instance, impossible.   
-The usability of current classical inference methods in this context is also problematic. 
-However, by combining hijacking and amortizing parts of the simulator, in particular rejection sampling 
-loops, we can not only correctly perform inference in such models, as the rejection sampling loops are 
-now replaced with learnt functions, but we can also perform inference much more efficiently. 
-This is because the rejection sampling loops are now replaced with learnt functions which enables us to correctly
-construct the density and as they are amortized, evaluation is cheap and only has to be performed once per call.
-This significantly reduces memory consumption and running time. 
+with other members of the population, which presents challenges for current inference methods.
+Because in many simulated settings we cannot correctly construct the functional form of the density of the 
+desired program. 
+This has spawned a large body of research in recent years to understand how to perform 
+inference in likelihood free methods~\cite{greenberg2019automatic} \textbf{Add normalising flow citations}
+for conditional density estimation. However, whilst many of these methods look to generate a surragote 
+for the entire simulator, we propose amortizing only computational expensive sub-components 
+of the simulator, which we can do in an automated way with probabilistic programming. 
+This enables three things. 
+1) It reduces the loss of information, as when simulators are amortized with in current
+settings we require, potentially infinite samples, to provide a useful learnt representation of the simulator. 
+2) It increases computational efficiency, whilst maintaining expressivity. 
+3) It converts expensive rejection sampling loops into to learnt functions that can be 
+easily sampled from and used to construct a functional form of the likelihood, that enables the 
+target density to be fully constructed, enabling one to leverage a large class of sample effient inference schemes, 
+namely MCMC. 
 
+% To model a single population member quantum-based methods leveraging 
+% linear superposition and entanglement provide an ability to explore multiple paths simultaneously maintaining 
+% the whole program, \emph{state}, in one iteration.
+%  Unfortunately, analytically writing the functional 
+% form of the state is, in this instance, impossible.   
+% 
+In particular, we focus on combining the hijacking of simulators via probabilistic programming~\cite{baydin2018efficient} and 
+state-of-the-art amortization schemes for density estimation \textbf{ Do home work on current papers}.
+This enables such a process to happen in automatic way, simplifying existing set-ups, whilst providing
+more expressive modelling capabilities. 
+We are able to demonstrate this by replacing rejection sampling blocks, which are utilised within 
+many prominent simulators to simulate densities that have no well defined cumulative density 
+function, nor no known process to efficiently sample from such a density exists. 
+By amortizing the rejection sampling blocks, during the inference stage when a simulator is run \emph{forword} we 
+can replace such blocks with their leant surrogate, from which we can then construct the entire 
+density of the simulator, which can then be utilized, \emph{correctly}, contrary to ~\cite{baydin2018efficient},
+by sample efficient Markov chain Monte Carlo inference schemes, such as Hamiltonian Monte Carlo~(HMC),
+random-walk Metropolis Hastings~(RMH), Light-weight Metropolis Hastings~(LMH) and many other schemes.
+Whilst also significantly reducing memory consumption and computational running time of 
+both the simulator and of the probabilistic programming system, as evaluating amortized functions 
+is cheap and the reduction in rejection sampling blocks significantly reduces the number of 
+unnecessary latent variables tracked~\cite{baydin2018efficient}.  
 
 Without the amortization procedure, as updates are made sequentially MCMC methods are typically not-well suited this type of recursive
 estimation problem. 
@@ -155,38 +180,23 @@ MCMC methods can be effective with a well designed amortized inference procedure
 Non-MCMC based methods such as importance sampling (IS) and sequential monte carlo (SMC), may also be
 sensible inference engines, although we shall discuss the limitations within the simulator context in the proceeding sections.  
 
-However, to implement this in practice we are required to do the following:
+However, to construct this hybrid procedure requires both substantial engineering contributions 
+and a description of the mathematical framework for these non-standard probabilistic programs. 
+We provide both of these in this paper. As to implement this in practice we are required to do the following:
  \begin{itemize}
-    \item Create a sensible training procedure
-    \item Have 2 additional functions implemented within pyprob
-    \begin{enumerate} \item 1) That stores only the necessary raw samples from the desired rejection sampling addresses to be used for training.
-                       \item 2) A function at \emph{test time} that replaces those given addresses with a learnt surrogate.
+    \item An automated training procedure for any given simulator.
+    \item Extend the protocols of existing probabilistic programming systems that hijack simulators, to enable:
+    \begin{enumerate} \item 1) Only the necessary raw samples from the desired rejection sampling addresses to be collected for training.
+                       \item 2) A function at inference time that replaces those given addresses with a learnt surrogate.
     \end{enumerate}
     \item Finer grained control over the actual latent variables of interest, to avoid unnecessary memory consumption and ensure that inference problems remain tractable.
   \end{itemize}
-There is no doubt that implementing some fo these features will be more invasive to the underlying simulator code than previously
+
+\textbf{There is no doubt that implementing some fo these features will be more invasive to the underlying simulator code than previously
 just hijacking the raw-random number draws, but, it would enable us to attack difficulties in the inference procedures that are
-currently not amenable to the current approach.
+currently not amenable to the current approach.}
 
- \input{thesystem.tex}
 \section{Limitations with different inference engines}  
-
-\subsection{Prior based sampling}
-In prior based sampling we take our existing program and look directly at the product of all the raw sample calls, denoted $f_{a_i}(x_i | \eta)$ and 
-construct a proposal that is is dependent on those. In this sampling scheme our proposal is defined as:
-\begin{equation}
-  q(x_{1:n_{x}}) = 
-  \begin{cases}
-    \prod_{i=1}^{n_x} f_{a_i}(x_i | \eta) \hspace{0.1cm} \texttt{if} \hspace{0.1cm} \mathcal{B}(x_{1:n_{x}})=1 \\
-    0
-  \end{cases}
-\end{equation}
-where $\mathcal{B}(\cdot)$ is satisfied by the simulator and $f_{a_i}(\cdot)$ represents a
-raw random sample, $\eta$ is a subset of the variables in-scope at the point of sampling
-and $n_{x}$ is the number of latent variables.
- This is true in all inference engines used in this hijacking framework.
-However, this makes use of no conditioning and is not sufficient for performing inference in
-complex, population-based simulations.
 
 
 \section{Non-prior Based Sampling}
@@ -260,7 +270,9 @@ by employing sequential monte carlo (SMC), although as we can only condition at 
 of one full run of the simulation, computational speed increases are minimal.
 SMC allows for conditioning on multiple observations, but the number of observations must
 be fixed. \textbf{Note: If we could condition on observations within the simulator, we 
-could get dramatic speed increases over standard importance sampling.}
+could get dramatic speed increases over standard importance sampling.We can actually do this 
+in pyprob, but it requires knowing where to condition. That can be quite challenging 
+for arbitrary code. }
 
 
 \begin{algorithm}
@@ -295,6 +307,324 @@ Ask tom what:  one can sometimes achieve improvements by instead using the type 
 associated with $x_m$ (what does this first part mean?) 
  to automatically construct a valid random walk proposal that allows for improved
  hill climbing behavior on the individual updates. }. 
+
+\textbf{TODO: Add some of the plots generated from this model and an accompanying analysis to them.}
+ 
+\section{Amortized Rejection Sampling}
+
+One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
+programming framework is that they rely heavily on rejection sampling 
+to generate samples from the target density. Not only is rejection sampling 
+computational inefficient, [especially if criteria in which samples are generated
+has been poorly calibrated] (may leave out this statement as it may make a reviewer
+question why would amortization work any better.), but it creates complications for inference.
+As the rejection sampling loops provide no explicit form of the target density,
+we can not simply evaluate the density and leverage statistically and computationally
+efficient algorithms such as MCMC sampling. This inhibits our ability to transform an arbitrary
+stochastic simulator into a probabilistic programming framework~\cite{baydin2018efficient}. 
+To this end, we derive both a mathematical and engineering based framework to facilitate 
+the amortization of rejection sampling loops in arbitrary simulators, which provides a path
+way to both leverage a larger, more efficient class of inference methods and convert arbitrary
+stochastic simulators into probabilistic programs systems.
+
+
+\begin{figure}
+  % \begin{minipage}[c]{0.67\textwidth}
+  \includegraphics[]{amoritized_rejection.pdf}
+  % \end{minipage}\hfill
+  % \begin{minipage}[c]{0.3\textwidth}
+    \caption{Using PyProb we can locate all regions of inefficient sampling 
+    and replace those points in the code with learnt functions that represent
+    the distributions of the rejection sampling statements. $Z_{i}$ represents the marginal and 
+    by learning surrogate functions for each of the rejection sampling loops.
+    In doing so we can learn approximate raw sample distributions $f(x_{i} | \eta)$ for each
+    rejection sampling loop. This means that we can evaluate the function at each part in the simulator, enabling
+    us to construct a target density that can be evaluated when using MCMC inference schemes such as RMH.}
+    \label{fig:amortized_sampling}
+  % \end{minipage}
+\end{figure}
+
+\section{Rejection Sampling}
+
+Rejection samplers are heavily used when designing simulators, due to their ease of use and ability to model 
+any arbitrary distribution on $\mathbb{R}^{D}$, with a sufficiently well designed rejection sampling scheme~\cite{MEYER20083408,martino2012improved,casella} and have 
+their origins in 1940 - 1950's, during the development of other prominent Monte carlo techniques at Los Alamos. 
+
+In the standard setting we let $X$ be a random variable whose density is $f(x)$ that we cannot easily 
+sample from, but can evaluate. Using a random variable $Z$, whose density is $g(z)$  that we can efficiently
+sample from, then we can generate a sample $X$ by sampling $Z$ and accept $Z$ with probability
+$p_{accept} = \frac{f(x)}{Mg(x)}$, which we can do until acceptance. 
+M is constant that has a finite bound, $M \in (1, \infty)$, on the likelihood ratio $\frac{f(x)}{g(x)}$ over the 
+support of $X$. $M$ must also satify the following inequality $f(x) \leq M g(x)  \forall x$. 
+This implies that the support of $Z$ must also contained the support of $X$, that is
+$g(x) > 0$ whenever $f(x)>0$. 
+The standard algorithm is defined as follows:
+\begin{algorithm}
+  \small
+   \caption{Rejection Sampling}
+    \begin{algorithmic}\small
+       \State {At iteration $i$ s.t $i \geq 1$}
+       \State $X_{i} \sim g(X_{i})$ 
+       \State $U_{i} \sim \mathcal{U}(0,1)$
+       \If{$U_{i} \leq M \frac{f(X_i)}{g(X_{i})}$}
+       \State{ accept $X_i \sim f$}
+       \Else
+       \State{$i \gets i + 1$, repeat}
+       \EndIf
+\end{algorithmic}
+\end{algorithm}
+
+As useful rejection sampling is, it has many short comings. 
+In particular, to simulate proposals for certain distributions,
+such as truncated normal distributions, regardless of the easy to sample from proposal
+chosen the computational running time of such rejection statements can be shown to have an
+expectation equal to infinity. Thus, the ability to learn and replace such rejection
+sampling blocks with learnt surrogate functions, that are expressive enough to 
+reciprocate the behavior of the rejection sampling block buys the user two things. 
+A) It reduces the computational complexity of the simulator. 
+B) As we now have a direct functional form of the density, we can correctly leverage
+more computationally and sample efficient inference schemes. 
+
+\section{Defining the Density and Sub-Densities within Simulators}
+
+To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
+where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can 
+
+
+
+\subsection{Prior based sampling}
+In prior based sampling we take our existing program and look directly at the product of all the raw sample calls, denoted $f_{a_i}(x_i | \eta)$ and 
+construct a proposal that is is dependent on those. In this sampling scheme our proposal is defined as:
+\begin{equation}
+  q(x_{1:n_{x}}) = 
+  \begin{cases}
+    \prod_{i=1}^{n_x} f_{a_i}(x_i | \eta) \hspace{0.1cm} \texttt{if} \hspace{0.1cm} \mathcal{B}(x_{1:n_{x}})=1 \\
+    0
+  \end{cases}
+\end{equation}
+where $\mathcal{B}(\cdot)$ is satisfied by the simulator and $f_{a_i}(\cdot)$ represents a
+raw random sample, $\eta$ is a subset of the variables in-scope at the point of sampling
+and $n_{x}$ is the number of latent variables.
+ This is true in all inference engines used in this hijacking framework.
+However, this makes use of no conditioning and is not sufficient for performing inference in
+complex, population-based simulations.
+
+In order to correctly characterize this problem we first provide a useful diagram demonstrating 
+the density of the system. 
+
+ \input{thesystem.tex}
+
+We do this by  Replacing the rejection sampling blocks with 
+learnt functions from an amortized inference procedure Figure~\ref{fig:amortized_sampling}.
+This then enables us to replace rejection sampling loops with amortized functions that 
+are quick to evaluate, provide a functional form to the density and significantly reduce 
+memory over-heads, as compared to~\cite{baydin2018efficient}, due to not having to track the 
+thousands of raw sample calls $f_{a_i}$ generated in standard simulators. 
+
+Consider the following program, that is representative of a simple stochastic simulator
+and two types of rejection sampler:
+
+
+\noindent
+\begin{tabular}{|p{3.6cm}|p{3.6cm}|p{3.6cm}|}
+\hline
+Stochastic Simulator  & Rejection Sampler 1 & Rejection Sampler 2 \\
+\hline
+\begin{lstlisting}[mathescape=true]
+    def f():
+      $z_{1} \sim \mathcal{N}(0,1)$
+      $z_{2} \gets R_{1}(z_1, 1)$
+      $z_{3} \sim \mathcal{U}(0,2)$
+      $z_{4} \gets R_{2}(z_2,z_3, 1)$
+    return $g(z_{1:4})$
+\end{lstlisting}&
+\begin{lstlisting}[mathescape=true]
+def $R_1(z_1)$:
+  $x \sim \mathcal{N}(z_1,1)$
+  if $x > 0$:
+    return $x$
+  else:
+    return $R_{1}(z_1)$
+\end{lstlisting}&
+\begin{lstlisting}[mathescape=true]
+def $R_2(z_2, z_3)$:
+  $y \gets 0$
+  while $y < z_2$:
+    $y \sim \mathcal{N}(z_3,1)$
+  end
+  return $y$
+\end{lstlisting}\\
+\hline
+$P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z_{2},z_{3})$ \\
+\hline
+\end{tabular} 
+
+Here the rejection sampling functions take an additional argument $1$, or $0$,
+to specify whether or not we want to collect samples to train, $1$, else replace with 
+the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
+the unknown densities that we wish to learn through an amortized approach. 
+
+\begin{figure}
+  \centering
+  \includegraphics{rs_plots.png}
+  \caption{ Simulated densities for rejection sampling block 1, \emph{blue} and rejection
+  sampling block 2, \emph{orange}.}
+  \label{fig:rs_simulated}
+\end{figure}
+However, in order to do this, we must correctly specify our variational objective.
+
+\section{ An overview of Amortized Inference schemes}
+\begin{itemize}
+  \item Whilst the variational posterior we choose as our proposal has a functional form 
+  and can be sampled, the functional form of the rejection sampling loops is not explicitly known,
+  which leads to problems when calculating the $KL$-divergence. 
+  \item There are two approaches that we can take to calculating some divergence metric. 
+  \item 1) Using something like a non-parametric divergence estimator that makes use of Renyi and $L_{2}$ divergences (see \cite{basseville2013divergence} for details)
+  \item 2) Use some form of kernel density to estimation to approximate the functional form of the rejection sampling 
+  block, which can be used in place. From which we learn a variational approximation characterized by a trained network that we can sample from quickly. 
+  \item An issue with approach 2) is that if I can approximate the density in functional form aren't there more efficient methods that we can use? (\textbf{Ask tom})
+  \item Or, if assuming that the rejection sampling block can be arbitrary dimension, are we first learning a flow to represent that density and then learn a variational approximation of something that we can easily sample from. 
+  \item But, this is very much the idea behind normalising flows, take a simple distribution that you can sample and then map it to the ``complicated'' density. 
+  \item Stein Variational inference may be quite nice to use here~\cite{feng2017learning}, but it does make explicit assumptions in requiring the densities to be differentiable. 
+  \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399}
+\end{itemize}
+
+New questions to ask Tom
+
+\begin{itemize}
+  \item Isn't what we are doing just conditional density estimation? It seems
+  like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
+  \item It does seem like this field has a large extensive past.
+\end{itemize}
+
+
+\subsection{Using a simple Neural Network regressor}
+
+As a first approach, we use a regressor to learn a function to map
+between the input / output pairs that are outputted from the rejection
+sampling blocks with in the simulator. 
+
+\paragraph{Architecture} For each rejection sampling block we learn a proposal $q(z_1, \ldots, z_i | \eta)$
+\subsection{Using variants of VAEs}
+
+\subsection{Density estimation using Normalising flows}
+Notes from models that define an explicit,  
+tractable density are highly effective, 
+because they permit the use of an optimization algorithm directly on the log-likelihood of the training data.
+However,  the  family  of  models  that provide  a  tractable  density  is  limited,
+with  different  families  having  different disadvantage.
+The rejection sampling loops, if proposed correctly, provide a way of generating 
+samples from some density, but do not provide a way of constructing the target density (\textbf{Bradley: Ask Tom, is this true?}). 
+Within event and population-based simulators, the rejection sampling loops have been designed with care,
+to ensure that they are representative to the events that they are simulating. So we can, with confidence,
+assume that they are representative of some density. 
+However, to utilise powerful inference engines, we must be able to construct the 
+full density of the program. 
+
+One recent technique for density estimation, in the amortized inference setting,
+is normalising flows combined with variation inference~\cite{rezende2015variational}.
+Flow-based methods work by leveraging a simple property of differential geometry applied 
+to random variables. 
+That being the change of variables.
+Let $z \sim r(z)$ where $r(z)$ represents the posterior defined by the rejection
+sampling loop, and define $\pi$ to be a smooth and invertible function.
+When $\pi$ acts $z$ we transform the random variable from one domain, to another. 
+Thus, if $z\prime = \pi(z)$ then we can construct the density of  
+the probability density of the new random variable $z\prime$ under the flow initiated by $\pi$: 
+\begin{equation}
+r(z\prime) = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi^{-1}}{\partial z'}\right| = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi}{\partial z\prime}\right|^{-1} 
+\end{equation}
+
+\begin{itemize}
+  \item Do we need to know the base distribution that the RS block is sampling from? i.e there maybe be multiple $r(z)$ in each 
+  RS block. 
+  \item Is it right to say here that $z\prime$ is the output of the RS block, we do not know $\pi$ here, or is $r(z)$ the raw sample $f_{a_i}$ and $\pi$ the distribution specified by the rejection sampling loop? 
+  \item We need to learn $\pi(.)$
+\end{itemize}
+
+\section{Constructing the Objective}
+
+The framework we present in this section is generally applicable to stochastic simulator 
+environment, where there exists rejection sampling loops. 
+
+We start by noting that the prior, defined in the context of the outer samples is 
+defined as: 
+\begin{equation}
+  p(x) = 
+  \begin{cases}
+    \prod^{n_{x}}_{j=1} f_{a_j}(x_j ; \psi_j) if \mathcal{B}(x) = 1 \\
+    0
+  \end{cases}
+\end{equation}
+We start with the information projection we construct the variational objective as follows:
+\begin{align*}
+  J(\eta) = KL(p(x) || q(x; \eta)) \\
+   = \int p(x)\ln\left(\frac{p(x)}{q(x;\eta)}\right) dx \\
+  %  \int p(x')dx' \gets 1 \\
+  %  &= \mathbb{E}_{p(x)}[\ln(p(x))]  - \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\
+  %  &= \ln(1) -  \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\ % I do not agree with this line
+  %  &= -\mathbb{E}_{p(x)}[\ln(q(x;\eta))] \\
+  %  &= -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\ln(q_{a_j}(x_j;\eta))] \\
+   \text{Let } a_{j} \in \{1, \ldots, L\} , S_{R} \subset \{1, \ldots, L\} \\
+   = \cancelto{\text{no dependence on } \eta}{\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \notin S_{R}}\ln(p(x))]}-\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \in S_{R}}\ln(q_{a_j}(x_j;\eta))]\\
+\end{align*}
+
+Thus, to define the objective for each subproblem $r  \in S_{R}$ as:
+\begin{equation}
+  J_{r}(\eta_r) = -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\mathbb{I}(a_j = r)\ln(q_r(x_j;\eta_r, \phi_j))]
+\end{equation}
+
+where during training we extract samples from each forward run and train each rejection sampler
+separately. 
+
+
+
+\section{Additional TODOs}
+
+
+\begin{itemize}
+\item Before implementing such tools into the simulator, spend time looking for simpler stochastic simulators 
+that can be hijacked but have target densities that can be constructed analytically. 
+\item If we are not utilizing the additional information stored in the trace, which is only used during the inference compilation
+training procedure, then we do not need it all, as for importance sampling we only require the weights after each \texttt{forward()}
+update. 
+\item If we cannot find any pre-existing simulators that are amenable to this approach then, we need to create our own, with
+a rejection sampling loop, that can be exploited by the new machinery. This would enable us to debug, provide a simple example 
+for the paper and understand the feasibility of the entire approach. 
+\end{itemize}
+
+\bibliography{refs}
+\bibliographystyle{plain}
+\appendix
+
+\section{The unconditional acceptance probability}
+
+Given a collection of i.i.d random variables $\{X_{i}\}_{i = 1:n}$ with 
+cumulative density function (CDF) $F_{X}$. Then by the Glivenko-Cantelli theorem~\cite{tucker1959generalization} 
+we can define the empirical distribution function for $x \in \mathbb{R}$ as:
+\begin{equation}
+  F_{n}(x) = \frac{1}{n}\sum^{n}_{i=1} \mathbb{I}_{[X_{i}, \infty)}(x)
+\end{equation}
+And for any fixed $x \in \mathbb{R}$, the Strong law of large numbers ensures that 
+$F_{n}(x) \rightarrow F_{X}(x)$ as $n \rightarrow \infty$ as 
+\begin{equation}
+\mathbb{E}[\mathbb{I}_{[X_{i},\infty)}(x)] = 
+ P[\mathbb{I}_{X_{i},\infty)}(x) = 1] = P[X_{i}\leq x] = F_(X)(x)
+\end{equation}
+where $\mathbb{I}_{A}(x)$  is the indicator function for a set $A$. 
+
+\begin{align}
+  \text{Prob}(U \leq \frac{p_{X}(z)}{Mg_{Z}(z)} = \mathbb{E}_()
+\end{align}
+\section{Law of total expectations}
+
+If $X$ is a random variable whose expected value is $\mathbb{E}[X]$ and $Z$ is a random variable on the same probability space
+then: \begin{equation}
+  \label{eq:lawoftotalexp}
+  \mathbb{E}[X] = \mathbb{E}_{p(z)}[\mathbb{E}_{p(x|z)}[X | Z]]
+\end{equation}
+That is, the expected value of $X$ given $Z$ is the same as the expectation of $X$.
+
 
 
 \section{An Example: Modelling Parasite Densities in Simulation}
@@ -428,288 +758,6 @@ to $\sigma^2_n = 0.187, 0.567$ and $0.704$.
 
 \paragraph{Models of decay of natural immunity}
 \textbf{To complete}
-
-
-\textbf{TODO: Add some of the plots generated from this model and an accompanying analysis to them.}
-
-\section{Amortized Rejection Sampling}
-
-One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
-programming framework is that they rely heavily on rejection sampling 
-to generate samples from the target density. Not only is rejection sampling 
-computational inefficient, [especially if criteria in which samples are generated
-has been poorly calibrated] (may leave out this statement as it may make a reviewer
-question why would amortization work any better.), but it creates complications for inference.
-As the rejection sampling loops provide no explicit form of the target density,
-we can not simply evaluate the density and leverage statistically and computationally
-efficient algorithms such as MCMC sampling. This inhibits our ability to transform an arbitrary
-stochastic simulator into a probabilistic programming framework~\cite{baydin2018efficient}. 
-To this end, we derive both a mathematical and engineering based framework to facilitate 
-the amortization of rejection sampling loops in arbitrary simulators, which provides a path
-way to both leverage a larger, more efficient class of inference methods and convert arbitrary
-stochastic simulators into probabilistic programs systems.
-
-
-\begin{figure}
-  % \begin{minipage}[c]{0.67\textwidth}
-  \includegraphics[]{amoritized_rejection.pdf}
-  % \end{minipage}\hfill
-  % \begin{minipage}[c]{0.3\textwidth}
-    \caption{Using PyProb we can locate all regions of inefficient sampling 
-    and replace those points in the code with learnt functions that represent
-    the distributions of the rejection sampling statements. $Z_{i}$ represents the marginal and 
-    by learning surrogate functions for each of the rejection sampling loops.
-    In doing so we can learn approximate raw sample distributions $f(x_{i} | \eta)$ for each
-    rejection sampling loop. This means that we can evaluate the function at each part in the simulator, enabling
-    us to construct a target density that can be evaluated when using MCMC inference schemes such as RMH.}
-    \label{fig:amortized_sampling}
-  % \end{minipage}
-\end{figure}
-
-\section{Rejection Sampling}
-
-Rejection samplers are heavily used when designing simulators, due to their ease of use and ability to model 
-any arbitrary distribution on $\mathbb{R}^{D}$, with a sufficiently well designed rejection sampling scheme~\cite{MEYER20083408,martino2012improved,casella} and have 
-their origins in 1940 - 1950's, during the development of other prominent Monte carlo techniques at Los Alamos. 
-
-In the standard setting we let $X$ be a random variable whose density is $p(x)$ that we cannot easily 
-sample from, but can evaluate. Using a random variable $Z$, whose density is $g(z)$  that we can efficiently
-sample from, then we can generate a sample $X$ by sampling $Z$ and accept $Z$ with probability
-$p_{accept} = \frac{p(x)}{Mg(x)}$, which we can do until acceptance. 
-M is constant that has a finite bound, $M \in (1, \infty)$, on the likelihood ratio $\frac{p(x)}{g(x)}$ over the 
-support of $X$. $M$ must also satify the following inequality $p(x) \leq M g(x)  \forall x$. 
-This implies that the support of $Z$ must also contained the support of $X$, that is
-$g(x) > 0$ whenever $p(x)>0$. 
-The standard algorithm is defined as follows:
-\begin{algorithm}
-  \small
-   \caption{Rejection Sampling}
-    \begin{algorithmic}\small
-       \State {At iteration $i$ s.t $i \geq 1$}
-       \State $X_{i} \sim g(X_{i})$ 
-       \State $U_{i} \sim \mathcal{U}(0,1)$
-       \If{$U_{i} \leq M \frac{f(X_i)}{g(X_{i})}$}
-       \State{ accept $X_i \sim f$}
-       \Else
-       \State{$i \gets i + 1$, repeat}
-       \EndIf
-\end{algorithmic}
-\end{algorithm}
-
-As useful rejection sampling is, it has many short comings. 
-In particular, to simulate proposals for certain distributions,
-such as truncated normal distributions, regardless of the easy to sample from proposal
-chosen the computational running time of such rejection statements can be shown to have an
-expectation equal to infinity. Thus, the ability to learn and replace such rejection
-sampling blocks with learnt surrogate functions, that are expressive enough to 
-reciprocate the behavior of the rejection sampling block buys the user two things. 
-A) It reduces the computational complexity of the simulator. 
-B) As we now have a direct functional form of the density, we can correctly leverage
-more computationally and sample efficient inference schemes. 
-\section{Details}
-
-We do this by  Replacing the rejection sampling blocks with 
-learnt functions from an amortized inference procedure Figure~\ref{fig:amortized_sampling}.
-This then enables us to replace rejection sampling loops with amortized functions that 
-are quick to evaluate, provide a functional form to the density and significantly reduce 
-memory over-heads, as compared to~\cite{baydin2018efficient}, due to not having to track the 
-thousands of raw sample calls $f_{a_i}$ generated in standard simulators. 
-
-Consider the following program, that is representative of a simple stochastic simulator
-and two types of rejection sampler:
-
-
-\noindent
-\begin{tabular}{|p{3.6cm}|p{3.6cm}|p{3.6cm}|}
-\hline
-Stochastic Simulator  & Rejection Sampler 1 & Rejection Sampler 2 \\
-\hline
-\begin{lstlisting}[mathescape=true]
-    def f():
-      $z_{1} \sim \mathcal{N}(0,1)$
-      $z_{2} \gets R_{1}(z_1, 1)$
-      $z_{3} \sim \mathcal{U}(0,2)$
-      $z_{4} \gets R_{2}(z_2,z_3, 1)$
-    return $g(z_{1:4})$
-\end{lstlisting}&
-\begin{lstlisting}[mathescape=true]
-def $R_1(z_1)$:
-  $x \sim \mathcal{N}(z_1,1)$
-  if $x > 0$:
-    return $x$
-  else:
-    return $R_{1}(z_1)$
-\end{lstlisting}&
-\begin{lstlisting}[mathescape=true]
-def $R_2(z_2, z_3)$:
-  $y \gets 0$
-  while $y < z_2$:
-    $y \sim \mathcal{N}(z_3,1)$
-  end
-  return $y$
-\end{lstlisting}\\
-\hline
-$P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z_{2},z_{3})$ \\
-\hline
-\end{tabular} 
-
-Here the rejection sampling functions take an additional argument $1$, or $0$,
-to specify whether or not we want to collect samples to train, $1$, else replace with 
-the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
-the unknown densities that we wish to learn through an amortized approach. 
-
-\begin{figure}
-  \centering
-  \includegraphics{rs_plots.png}
-  \caption{ Simulated densities for rejection sampling block 1, \emph{blue} and rejection
-  sampling block 2, \emph{orange}.}
-  \label{fig:rs_simulated}
-\end{figure}
-However, in order to do this, we must correctly specify our variational objective.
-
-\section{ An overview of Amortized Inference schemes}
-\textbf{Bradley: Todo: Tom has provided me with all the information to conduct this approach}
-\begin{itemize}
-  \item Whilst the variational posterior we choose as our proposal has a functional form 
-  and can be sampled, the functional form of the rejection sampling loops is not explicitly known,
-  which leads to problems when calculating the $KL$-divergence. 
-  \item There are two approaches that we can take to calculating some divergence metric. 
-  \item 1) Using something like a non-parametric divergence estimator that makes use of Renyi and $L_{2}$ divergences (see \cite{basseville2013divergence} for details)
-  \item 2) Use some form of kernel density to estimation to approximate the functional form of the rejection sampling 
-  block, which can be used in place. From which we learn a variational approximation characterized by a trained network that we can sample from quickly. 
-  \item An issue with approach 2) is that if I can approximate the density in functional form aren't there more efficient methods that we can use? (\textbf{Ask tom})
-  \item Or, if assuming that the rejection sampling block can be arbitrary dimension, are we first learning a flow to represent that density and then learn a variational approximation of something that we can easily sample from. 
-  \item But, this is very much the idea behind normalising flows, take a simple distribution that you can sample and then map it to the ``complicated'' density. 
-  \item Stein Variational inference may be quite nice to use here~\cite{feng2017learning}, but it does make explicit assumptions in requiring the densities to be differentiable. 
-  \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399}
-\end{itemize}
-
-\subsection{Using a simple Neural Network regressor}
-
-As a first approach, we use a regressor to learn a function to map
-between the input / output pairs that are outputted from the rejection
-sampling blocks with in the simulator. 
-
-\paragraph{Architecture} For each rejection sampling block we learn a proposal $q(z_1, \ldots, z_i | \eta)$
-\subsection{Using variants of VAEs}
-
-\subsection{Density estimation using Normalising flows}
-Notes from models that define an explicit,  
-tractable density are highly effective, 
-because they permit the use of an optimization algorithm directly on the log-likelihood of the training data.
-However,  the  family  of  models  that provide  a  tractable  density  is  limited,
-with  different  families  having  different disadvantage.
-The rejection sampling loops, if proposed correctly, provide a way of generating 
-samples from some density, but do not provide a way of constructing the target density (\textbf{Bradley: Ask Tom, is this true?}). 
-Within event and population-based simulators, the rejection sampling loops have been designed with care,
-to ensure that they are representative to the events that they are simulating. So we can, with confidence,
-assume that they are representative of some density. 
-However, to utilise powerful inference engines, we must be able to construct the 
-full density of the program. 
-
-One recent technique for density estimation, in the amortized inference setting,
-is normalising flows combined with variation inference~\cite{rezende2015variational}.
-Flow-based methods work by leveraging a simple property of differential geometry applied 
-to random variables. 
-That being the change of variables.
-Let $z \sim r(z)$ where $r(z)$ represents the posterior defined by the rejection
-sampling loop, and define $\pi$ to be a smooth and invertible function.
-When $\pi$ acts $z$ we transform the random variable from one domain, to another. 
-Thus, if $z\prime = \pi(z)$ then we can construct the density of  
-the probability density of the new random variable $z\prime$ under the flow initiated by $\pi$: 
-\begin{equation}
-r(z\prime) = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi^{-1}}{\partial z'}\right| = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi}{\partial z\prime}\right|^{-1} 
-\end{equation}
-
-\begin{itemize}
-  \item Do we need to know the base distribution that the RS block is sampling from? i.e there maybe be multiple $r(z)$ in each 
-  RS block. 
-  \item Is it right to say here that $z\prime$ is the output of the RS block, we do not know $\pi$ here, or is $r(z)$ the raw sample $f_{a_i}$ and $\pi$ the distribution specified by the rejection sampling loop? 
-  \item We need to learn $\pi(.)$
-\end{itemize}
-
-\section{Constructing the Objective}
-
-The framework we present in this section is generally applicable to stochastic simulator 
-environment, where there exists rejection sampling loops. 
-
-We start by noting that the prior, defined in the context of the outer samples is 
-defined as: 
-\begin{equation}
-  p(x) = 
-  \begin{cases}
-    \prod^{n_{x}}_{j=1} f_{a_j}(x_j ; \psi_j) if \mathcal{B}(x) = 1 \\
-    0
-  \end{cases}
-\end{equation}
-We start with the information projection we construct the variational objective as follows:
-\begin{align*}
-  J(\eta) = KL(p(x) || q(x; \eta)) \\
-   = \int p(x)\ln\left(\frac{p(x)}{q(x;\eta)}\right) dx \\
-  %  \int p(x')dx' \gets 1 \\
-  %  &= \mathbb{E}_{p(x)}[\ln(p(x))]  - \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\
-  %  &= \ln(1) -  \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\ % I do not agree with this line
-  %  &= -\mathbb{E}_{p(x)}[\ln(q(x;\eta))] \\
-  %  &= -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\ln(q_{a_j}(x_j;\eta))] \\
-   \text{Let } a_{j} \in \{1, \ldots, L\} , S_{R} \subset \{1, \ldots, L\} \\
-   = \cancelto{\text{no dependence on } \eta}{\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \notin S_{R}}\ln(p(x))]}-\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \in S_{R}}\ln(q_{a_j}(x_j;\eta))]\\
-\end{align*}
-
-Thus, to define the objective for each subproblem $r  \in S_{R}$ as:
-\begin{equation}
-  J_{r}(\eta_r) = -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\mathbb{I}(a_j = r)\ln(q_r(x_j;\eta_r, \phi_j))]
-\end{equation}
-
-where during training we extract samples from each forward run and train each rejection sampler
-separately. 
-
-
-
-\section{Additional TODOs}
-
-
-\begin{itemize}
-\item Before implementing such tools into the simulator, spend time looking for simpler stochastic simulators 
-that can be hijacked but have target densities that can be constructed analytically. 
-\item If we are not utilizing the additional information stored in the trace, which is only used during the inference compilation
-training procedure, then we do not need it all, as for importance sampling we only require the weights after each \texttt{forward()}
-update. 
-\item If we cannot find any pre-existing simulators that are amenable to this approach then, we need to create our own, with
-a rejection sampling loop, that can be exploited by the new machinery. This would enable us to debug, provide a simple example 
-for the paper and understand the feasibility of the entire approach. 
-\end{itemize}
-
-\bibliography{refs}
-\bibliographystyle{plain}
-\appendix
-
-\section{The unconditional acceptance probability}
-
-Given a collection of i.i.d random variables $\{X_{i}\}_{i = 1:n}$ with 
-cumulative density function (CDF) $F_{X}$. Then by the Glivenko-Cantelli theorem~\cite{tucker1959generalization} 
-we can define the empirical distribution function for $x \in \mathbb{R}$ as:
-\begin{equation}
-  F_{n}(x) = \frac{1}{n}\sum^{n}_{i=1} \mathbb{I}_{[X_{i}, \infty)}(x)
-\end{equation}
-And for any fixed $x \in \mathbb{R}$, the Strong law of large numbers ensures that 
-$F_{n}(x) \rightarrow F_{X}(x)$ as $n \rightarrow \infty$ as 
-\begin{equation}
-\mathbb{E}[\mathbb{I}_{[X_{i},\infty)}(x)] = 
- P[\mathbb{I}_{X_{i},\infty)}(x) = 1] = P[X_{i}\leq x] = F_(X)(x)
-\end{equation}
-where $\mathbb{I}_{A}(x)$  is the indicator function for a set $A$. 
-
-\begin{align}
-  \text{Prob}(U \leq \frac{p_{X}(z)}{Mg_{Z}(z)} = \mathbb{E}_()
-\end{align}
-\section{Law of total expectations}
-
-If $X$ is a random variable whose expected value is $\mathbb{E}[X]$ and $Z$ is a random variable on the same probability space
-then: \begin{equation}
-  \label{eq:lawoftotalexp}
-  \mathbb{E}[X] = \mathbb{E}_{p(z)}[\mathbb{E}_{p(x|z)}[X | Z]]
-\end{equation}
-That is, the expected value of $X$ given $Z$ is the same as the expectation of $X$.
 
 
 \end{document}
