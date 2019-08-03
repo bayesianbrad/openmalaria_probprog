@@ -151,6 +151,7 @@ def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutpu
         sim = simulator(origSamples[i,0],origSamples[i,2])
         for j in range(batch_size):
             newSamples[j,:] = sim.f()
+        torch.save('batch_samples_{}.pt'.format(i),newSamples)
         return newSamples
     
     start = time.time()
