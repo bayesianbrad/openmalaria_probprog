@@ -1,11 +1,9 @@
 {
     "data_size": 950000,
     "batch_size": 16,
-    "x dim": 1,
-    "r(x) dim":2,
-    "r_dim": 1
+    "x dim": [1,2],
+    "r(x) dim":[1,1],
     "lr": 4e-5,
-    "epochs": 100,
+    "epochs": 10,
     "dataset": "points"
   }
-  
