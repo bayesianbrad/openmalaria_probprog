@@ -180,19 +180,26 @@ def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutpu
 
         
 class RejectionDataset(Dataset):
-    def __init__(self, split, l_data, train_percentage, *args, **kwargs):
+    def __init__(self, split, l_data, train_percentage, fname_test, fname_train, InIndx, OutIndx):
         
-        if self.PATHA:
-            _a = torch.load(a)
-            n_split = (len(_a)*train_percentage//l_data)*l_data
-
-            self.a = torch.load(self.a)[:n_split] if split == 'train' else torch.load("path/..")[n_split:]
-        self.b = torch.load("pathb/..")[:n_split] if split == 'train' else torch.load("path/..")[n_split:]
-        perm = torch.randperm(len(self.a))
-        self.a, self.b = self.a[perm], self.b[perm]
-        self.l_data = l_data
+        _samples = torch.load('/data/'+fname_test)
+        n_split = (len(_samples)*train_percentage//l_data)*l_data
+        
+            
+        self.zinput = _samples[:n_split,InIndx] if split == 'train' else torch.load("data/"+fname_test)[n_split:]
+        self.zoutput = samples[:n_split,OutIndx] if split == 'train' else torch.load("data/"+fname_test)[n_split:]
+        # using shuffle= True does the same job
+        # perm = torch.randperm(len(self.zinput))
+        # self.zinput, self.zoutput = self.zinput[perm], self.zoutput[perm]
+        # self.l_data = l_data
 
     def __getitem__(self, idx):
+        ' Generates one sample of data - in our case batch size'
         start_idx = idx*self.l_data
         end_idx = start_idx + self.l_data
-        return self.a[start_idx:end_idx], self.b[start_idx:end_idx]
+        return self.zinput[start_idx:end_idx], self.zoutput[start_idx:end_idx]
+    
+    # def __len__(self):
+    #     ' Denotes the total number of samples'
+    #     return len(self.list_IDs)
+    
