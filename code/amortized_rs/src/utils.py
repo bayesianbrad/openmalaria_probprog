@@ -187,6 +187,7 @@ class RejectionDataset(Dataset):
             
         self.zinput = _samples[:n_split,InIndx] if split == 'train' else torch.load("data/"+fname_test)[n_split:]
         self.zoutput = samples[:n_split,OutIndx] if split == 'train' else torch.load("data/"+fname_test)[n_split:]
+        # using shuffle= True does the same job
         # perm = torch.randperm(len(self.zinput))
         # self.zinput, self.zoutput = self.zinput[perm], self.zoutput[perm]
         # self.l_data = l_data
