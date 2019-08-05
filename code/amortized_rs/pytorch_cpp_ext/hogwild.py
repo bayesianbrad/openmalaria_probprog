@@ -12,7 +12,7 @@ def train(model, max_it):
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     for it in range(max_it):
         batch_size = 256
-        data = th.stack([amortized_rs.f() for b in range(batch_size)])
+        data = th.stack([amortized_rs.f() for _ in range(batch_size)])
         optimizer.zero_grad()
         # TODO: Extract data, labels and define loss_fn etc!
         loss_fn(model(data), labels).backward()
