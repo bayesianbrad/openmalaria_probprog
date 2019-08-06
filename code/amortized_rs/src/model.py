@@ -4,7 +4,7 @@ from torch.nn import functional as F
 
 class density_estimator(nn.Module):
     def __init__(self, inputSize, outputSize):
-        super(density_estimator, self).__init__()
+        # super(density_estimator, self).__init__()
         self.hidden = nn.Sequential(
             nn.Linear(inputSize, inputSize//2),
             nn.ReLU(inputSize //2, inputSize//2),
