@@ -53,7 +53,7 @@ class frepeat():
         while z2 == math.inf:
             z2 = self.R1(self.z1)
         z4 = self.R2(self.z2Prev,self.z3)
-        return torch.tensor([self.z1,z2,self.z3,z4])
+        return torch.tensor([self.z1,z2,self.z2Prev,self.z3,z4])
 
     def R1(z1, i=0):
         i = 0
