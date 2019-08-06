@@ -86,11 +86,11 @@ if __name__ == '__main__':
     # optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     batch_size = 128
     inputSize = batch_size
-    outputSize = 2
+    data_flag= 'R1'
+    outputSize = 1 # for R1
     model = density_estimator(inputSize, outputSize)
     num_processes = mp.cpu_count() - 1
     N = 10000
-    data_flag= 'R1'
     # NOTE: this is required for the ``fork`` method to work
     model.share_memory()
     processes = []
