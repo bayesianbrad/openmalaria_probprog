@@ -86,7 +86,7 @@ if __name__ == '__main__':
     inputSize = batch_size
     outputSize = 2
     model = density_estimator(inputSize, outputSize)
-    num_processes = mp.cpu_count()
+    num_processes = mp.cpu_count() - 1
     N = 10000
     data_flag= 'R1'
     # NOTE: this is required for the ``fork`` method to work
