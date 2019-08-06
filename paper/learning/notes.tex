@@ -1,4 +1,3 @@
-
 \documentclass{article}
 
 % if you need to pass options to natbib, use, e.g.:
@@ -37,6 +36,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{wrapfig}
+\usepackage{bookmark}
 \usepackage{amsmath,amsthm}
 \usepackage{amssymb}
 \usepackage{cancel}
@@ -145,7 +145,7 @@ settings we require, potentially infinite samples, to provide a useful learnt re
 3) It converts expensive rejection sampling loops into to learnt functions that can be 
 easily sampled from and used to construct a functional form of the likelihood, that enables the 
 target density to be fully constructed, enabling one to leverage a large class of sample effient inference schemes, 
-namely MCMC. 
+namely MCMC.
 
 % To model a single population member quantum-based methods leveraging 
 % linear superposition and entanglement provide an ability to explore multiple paths simultaneously maintaining 
@@ -196,40 +196,6 @@ We provide both of these in this paper. As to implement this in practice we are 
 just hijacking the raw-random number draws, but, it would enable us to attack difficulties in the inference procedures that are
 currently not amenable to the current approach.}
 
-\section{Amortized Rejection Sampling}
-
-One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
-programming framework is that they rely heavily on rejection sampling 
-to generate samples from the target density. Not only is rejection sampling 
-computational inefficient, [especially if criteria in which samples are generated
-has been poorly calibrated] (may leave out this statement as it may make a reviewer
-question why would amortization work any better.), but it creates complications for inference.
-As the rejection sampling loops provide no explicit form of the target density,
-we can not simply evaluate the density and leverage statistically and computationally
-efficient algorithms such as MCMC sampling. This inhibits our ability to transform an arbitrary
-stochastic simulator into a probabilistic programming framework~\cite{baydin2018efficient}. 
-To this end, we derive both a mathematical and engineering based framework to facilitate 
-the amortization of rejection sampling loops in arbitrary simulators, which provides a path
-way to both leverage a larger, more efficient class of inference methods and convert arbitrary
-stochastic simulators into probabilistic programs systems.
-
-
-\begin{figure}
-  % \begin{minipage}[c]{0.67\textwidth}
-  \includegraphics[]{amoritized_rejection.pdf}
-  % \end{minipage}\hfill
-  % \begin{minipage}[c]{0.3\textwidth}
-    \caption{Using PyProb we can locate all regions of inefficient sampling 
-    and replace those points in the code with learnt functions that represent
-    the distributions of the rejection sampling statements. $Z_{i}$ represents the marginal and 
-    by learning surrogate functions for each of the rejection sampling loops.
-    In doing so we can learn approximate raw sample distributions $f(x_{i} | \eta)$ for each
-    rejection sampling loop. This means that we can evaluate the function at each part in the simulator, enabling
-    us to construct a target density that can be evaluated when using MCMC inference schemes such as RMH.}
-    \label{fig:amortized_sampling}
-  % \end{minipage}
-\end{figure}
-
 \section{Rejection Sampling}
 
 Rejection samplers are heavily used when designing simulators [ add SHERPA etc], due to their ease of use and ability to model 
@@ -270,7 +236,42 @@ A) It reduces the computational complexity of the simulator.
 B) As we now have a direct functional form of the density, we can correctly leverage
 more computationally and sample efficient inference schemes. 
 
-\section{Defining the Density and Sub-Densities within Simulators}
+\section{Amortized Rejection Sampling}
+
+One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
+programming framework is that they rely heavily on rejection sampling 
+to generate samples from the target density. Not only is rejection sampling 
+computational inefficient, [especially if criteria in which samples are generated
+has been poorly calibrated] (may leave out this statement as it may make a reviewer
+question why would amortization work any better.), but it creates complications for inference.
+As the rejection sampling loops provide no explicit form of the target density,
+we can not simply evaluate the density and leverage statistically and computationally
+efficient algorithms such as MCMC sampling. This inhibits our ability to transform an arbitrary
+stochastic simulator into a probabilistic programming framework~\cite{baydin2018efficient}. 
+To this end, we derive both a mathematical and engineering based framework to facilitate 
+the amortization of rejection sampling loops in arbitrary simulators, which provides a path
+way to both leverage a larger, more efficient class of inference methods and convert arbitrary
+stochastic simulators into probabilistic programs systems.
+
+
+\begin{figure}
+  % \begin{minipage}[c]{0.67\textwidth}
+  \includegraphics[]{amoritized_rejection.pdf}
+  % \end{minipage}\hfill
+  % \begin{minipage}[c]{0.3\textwidth}
+    \caption{Using PyProb we can locate all regions of inefficient sampling 
+    and replace those points in the code with learnt functions that represent
+    the distributions of the rejection sampling statements. $Z_{i}$ represents the marginal and 
+    by learning surrogate functions for each of the rejection sampling loops.
+    In doing so we can learn approximate raw sample distributions $f(x_{i} | \eta)$ for each
+    rejection sampling loop. This means that we can evaluate the function at each part in the simulator, enabling
+    us to construct a target density that can be evaluated when using MCMC inference schemes such as RMH.}
+    \label{fig:amortized_sampling}
+  % \end{minipage}
+\end{figure}
+
+
+\ssubection{Defining the Density and Sub-Densities within Simulators}
 
 To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
 where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can 
@@ -344,76 +345,7 @@ the unknown densities that we wish to learn through an amortized approach.
 \end{figure}
 However, in order to do this, we must correctly specify our variational objective.
 
-\section{ An overview of Amortized Inference schemes}
-\begin{itemize}
-  \item Whilst the variational posterior we choose as our proposal has a functional form 
-  and can be sampled, the functional form of the rejection sampling loops is not explicitly known,
-  which leads to problems when calculating the $KL$-divergence. 
-  \item There are two approaches that we can take to calculating some divergence metric. 
-  \item 1) Using something like a non-parametric divergence estimator that makes use of Renyi and $L_{2}$ divergences (see \cite{basseville2013divergence} for details)
-  \item 2) Use some form of kernel density to estimation to approximate the functional form of the rejection sampling 
-  block, which can be used in place. From which we learn a variational approximation characterized by a trained network that we can sample from quickly. 
-  \item An issue with approach 2) is that if I can approximate the density in functional form aren't there more efficient methods that we can use? (\textbf{Ask tom})
-  \item Or, if assuming that the rejection sampling block can be arbitrary dimension, are we first learning a flow to represent that density and then learn a variational approximation of something that we can easily sample from. 
-  \item But, this is very much the idea behind normalising flows, take a simple distribution that you can sample and then map it to the ``complicated'' density. 
-  \item Stein Variational inference may be quite nice to use here~\cite{feng2017learning}, but it does make explicit assumptions in requiring the densities to be differentiable. 
-  \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399}
-\end{itemize}
-
-New questions to ask Tom
-
-\begin{itemize}
-  \item Isn't what we are doing just conditional density estimation? It seems
-  like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
-  \item It does seem like this field has a large extensive past.
-\end{itemize}
-
-
-\subsection{Using a simple Neural Network regressor}
-
-As a first approach, we use a regressor to learn a function to map
-between the input / output pairs that are outputted from the rejection
-sampling blocks with in the simulator. 
-
-\paragraph{Architecture} For each rejection sampling block we learn a proposal $q(z_1, \ldots, z_i | \eta)$
-\subsection{Using variants of VAEs}
-
-\subsection{Density estimation using Normalising flows}
-Notes from models that define an explicit,  
-tractable density are highly effective, 
-because they permit the use of an optimization algorithm directly on the log-likelihood of the training data.
-However,  the  family  of  models  that provide  a  tractable  density  is  limited,
-with  different  families  having  different disadvantage.
-The rejection sampling loops, if proposed correctly, provide a way of generating 
-samples from some density, but do not provide a way of constructing the target density (\textbf{Bradley: Ask Tom, is this true?}). 
-Within event and population-based simulators, the rejection sampling loops have been designed with care,
-to ensure that they are representative to the events that they are simulating. So we can, with confidence,
-assume that they are representative of some density. 
-However, to utilise powerful inference engines, we must be able to construct the 
-full density of the program. 
-
-One recent technique for density estimation, in the amortized inference setting,
-is normalising flows combined with variation inference~\cite{rezende2015variational}.
-Flow-based methods work by leveraging a simple property of differential geometry applied 
-to random variables. 
-That being the change of variables.
-Let $z \sim r(z)$ where $r(z)$ represents the posterior defined by the rejection
-sampling loop, and define $\pi$ to be a smooth and invertible function.
-When $\pi$ acts $z$ we transform the random variable from one domain, to another. 
-Thus, if $z\prime = \pi(z)$ then we can construct the density of  
-the probability density of the new random variable $z\prime$ under the flow initiated by $\pi$: 
-\begin{equation}
-r(z\prime) = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi^{-1}}{\partial z'}\right| = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi}{\partial z\prime}\right|^{-1} 
-\end{equation}
-
-\begin{itemize}
-  \item Do we need to know the base distribution that the RS block is sampling from? i.e there maybe be multiple $r(z)$ in each 
-  RS block. 
-  \item Is it right to say here that $z\prime$ is the output of the RS block, we do not know $\pi$ here, or is $r(z)$ the raw sample $f_{a_i}$ and $\pi$ the distribution specified by the rejection sampling loop? 
-  \item We need to learn $\pi(.)$
-\end{itemize}
-
-\section{Constructing the Objective}
+\subsection{}{Constructing the Objective}
 
 The framework we present in this section is generally applicable to stochastic simulator 
 environment, where there exists rejection sampling loops. 
@@ -447,9 +379,95 @@ Thus, to define the objective for each subproblem $r  \in S_{R}$ as:
 
 where during training we extract samples from each forward run and train each rejection sampler
 separately. 
+% \section{ An overview of Amortized Inference schemes}
+
+
+\section{Experiments: Amortizing Stochastic Processes}
+
+\subsection{Baseliner}
+As a first approach, we train a regressor to learn a function to map
+between the input / output pairs that are outputted from the rejection
+sampling blocks with in the simulator. 
+
+For $R1$ we have one input and one output, for $R2$ we have 2 inputs and 1 output. 
+For the loss function we use a simple mean squared error loss and use a the regressor the learn 
+and unknown mean $\mu$ and variance $\sigma^{2}$. This means that we are trying to fit a simple Normal distribution
+to each rejection sampling block. Once learned we can then efficiently sample from the parameterized normal distribution, which 
+represents our learned proposal $q(z_i, \ldots, z_{n} | \eta)$. 
+\paragraph{Training scheme} For each rejection sampling block we learn a proposal $q(z_1, \ldots, z_i | \eta)$, in this case 
+\textbf{Note: Add results here. Code almost complete}
+
+\subsection{More complicated: Conditional Density estimation}
+
+
+\paragraph{Normalizing flows} One recent technique for density estimation, in the amortized inference setting,
+is normalising flows combined with variation inference~\cite{rezende2015variational}.
+Flow-based methods work by leveraging a simple property of differential geometry applied 
+to random variables. 
+That being the change of variables. 
+Using flow based methods we can construct our rejection sampling block density, by learning a flow to map from
+a simpler distribution to more complicated one.
+Let $z \sim r(z)$ where $r(z)$ represents the posterior defined by the rejection
+sampling loop, and define $\pi$ to be a smooth and invertible function.
+When $\pi$ acts $z$ we transform the random variable from one domain, to another. 
+Thus, if $z\prime = \pi(z)$ then we can construct the density of  
+the probability density of the new random variable $z\prime$ under the flow initiated by $\pi$: 
+\begin{equation}
+r(z\prime) = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi^{-1}}{\partial z'}\right| = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi}{\partial z\prime}\right|^{-1} 
+\end{equation}
+
+Flows availabile are MVP and Neural Spline flows [add citations]. 
+
+for other techniques ask Guens. 
+
+\begin{itemize}
+  \item Do we need to know the base distribution that the RS block is sampling from? i.e there maybe be multiple $r(z)$ in each 
+  RS block. 
+  \item Is it right to say here that $z\prime$ is the output of the RS block, we do not know $\pi$ here, or is $r(z)$ the raw sample $f_{a_i}$ and $\pi$ the distribution specified by the rejection sampling loop? 
+  \item We need to learn $\pi(.)$
+\end{itemize}
+\subsection{Using variants of VAEs}
+
+\subsection{Density estimation using Normalising flows}
+Notes from models that define an explicit,  
+tractable density are highly effective, 
+because they permit the use of an optimization algorithm directly on the log-likelihood of the training data.
+However,  the  family  of  models  that provide  a  tractable  density  is  limited,
+with  different  families  having  different disadvantage.
+The rejection sampling loops, if proposed correctly, provide a way of generating 
+samples from some density, but do not provide a way of constructing the target density (\textbf{Bradley: Ask Tom, is this true?}). 
+Within event and population-based simulators, the rejection sampling loops have been designed with care,
+to ensure that they are representative to the events that they are simulating. So we can, with confidence,
+assume that they are representative of some density. 
+However, to utilise powerful inference engines, we must be able to construct the 
+full density of the program. 
 
 
 
+
+\section{ Questions for Tom}
+\begin{itemize}
+  \item Whilst the variational posterior we choose as our proposal has a functional form  
+  and can be sampled, the functional form of the rejection sampling loops is not explicitly known,
+  which leads to problems when calculating the $KL$-divergence - reparametrize a with a function from a family of easy to sample distribution. 
+  \item There are two approaches that we can take to calculating some divergence metric. 
+  \item 1) Using something like a non-parametric divergence estimator that makes use of Renyi and $L_{2}$ divergences (see \cite{basseville2013divergence} for details) - No point, more difficult to implement
+  \item 2) Use some form of kernel density to estimation to approximate the functional form of the rejection sampling 
+  block, which can be used in place. From which we learn a variational approximation characterized by a trained network that we can sample from quickly. 
+  \item An issue with approach 2) is that if I can approximate the density in functional form aren't there more efficient methods that we can use? - There are other methods out there and it would maybe make sense to compare some of those methods. However, it may still be difficult to sample. 
+  \item Or, if assuming that the rejection sampling block can be arbitrary dimension, are we first learning a flow to represent that density and then learn a variational approximation of something that we can easily sample from. 
+  \item But, this is very much the idea behind normalising flows, take a simple distribution that you can sample and then map it to the ``complicated'' density - Question not well defined. 
+  \item Stein Variational inference may be quite nice to use here~\cite{feng2017learning}, but it does make explicit assumptions in requiring the densities to be differentiable. - Yes this metod is good, but only works in the continuous domain. 
+  \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399} - Answered - Quite finickity to set up. 
+\end{itemize}
+
+New questions to ask Tom
+
+\begin{itemize}
+  \item Isn't what we are doing just conditional density estimation? It seems
+  like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
+  \item It does seem like this field has a large extensive past, but we still have a small neesh .
+\end{itemize}
 \section{Additional TODOs}
 
 
