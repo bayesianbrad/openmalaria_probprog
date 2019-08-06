@@ -1,3 +1,4 @@
+
 \documentclass{article}
 
 % if you need to pass options to natbib, use, e.g.:
@@ -36,7 +37,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{wrapfig}
-\usepackage{bookmark}
+
 \usepackage{amsmath,amsthm}
 \usepackage{amssymb}
 \usepackage{cancel}
@@ -144,8 +145,8 @@ settings we require, potentially infinite samples, to provide a useful learnt re
 2) It increases computational efficiency, whilst maintaining expressivity. 
 3) It converts expensive rejection sampling loops into to learnt functions that can be 
 easily sampled from and used to construct a functional form of the likelihood, that enables the 
-target density to be fully constructed, enabling one to leverage a large class of sample effient inference schemes, 
-namely MCMC.
+target density to be fully constructed, enabling one to leverage a large class of sample effient inference schemes, namely MCMC.
+
 
 % To model a single population member quantum-based methods leveraging 
 % linear superposition and entanglement provide an ability to explore multiple paths simultaneously maintaining 
@@ -196,6 +197,7 @@ We provide both of these in this paper. As to implement this in practice we are 
 just hijacking the raw-random number draws, but, it would enable us to attack difficulties in the inference procedures that are
 currently not amenable to the current approach.}
 
+
 \section{Rejection Sampling}
 
 Rejection samplers are heavily used when designing simulators [ add SHERPA etc], due to their ease of use and ability to model 
@@ -236,6 +238,7 @@ A) It reduces the computational complexity of the simulator.
 B) As we now have a direct functional form of the density, we can correctly leverage
 more computationally and sample efficient inference schemes. 
 
+
 \section{Amortized Rejection Sampling}
 
 One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
@@ -271,7 +274,8 @@ stochastic simulators into probabilistic programs systems.
 \end{figure}
 
 
-\ssubection{Defining the Density and Sub-Densities within Simulators}
+\subsection{Defining the Density and Sub-Densities within Simulators}
+
 
 To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
 where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can 
@@ -345,7 +349,7 @@ the unknown densities that we wish to learn through an amortized approach.
 \end{figure}
 However, in order to do this, we must correctly specify our variational objective.
 
-\subsection{}{Constructing the Objective}
+\subsection{Constructing the Objective}
 
 The framework we present in this section is generally applicable to stochastic simulator 
 environment, where there exists rejection sampling loops. 
@@ -379,12 +383,11 @@ Thus, to define the objective for each subproblem $r  \in S_{R}$ as:
 
 where during training we extract samples from each forward run and train each rejection sampler
 separately. 
-% \section{ An overview of Amortized Inference schemes}
 
 
 \section{Experiments: Amortizing Stochastic Processes}
 
-\subsection{Baseliner}
+\subsection{Baseline}
 As a first approach, we train a regressor to learn a function to map
 between the input / output pairs that are outputted from the rejection
 sampling blocks with in the simulator. 
@@ -397,6 +400,9 @@ represents our learned proposal $q(z_i, \ldots, z_{n} | \eta)$.
 \paragraph{Training scheme} For each rejection sampling block we learn a proposal $q(z_1, \ldots, z_i | \eta)$, in this case 
 \textbf{Note: Add results here. Code almost complete}
 
+\subsection{2nd Baseline}
+Instead of using a single guassain, use a proposal that is a mixture of gaussians. 
+\texbf{TODO: Add math tomorrow}
 \subsection{More complicated: Conditional Density estimation}
 
 
@@ -428,7 +434,6 @@ for other techniques ask Guens.
 \end{itemize}
 \subsection{Using variants of VAEs}
 
-\subsection{Density estimation using Normalising flows}
 Notes from models that define an explicit,  
 tractable density are highly effective, 
 because they permit the use of an optimization algorithm directly on the log-likelihood of the training data.
@@ -468,6 +473,11 @@ New questions to ask Tom
   like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
   \item It does seem like this field has a large extensive past, but we still have a small neesh .
 \end{itemize}
+=======
+
+
+
+>>>>>>> e2910a3683b657af5fa91292c678419ec3b427c7
 \section{Additional TODOs}
 
 

@@ -16,10 +16,14 @@ from rejection_samplers import frepeat
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
+<<<<<<< HEAD
 import pickle
 
 def load_samples(samples_per_file=95000, saved_entries=4, PATH=None, torch=True, pickle=False):
 
+=======
+def load_samples(samples_per_file=95000, saved_entries=4, PATH=None, learning=True):
+>>>>>>> e2910a3683b657af5fa91292c678419ec3b427c7
     """
      This function assumes that the samples must be concatenated and are saved in a folder specified by
      PATH. If you want the data back in learning form i.e training, validation and test specify `learning = True`.
@@ -30,6 +34,7 @@ def load_samples(samples_per_file=95000, saved_entries=4, PATH=None, torch=True,
      param: learning type: bool descrip: True splits training into training, validation and test and returns 3 tensors, else, one tensor of all samples. 
     """
     count = 0
+<<<<<<< HEAD
 <<<<<<< HEAD
     if torch:
         with os.scandir(PATH) as files:
@@ -53,6 +58,30 @@ def load_samples(samples_per_file=95000, saved_entries=4, PATH=None, torch=True,
                     samples = torch.cat((samples, temp),0)
                 count += 1
     return samples
+=======
+    with os.scandir(PATH) as files:
+        for file in files:
+            temp = torch.load(os.path.join(PATH,file.name))
+            # indexing starts at 1, because the first entry of all samples is 0. 
+            if count == 0:
+                samples = temp[1:samples_per_file,:]
+            else:
+                samples = torch.cat((samples, temp[1:samples_per_file,:]),0)
+            count += 1
+    
+    if learning:
+        # simple split for training, validation and test data. 
+        total_samples = len(samples)
+        ntrain_samples = int(0.7*total_samples)
+        nvalidation_samples = int(0.8*total_samples)
+        train_samples = samples[:ntrain_samples,:]
+        validation_samples = samples[ntrain_samples:nvalidation_samples,:]
+        test_samples = samples[nvalidation_samples:total_samples-1,:]
+        return train_samples, validation_samples, test_samples
+    
+    else:
+        return samples
+>>>>>>> e2910a3683b657af5fa91292c678419ec3b427c7
 
 def gen_samples_parallel(total_samples=1000, nOutputs=4, simulator=None, UNIQUE_ID=None, Save_PATH=None, nCheckpoint=10):
     """
@@ -121,8 +150,12 @@ def gen_samples_non_parallel(total_samples=1000, n_outputs=4, simulator=None, PA
     total_time = end - start
     print(' Time taken is {} for {} samples'.format(total_time, total_samples))
 
+<<<<<<< HEAD
 
 def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutputs=4, indx_latents=None, simulator=None, UNIQUE_ID=None, Save_PATH='results/', server=False):
+=======
+def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutputs=4, indx_latents=None, simulator=None, UNIQUE_ID=None, Save_PATH='results/'):
+>>>>>>> e2910a3683b657af5fa91292c678419ec3b427c7
     """
     For each datum in your data set, this function loads the simulator and 
     creates a dataset from the rejection samplers corresponding to batch size. 
@@ -156,8 +189,12 @@ def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutpu
         sim = simulator(origSamples[i,0],origSamples[i,2])
         for j in range(batch_size):
             newSamples[j,:] = sim.f()
+<<<<<<< HEAD
         filename = open('samples_batch_{}.obj'.format(i), 'w')
         torch.save(newSamples, filename)
+=======
+        torch.save('batch_samples_{}.pt'.format(i),newSamples)
+>>>>>>> e2910a3683b657af5fa91292c678419ec3b427c7
         return newSamples
     
     start = time.time()
@@ -169,7 +206,11 @@ def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutpu
     for result in results:
         genSamples[l:batch_size+k*batch_size,:] = result
         k += 1
+<<<<<<< HEAD
         l += batch_size
+=======
+        l += batch_size 
+>>>>>>> e2910a3683b657af5fa91292c678419ec3b427c7
     
     end = time.time()
     totalTime = end - start
