@@ -28,24 +28,11 @@ def f():
     # the following is used to avoid tail recursion  - simple solution and stops stack overflow
     # You can not use this trick straight forwardly if you wish to access multiple core / threads.
     while z2 == math.inf:
-#         print(' while loop triggered')
         z2 = R1(z1)
         ctr += 1
-    #print("CTR: ", ctr)
     z3 = Uniform(0,2).sample()
-    #print(type(z3))
     z4 = R2(z2,z3)
     return torch.tensor([z1,z2,z3,z4])
-
-def R1(z1, i=0):
-    temp = Normal(z1,1).sample()
-    if temp.data > 0:
-        return temp
-    elif i == 100:
-        return math.inf
-    else:
-        i = i+1
-        return R1(z1,i)
 
 def R2(z2,z3):
     ''' Need to ensure that we don't return a
@@ -57,22 +44,12 @@ def R2(z2,z3):
         temp = Normal(z3,1).sample()
     return temp
 
-import timeit
-torch.manual_seed(7)
-print(f())
-print(timeit.timeit("f()", setup="from __main__ import f", number=2000))
-
-
 # recursion-free
 def R1(z1, i=0):
     i = 0
     bs = 1
     while True:
-        #temp = Normal(z1, 1).sample((bs,))
         temp = Normal(z1, 1).sample()
-        #mask = temp>0
-        #if torch.sum(mask) > 0:
-        #    return temp[mask][0]
         if temp > 0:
             return temp
         if i >= 10000:
