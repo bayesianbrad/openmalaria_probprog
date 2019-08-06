@@ -4,8 +4,8 @@ from torch.utils.cpp_extension import load
 import torch as th
 from torch import optim
 from torch.distributions import Normal
-from utils import RejectionDataset
-from torch.utils.data import DataLoader
+# from utils import RejectionDataset
+# from torch.utils.data import DataLoader
 import os
 import time
 
@@ -19,7 +19,7 @@ def train(model, optimizer,  N, data_flag, batch_size, load_data=False):
     n_samples = batch_size*N
     # data = th.stack([amortized_rs.f() for _ in range(batch_size)]) # hmm, shouldn't this be the number of training samples, rather than batch_size?
     # data = th.stack([amortized_rs.f() for _ in range(n_samples)]) # actually this loop needs to create multiple runs of the simulator of each z1, z2,z3 with
-    if load_data = True:
+    if load_data == True:
         data = torch.load('../data/all_batch_samples.pt')
         data = data[0:n_samples,:]
     optimizer.zero_grad()
@@ -29,12 +29,13 @@ def train(model, optimizer,  N, data_flag, batch_size, load_data=False):
         if not load_data:
             data = th.stack([amortized_rs.f() for _ in range(batch_size)]) 
         if data_flag == 'R1':
+            print(data)
             inR1 = data[count:batch_size+count*batch_size,0]
             outR1 = data[count:batch_size+count*batch_size,1]
             count = count + 1
             return inR1.to(device),outR1.to(device), count
         elif data_flag == 'R2':
-            inR2 = th.stack([data[count:batch_size+count*batch_size,1], data[count:batch_size+count*batch_size],2], dim=1))
+            inR2 = th.stack([data[count:batch_size+count*batch_size,1], data[count:batch_size+count*batch_size,2]], dim=1)
             outR2 = data[count:batch_size+count*batch_size,3]
             count = count + 1
         return inR2.to(device),outR2.to(device), count
@@ -56,11 +57,11 @@ def train(model, optimizer,  N, data_flag, batch_size, load_data=False):
                 print("iteration {:04d}/{:d}: loss: {:6.3f}".format(i, iterations,
                                                                     loss.item() / args.batch_size))
             print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, ...))
-        if not os.path.exists('../model/'):
-            os.makedirs('../model/')
-        fname = '../model/model_{}_rejectionBlock_{}'.format(strftime("%Y-%m-%d_%H-%M"), data_flag)
-        torch.save(model.state_dict(), fname)
-        print(' Model is saved at : {}'.format(fname))
+    if not os.path.exists('../model/'):
+        os.makedirs('../model/')
+    fname = '../model/model_{}_rejectionBlock_{}'.format(strftime("%Y-%m-%d_%H-%M"), data_flag)
+    torch.save(model.state_dict(), fname)
+    print(' Model is saved at : {}'.format(fname))
 
 def test(test_iterations,model_name):
     model = torch.load(model_name)
@@ -77,7 +78,8 @@ def test(test_iterations,model_name):
 
 if __name__ == '__main__':
     loss_fn = th.nn.MSELoss()
-    device = th.device("cuda" if th.cuda.is_available() else "cpu")
+    # device = th.device("cuda" if th.cuda.is_available() else "cpu")
+    device = th.device("cpu")
     # inputs = DataLoader(RejectionDataset(split='train', l_data=128, train_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True, norma num_workers=cpu_count-2)
     # outputs = DataLoader(RejectionDataset(split='test', l_data=128, test_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True,num_workers=cpu_count-2)
     optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=config['lr'], amsgrad=True)
