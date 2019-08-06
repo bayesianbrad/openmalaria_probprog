@@ -20,15 +20,16 @@ class f():
         z4 = self.R2(z2,z3)
         return torch.tensor([z1,z2,z3,z4])
 
-    def R1(self,z1, i=0):
-        temp = Normal(z1,1).sample()
-        if temp.data > 0:
-            return temp
-        elif i == 1000:
-            return math.inf
-        else:
-            i = i+1
-            return self.R1(z1,i)
+    def R1(z1, i=0):
+        i = 0
+        bs = 1
+        while True:
+            temp = Normal(z1, 1).sample()
+            if temp > 0:
+                return temp
+            if i >= 10000:
+                return math.inf
+        i += bs
 
     def R2(self,z2,z3):
         ''' Need to ensure that we don't return a 
@@ -41,27 +42,29 @@ class f():
         return temp
 class frepeat():
 
-    def __init__(self, z1,z3):
+    def __init__(self, z1,z2,z3):
         self.z1 = z1
         self.z3 = z3
+        self.z2Prev = z2
     def f(self):
         z2 = self.R1(self.z1)
         # the following is used to avoid tail recursion  - simple solution and stops stack overflow 
         # You can not use this trick straight forwardly if you wish to access multiple core / threads. 
         while z2 == math.inf:
             z2 = self.R1(self.z1)
-        z4 = self.R2(z2,self.z3)
+        z4 = self.R2(self.z2Prev,self.z3)
         return torch.tensor([self.z1,z2,self.z3,z4])
 
-    def R1(self,z1, i=0):
-        temp = Normal(z1,1).sample()
-        if temp.data > 0:
-            return temp
-        elif i == 10:
-            return math.inf
-        else:
-            i = i+1
-            return self.R1(z1,i)
+    def R1(z1, i=0):
+        i = 0
+        bs = 1
+        while True:
+            temp = Normal(z1, 1).sample()
+            if temp > 0:
+                return temp
+            if i >= 10000:
+                return math.inf
+            i += bs
 
     def R2(self,z2,z3):
         ''' Need to ensure that we don't return a 
@@ -158,14 +161,14 @@ class f1():
 #                 # new_z1 must preserve same shape and index characteristics as initial z1. 
 #             return self.R1(z1=new_z1,i=i,trues=trues, output=out_z1)
 
-    def R2(z2,z3):
-        ''' Need to ensure that we don't return a 
-        value generated from a deterministic process, i.e if return temp=0, that
-        has not been generated from the while loop - although with R1 defined as it is 
-        this will never be the case'''
-        temp = 0
-        while temp < z2:
-            temp = Normal(z3,1).sample()
-        return temp
+    # def R2(z2,z3):
+    #     ''' Need to ensure that we don't return a 
+    #     value generated from a deterministic process, i.e if return temp=0, that
+    #     has not been generated from the while loop - although with R1 defined as it is 
+    #     this will never be the case'''
+    #     temp = 0
+    #     while temp < z2:
+    #         temp = Normal(z3,1).sample()
+    #     return temp
 
 
