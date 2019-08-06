@@ -1,3 +1,4 @@
+
 import torch
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
@@ -14,9 +15,11 @@ from time import strftime
 from rejection_samplers import frepeat
 from joblib import Parallel, delayed
 from tqdm import tqdm
+
 import pickle
 
 def load_samples(samples_per_file=95000, saved_entries=4, PATH=None, torch=True, pickle=False):
+
     """
      This function assumes that the samples must be concatenated and are saved in a folder specified by
      PATH. If you want the data back in learning form i.e training, validation and test specify `learning = True`.
@@ -27,6 +30,7 @@ def load_samples(samples_per_file=95000, saved_entries=4, PATH=None, torch=True,
      param: learning type: bool descrip: True splits training into training, validation and test and returns 3 tensors, else, one tensor of all samples. 
     """
     count = 0
+<<<<<<< HEAD
     if torch:
         with os.scandir(PATH) as files:
             for file in files:
@@ -116,6 +120,7 @@ def gen_samples_non_parallel(total_samples=1000, n_outputs=4, simulator=None, PA
     end = time.time()
     total_time = end - start
     print(' Time taken is {} for {} samples'.format(total_time, total_samples))
+
 
 def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutputs=4, indx_latents=None, simulator=None, UNIQUE_ID=None, Save_PATH='results/', server=False):
     """
