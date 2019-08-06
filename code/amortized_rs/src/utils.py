@@ -182,13 +182,14 @@ def create_dataset(data=None, PATH=None, batch_size=5, totalSamples=1000, nOutpu
 class RejectionDataset(Dataset):
     def __init__(self, split, l_data, train_percentage, fname_test, fname_train, InIndx, OutIndx):
         
-        _samples = torch.load('/data/'+fname_test)
+        _samples = torch.load('/data/'+fname_train)
         n_split = (len(_samples)*train_percentage//l_data)*l_data
         
             
         self.zinput = _samples[:n_split,InIndx] if split == 'train' else torch.load("data/"+fname_test)[n_split:]
-        self.zoutput = samples[:n_split,OutIndx] if split == 'train' else torch.load("data/"+fname_test)[n_split:]
-        # using shuffle= True does the same job
+        self.zoutput = _samples[:n_split,OutIndx] if split == 'train' else torch.load("data/"+fname_test)[n_split:]
+        # center inputs 
+        self.zinput = (self.zinput - torch.mean(self.zinput, 0).mul(torch.ones(self.zinput.shape))) / torch.std(self.zinput, dim=0).mul(torch.ones(x.shape))
         # perm = torch.randperm(len(self.zinput))
         # self.zinput, self.zoutput = self.zinput[perm], self.zoutput[perm]
         # self.l_data = l_data
