@@ -9,7 +9,7 @@ import torch.distributions as dist
 from torch.multiprocessing import cpu_count
 from utils import RejectionDataset
 from torch.utils.data import DataLoader
-
+from torch import distributions as dist
 # Open config file
 with open(config_path) as config_file:
     config = json.load(config_file)
@@ -18,7 +18,7 @@ with open(config_path) as config_file:
 with open(directory + '/config.json', 'w') as config_file:
     json.dump(config, config_file)
 
-inputs = DataLoader(RejectionDataset(split='train', l_data=128, train_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True, norma num_workers=cpu_count-2)
+inputs = DataLoader(RejectionDataset(split='train', l_data=128, train_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True, num_workers=cpu_count-2)
 outputs = DataLoader(RejectionDataset(split='test', l_data=128, test_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True,num_workers=cpu_count-2)
 
 epochs = 10
