@@ -60,14 +60,14 @@ def train(model, optimizer,  N, data_flag, batch_size, load_data=False):
     if not os.path.exists('../model/'):
         os.makedirs('../model/')
     fname = '../model/model_{}_rejectionBlock_{}'.format(strftime("%Y-%m-%d_%H-%M"), data_flag)
-    torch.save(model.state_dict(), fname)
+    th.save(model.state_dict(), fname)
     print(' Model is saved at : {}'.format(fname))
 
 def test(test_iterations,model_name):
-    model = torch.load(model_name)
+    model = th.load(model_name)
     model.eval()
     out_loss = 0
-    with torch.no_grad():
+    with th.no_grad():
         for i in range(test_iterations):
             inData, outData = get_batch(data_flag, batch_size, count)
             proposal = dist.Normal(*model(inData))
