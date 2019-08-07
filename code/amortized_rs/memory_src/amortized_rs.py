@@ -10,10 +10,18 @@ amortized_rs = load(name="amortized_rs",
 #     print(a)
 
 f_cpp = amortized_rs.f
+batch_f = amortized_rs.batch_f
 import timeit
 torch.manual_seed(7)
 print(f_cpp())
+torch.manual_seed(7)
+print(batch_f(1))
+torch.manual_seed(7)
 print(timeit.timeit("f_cpp()", setup="from __main__ import f_cpp", number=2000))
+torch.manual_seed(7)
+print(timeit.timeit("[f_cpp() for _ in range(2000)]", setup="from __main__ import f_cpp", number=1))
+torch.manual_seed(7)
+print(timeit.timeit("batch_f(2000)", setup="from __main__ import batch_f", number=1))
 
 # pure python
 import math
@@ -60,3 +68,14 @@ import timeit
 torch.manual_seed(7)
 print(f())
 print(timeit.timeit("f()", setup="from __main__ import f", number=2000))
+
+amortized_rs_std = load(name="amortized_rs_std",
+                    sources=["amortized_rs_std.cpp"])
+
+f_cpp = amortized_rs_std.f
+batch_f = amortized_rs_std.batch_f
+import timeit
+torch.manual_seed(7)
+print(f_cpp())
+print(timeit.timeit("f_cpp()", setup="from __main__ import f_cpp", number=2000))
+print(timeit.timeit("batch_f(2000)", setup="from __main__ import batch_f", number=1))

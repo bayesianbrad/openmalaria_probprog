@@ -6,9 +6,17 @@
 using namespace at;
 
 //https://pytorch.org/cppdocs/api/namespace_at.html#namespace-at
+at::Tensor f(void);
 Scalar R1(Scalar z_1, unsigned int i);
 Scalar R2(Scalar z_2, Scalar z_3);
 
+torch::Tensor batch_f(unsigned int bs){
+    auto ret = torch::empty({bs, 4}, kFloat);
+    for(int i=0;i<bs;i++){
+        ret[i] = f();
+    }
+    return ret;
+}
 
 at::Tensor f(void) {
   Scalar z_1 = at::empty({1}, kFloat).normal_(0.0, 1.0).item();
@@ -48,7 +56,9 @@ Scalar R1(Scalar z_1, unsigned int i) {
         if (temp.to<float>() > 0){
             return temp;
         } else if (j == 10000){
-            return CPU(kFloat).scalarType(std::numeric_limits<float>::infinity()).item();
+            // return at::CPU(kFloat).scalarType(std::numeric_limits<float>::infinity()).item();
+            //return at::from_blob({std::numeric_limits<float>::infinity()}, {1}).item();
+            return Scalar(std::numeric_limits<float>::infinity());
         } else {
             j += 1;
         }
@@ -63,14 +73,6 @@ Scalar R2(Scalar z_2, Scalar z_3) {
     return temp;
 }
 
-Tensor batch_f(unsigned int bs){
-    auto ret = torch::empty({batch_size, 4}, kFloat);
-    for(int i=0;i<bs;i++){
-        ret_view = ret.narrow(i, 0, -1)
-        ret_view = f()
-    }
-    return ret
-}
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("f", &f, "f");
