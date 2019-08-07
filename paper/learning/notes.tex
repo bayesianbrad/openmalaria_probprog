@@ -125,17 +125,19 @@ Paper ID: 1010 }
 
 \section{Introduction}
 \label{sec:intro}
-
-One challenge in performing inference in such models is the combinatorial increase in \emph{paths}
-that can be taken within the given probabilistic model.
-This is because each member of the population has 
-a bounded, but large number of decisions to make. 
-In addition to this, each member of the population can interact
-with other members of the population, which presents challenges for current inference methods.
-Because in many simulated settings we cannot correctly construct the functional form of the density of the 
-desired program. 
-This has spawned a large body of research in recent years to understand how to perform 
-inference in likelihood free methods~\cite{greenberg2019automatic} \textbf{Add normalising flow citations}
+Simulators arise in a myriad of scientific and industrial settings; epidemiology, physics, engineering, climate modelling and so forth [add citations].
+One interesting class of simulators are population-based simulators, using in epidemiology, reinforcement learning
+and financial modelling [add citations].
+Performing inference in such population-based simulators is challenging, because we have nested-programs, 
+which come in the form of rejection sampling blocks. 
+In addition to this, each population member can traverse a number of different paths and 
+can interact with other members, in certain instances, which can lead to a combinatorial number of paths 
+to explore. 
+Equally, in many simulated settings we cannot correctly construct the functional form of the density of the desired program,
+since we do not have explicit access to the density of the \emph{program}.
+Where program density refers to the joint density constructed by the program, which in this case is represented by the simulator.
+This inability to evaluate the joint density has spawned research into how to perform 
+inference in this likelihood free setting~\cite{greenberg2019automatic} \textbf{Add normalising flow citations}
 for conditional density estimation. However, whilst many of these methods look to generate a surragote 
 for the entire simulator, we propose amortizing only computational expensive sub-components 
 of the simulator, which we can do in an automated way with probabilistic programming. 
@@ -279,7 +281,7 @@ more computationally and sample efficient inference schemes.
 
 \begin{figure}
   % \begin{minipage}[c]{0.67\textwidth}
-  \includegraphics[]{amoritized_rejection.pdf}
+  \includegraphics[width=0.6\textwidth, height=0.6\textheight,keepaspectratio]{amoritized_rejection.pdf}
   % \end{minipage}\hfill
   % \begin{minipage}[c]{0.3\textwidth}
     \caption{Using PyProb we can locate all regions of inefficient sampling 
@@ -343,12 +345,40 @@ Here the rejection sampling functions take an additional argument $1$, or $0$,
 to specify whether or not we want to collect samples to train, $1$, else replace with 
 the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
 the unknown densities that we wish to learn through an amortized approach.
-It is important to note that the expected running time of rejection sampler one, $R1$, 
-has an expected running time $\mathbb{E}(\mathcal{O}(R1)) = \infty$. 
+It is important to note that the expected running time of the rejection sampler is expected to geometric mean, we can show this as follows:
+\begin{equation}
+\text{derivation}
+\end{equation}
+
+In addition to this, if we have direct access to a rejection sampling loop then it is indeed 
+possible to construct the density, up to a constant of proportionality. 
+That is:
+\begin{align*}
+y \sim q(\theta) \\
+do something \\
+\alpha = p_{accept}(y,\theta) \\
+\mathtt{if} Bern(\alpha) = 1: \\
+return y
+\end{align*}
+thus the density of $y,\theta \propto q(\theta, y) \alpha$.
+However, in order to do construct this we need the input $\theta$, $y$, $\alpha$ and the distributions utilised for the rejection sampling loop. 
+For any arbitrary simulator, written in a generic code base, this is an incredibly hard 
+task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template
+\textbf{Add examples in a supplement.  Need to demonstrate to YW that this is challenging to do, even if you know where 
+the rejection sampling loops are. Hypothesis, RS loops are not written in a templated form}. With the PPX protocols previously developed in \cite{baydin2018efficient,gram2019hijacking} we can however, 
+extract all variables, other than $\alpha$ in an automated way.
+However, without being able to easily extract $\alpha$ this means that we are unable to 
+correctly build the form of the density and thus we limited in our ability to leverage 
+powerful inference methods such as MCMC and Variational inference.
+Thus, we propose another approach, automating the amortization of rejection sampling loops. 
+To learn functions that we can easily sample from and use to construct the density of the entire
+simulator. 
+
+
 The simulated densities for both each rejection sampling block can be seen in Figure~\ref{fig:rs_simulated}.
 \begin{figure}
   \centering
-  \includegraphics{rs_plots.png}
+  \includegraphics[width=0.2\textwidth, height=0.2\textheight, keepaspectratio]{rs_plots.png}
   \caption{ Simulated densities for rejection sampling block 1, \emph{blue} and rejection
   sampling block 2, \emph{orange}.}
   \label{fig:rs_simulated}
@@ -395,6 +425,13 @@ separately.
 
 \section{Experiments: Amortizing Stochastic Processes}
 
+\subsection{Ground truth}
+
+Because in this simple case we have direct access to $\alpha$, the rejection sampler acceptance probability,
+we can calculate the true density up to a constant of proportionality. 
+\textbf{I will add this tomorrow}. I had no idea about this, until my meeting with 
+YW today. 
+
 \subsection{Baseline}
 As a first approach, we train a regressor to learn a function to map
 between the input / output pairs that are outputted from the rejection
@@ -419,9 +456,12 @@ This is then replaced in the simulator, during inference time.
 Instead of using a single Gaussian, use a proposal that is a mixture of Gaussians. 
 That is, for $R1$,   $q(z_{1} | z_{2}) = \sum^{N}_{i=1}K_{i}\mathcal{N}(\hat{\mu^{i}_{r1}},  \hat{\sigma^{i}_{r1}}^{2})$
 under the constraint that $\sum^{N}_{i=1}K_{i} = 1$. Maybe $N$ can be treated as a hyper-parameter. 
-\textbf{TODO: Add math tomorrow}
+Or choose particular values.
 \subsection{More complicated: Conditional Density estimation}
 
+\subsection{3rd Baseline}
+ 
+Use the variational objective constructed above. 
 
 \paragraph{Normalizing flows} One recent technique for density estimation, in the amortized inference setting,
 is normalising flows combined with variation inference~\cite{rezende2015variational}.
