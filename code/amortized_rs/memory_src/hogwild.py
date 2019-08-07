@@ -1,11 +1,12 @@
 import torch.multiprocessing as mp
-from model import density_estimator
+from ..model import density_estimator
 from torch.utils.cpp_extension import load
 import torch as th
 from torch import optim
 import torch.distributions as dist 
 from time import strftime
 # from utils import RejectionDataset
+from time import strftime
 # from torch.utils.data import DataLoader
 import os
 import time
@@ -53,28 +54,28 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False)
             _loss.backward()
             optimizer.step()
 
-            outLoss += _loss.item()
+            _outLoss += _loss.item()
 
             if i % 100 == 0:
-                print("iteration {:04d}/{:d}: loss: {:6.3f}".format(i,outloss // batch_size))
+                print("iteration {:04d}/{:d}: loss: {:6.3f}".format(i,_outloss // batch_size))
             # print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, outloss))
     if not os.path.exists('../model/'):
         os.makedirs('../model/')
     fname = '../model/model_{}_rejectionBlock_{}'.format(strftime("%Y-%m-%d_%H-%M"), data_flag)
-    torch.save(model.state_dict(), fname)
+    th.save(model.state_dict(), fname)
     print(' Model is saved at : {}'.format(fname))
 
 def test(test_iterations,model_name):
-    model = torch.load(model_name)
+    model = th.load(model_name)
     model.eval()
     _outloss = 0
-    with torch.no_grad():
+    with th.no_grad():
         for i in range(test_iterations):
             inData, outData, count = get_batch(data_flag, batch_size, count)
             proposal = dist.Normal(*model(inData))
             pred = proposal.rsample()
             _loss = loss_fn(outData, pred)
-            _outloss += loss.item()
+            _outloss += _loss.item()
         print('Test loss: {:.4f}\n'.format(_outloss.item()/test_iterations))
 
 def objective(zlearn, *args, **kwargs):

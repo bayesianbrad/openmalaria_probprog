@@ -48,7 +48,7 @@ Scalar R1(Scalar z_1, unsigned int i) {
         if (temp.to<float>() > 0){
             return temp;
         } else if (j == 10000){
-            return CPU(kFloat).scalarTensor(std::numeric_limits<float>::infinity()).item();
+            return CPU(kFloat).scalarType(std::numeric_limits<float>::infinity()).item();
         } else {
             j += 1;
         }
