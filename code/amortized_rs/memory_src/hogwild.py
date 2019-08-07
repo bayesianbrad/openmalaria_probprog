@@ -1,21 +1,32 @@
 import torch.multiprocessing as mp
-from ..model import density_estimator
+from model import density_estimator
 from torch.utils.cpp_extension import load
 import torch as th
 from torch import optim
 import torch.distributions as dist 
-# from utils import RejectionDataset
 from time import strftime
-# from torch.utils.data import DataLoader
 import os
 import time
 
 amortized_rs = load(name="amortized_rs",
                     sources=["amortized_rs.cpp"])
 
+# no longer need write the batch loop in c - we can do that later
+def get_batch(data_flag, batch_size, count, load_data=False):
+    if not load_data:
+        data = th.stack([amortized_rs.f() for _ in range(batch_size)]) 
+    if data_flag == 'R1':
+        inR1 = data[count:batch_size+count*batch_size,0].view(128,1)
+        outR1 = data[count:batch_size+count*batch_size,1].view(128,1)
+        count = count + 1
+        return inR1.to(device),outR1.to(device), count
+    elif data_flag == 'R2':
+        inR2 = th.stack([data[count:batch_size+count*batch_size,1], data[count:batch_size+count*batch_size,2]], dim=1).t()
+        outR2 = data[count:batch_size+count*batch_size,3].view(batch_size,1)
+        count = count + 1
+    return inR2.to(device),outR2.to(device), count
+    
 def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False):
-    # Construct data_loader, optimizer, etc.
-    # for it in range(max_it):
     model.train()
     n_samples = batch_size*N
     # data = th.stack([amortized_rs.f() for _ in range(batch_size)]) # hmm, shouldn't this be the number of training samples, rather than batch_size?
@@ -25,23 +36,6 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False)
         data = data[0:n_samples,:]
     optimizer.zero_grad()
     count  = 0
-    # no longer need write the batch loop in c - we can do that later
-    def get_batch(data_flag, batch_size, count, load_data=False):
-        if not load_data:
-            data = th.stack([amortized_rs.f() for _ in range(batch_size)]) 
-        if data_flag == 'R1':
-            print(data)
-            inR1 = data[count:batch_size+count*batch_size,0].view(batch_size,1)
-            outR1 = data[count:batch_size+count*batch_size,1].view(batch_size,1)
-            # print(inR1.shape)
-            # print(outR1.shape)
-            count = count + 1
-            return inR1.to(device),outR1.to(device), count
-        elif data_flag == 'R2':
-            inR2 = th.stack([data[count:batch_size+count*batch_size,1], data[count:batch_size+count*batch_size,2]], dim=1)
-            outR2 = data[count:batch_size+count*batch_size,3].view(batch_size,1)
-            count = count + 1
-        return inR2.to(device),outR2.to(device), count
 
     # The network needs to learn z1 -> z2 and z2,z3 -> z4
     for i in range(N):
@@ -77,6 +71,9 @@ def test(test_iterations,model_name):
             _loss = loss_fn(outData, pred)
             _outloss += _loss.item()
         print('Test loss: {:.4f}\n'.format(_outloss.item()/test_iterations))
+
+def objective(zlearn, *args, **kwargs):
+    ''' This has to be representative of the objective, equation 2'''
 
 if __name__ == '__main__':
     loss_fn = th.nn.MSELoss()
