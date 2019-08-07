@@ -29,15 +29,14 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False)
         if not load_data:
             data = th.stack([amortized_rs.f() for _ in range(batch_size)]) 
         if data_flag == 'R1':
-            print(data)
-            inR1 = data[count:batch_size+count*batch_size,0].view(batch_size,1)
-            outR1 = data[count:batch_size+count*batch_size,1].view(batch_size,1)
+            inR1 = data[count:batch_size+count*batch_size,0].view(128,1)
+            outR1 = data[count:batch_size+count*batch_size,1].view(128,1)
             # print(inR1.shape)
             # print(outR1.shape)
             count = count + 1
             return inR1.to(device),outR1.to(device), count
         elif data_flag == 'R2':
-            inR2 = th.stack([data[count:batch_size+count*batch_size,1], data[count:batch_size+count*batch_size,2]], dim=1)
+            inR2 = th.stack([data[count:batch_size+count*batch_size,1], data[count:batch_size+count*batch_size,2]], dim=1).t()
             outR2 = data[count:batch_size+count*batch_size,3].view(batch_size,1)
             count = count + 1
         return inR2.to(device),outR2.to(device), count
@@ -77,6 +76,8 @@ def test(test_iterations,model_name):
             _outloss += loss.item()
         print('Test loss: {:.4f}\n'.format(_outloss.item()/test_iterations))
 
+def objective(zlearn, *args, **kwargs):
+    ''' This has to be representative of the objective, equation 2'''
 if __name__ == '__main__':
     loss_fn = th.nn.MSELoss()
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")

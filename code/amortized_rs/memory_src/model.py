@@ -16,6 +16,7 @@ class density_estimator(nn.Module):
     def forward(self, x):
          # x is of shape [batch_size, input_dim]
         hidden = self.hidden(x) # return [batch_size//2, 2]
+        print(' Debug in model.py. Forward pass completed')
         return self.linear_mu(hidden), nn.Softplus(self.linear_std(hidden))
 
 
