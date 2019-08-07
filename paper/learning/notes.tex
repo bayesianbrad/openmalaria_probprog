@@ -197,8 +197,47 @@ We provide both of these in this paper. As to implement this in practice we are 
 just hijacking the raw-random number draws, but, it would enable us to attack difficulties in the inference procedures that are
 currently not amenable to the current approach.}
 
+\section{Nested-Programs within Simulators}
 
-\section{Rejection Sampling}
+\begin{itemize}
+  \item Talk about how within simulators we have nested-structures which are \emph{nested-programs}
+  \item Define the notations used to define the processes within the simulator, in terms of the PPL framework
+  \item Talk about the problems that such nested-programs cause to inference procedures
+  \item Define the density of the simulator in terms of these sub-programs. 
+\end{itemize}
+
+To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
+where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can be thought of as prior 
+\textbf{To finish - Linked back to figure 1}
+In order to correctly characterize this problem we first provide a useful diagram demonstrating 
+the density of the system~\ref{fig:systemoverview}. \textbf{Lots to do}
+
+ \input{thesystem.tex}
+
+% In order to correctly characterize this problem we first provide a useful diagram demonstrating 
+% the density of the system. 
+
+%  \input{thesystem.tex}
+
+
+\section{Amortized Rejection Sampling}
+
+One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
+programming framework is that they rely heavily on rejection sampling 
+to generate samples from the target density. Not only is rejection sampling 
+computational inefficient, [especially if criteria in which samples are generated
+has been poorly calibrated] (may leave out this statement as it may make a reviewer
+question why would amortization work any better.), but it creates complications for inference.
+As the rejection sampling loops provide no explicit form of the target density,
+we can not simply evaluate the density and leverage statistically and computationally
+efficient algorithms such as MCMC sampling. This inhibits our ability to transform an arbitrary
+stochastic simulator into a probabilistic programming framework~\cite{baydin2018efficient}. 
+To this end, we derive both a mathematical and engineering based framework to facilitate 
+the amortization of rejection sampling loops in arbitrary simulators, which provides a path
+way to both leverage a larger, more efficient class of inference methods and convert arbitrary
+stochastic simulators into probabilistic programs systems.
+
+\subsection{Rejection Sampling}
 
 Rejection samplers are heavily used when designing simulators [ add SHERPA etc], due to their ease of use and ability to model 
 any arbitrary distribution on $\mathbb{R}^{D}$, with a sufficiently well designed rejection sampling scheme~\cite{MEYER20083408,martino2012improved,casella} 
@@ -238,25 +277,6 @@ A) It reduces the computational complexity of the simulator.
 B) As we now have a direct functional form of the density, we can correctly leverage
 more computationally and sample efficient inference schemes. 
 
-
-\section{Amortized Rejection Sampling}
-
-One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
-programming framework is that they rely heavily on rejection sampling 
-to generate samples from the target density. Not only is rejection sampling 
-computational inefficient, [especially if criteria in which samples are generated
-has been poorly calibrated] (may leave out this statement as it may make a reviewer
-question why would amortization work any better.), but it creates complications for inference.
-As the rejection sampling loops provide no explicit form of the target density,
-we can not simply evaluate the density and leverage statistically and computationally
-efficient algorithms such as MCMC sampling. This inhibits our ability to transform an arbitrary
-stochastic simulator into a probabilistic programming framework~\cite{baydin2018efficient}. 
-To this end, we derive both a mathematical and engineering based framework to facilitate 
-the amortization of rejection sampling loops in arbitrary simulators, which provides a path
-way to both leverage a larger, more efficient class of inference methods and convert arbitrary
-stochastic simulators into probabilistic programs systems.
-
-
 \begin{figure}
   % \begin{minipage}[c]{0.67\textwidth}
   \includegraphics[]{amoritized_rejection.pdf}
@@ -273,22 +293,6 @@ stochastic simulators into probabilistic programs systems.
   % \end{minipage}
 \end{figure}
 
-
-\subsection{Defining the Density and Sub-Densities within Simulators}
-
-
-To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
-where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can 
-
-In order to correctly characterize this problem we first provide a useful diagram demonstrating 
-the density of the system. 
-
- \input{thesystem.tex}
-
-% In order to correctly characterize this problem we first provide a useful diagram demonstrating 
-% the density of the system. 
-
-%  \input{thesystem.tex}
 
 We do this by replacing the rejection sampling blocks with 
 learnt functions from an amortized inference procedure Figure~\ref{fig:amortized_sampling}.
@@ -338,8 +342,10 @@ $P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z
 Here the rejection sampling functions take an additional argument $1$, or $0$,
 to specify whether or not we want to collect samples to train, $1$, else replace with 
 the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
-the unknown densities that we wish to learn through an amortized approach. 
-
+the unknown densities that we wish to learn through an amortized approach.
+It is important to note that the expected running time of rejection sampler one, $R1$, 
+has an expected running time $\mathbb{E}(\mathcal{O}(R1)) = \infty$. 
+The simulated densities for both each rejection sampling block can be seen in Figure~\ref{fig:rs_simulated}.
 \begin{figure}
   \centering
   \includegraphics{rs_plots.png}
@@ -347,7 +353,9 @@ the unknown densities that we wish to learn through an amortized approach.
   sampling block 2, \emph{orange}.}
   \label{fig:rs_simulated}
 \end{figure}
-However, in order to do this, we must correctly specify our variational objective.
+
+In order to replace such rejection sampling blocks with learnt functions that we 
+can efficiently sample from, we must correctly specify our variational objective.
 
 \subsection{Constructing the Objective}
 
@@ -392,16 +400,25 @@ As a first approach, we train a regressor to learn a function to map
 between the input / output pairs that are outputted from the rejection
 sampling blocks with in the simulator. 
 
-For $R1$ we have one input and one output, for $R2$ we have 2 inputs and 1 output. 
-For the loss function we use a simple mean squared error loss and use a the regressor the learn 
-and unknown mean $\mu$ and variance $\sigma^{2}$. This means that we are trying to fit a simple Normal distribution
-to each rejection sampling block. Once learned we can then efficiently sample from the parameterized normal distribution, which 
-represents our learned proposal $q(z_i, \ldots, z_{n} | \eta)$. 
-\paragraph{Training scheme} For each rejection sampling block we learn a proposal $q(z_1, \ldots, z_i | \eta)$, in this case 
-\textbf{Note: Add results here. Code almost complete}
+For $R1$ we have one input $z^{r1} \in \mathbb{R}^{1 \times 1}$ and one output $y^{r1} \in \mathbb{R}^{1 \times 1}$.
+For $R2$ we have two inputs $z^{r2} \in \mathbb{R}^{2 \times 1}$ and one output $y^{r2} \in \mathbb{R}^{1 \times 1}$.
+For training purposes we generate $n_{b}$ batches of $n_{t}$ samples for training. 
+This means that $z^{r1}_{batch}\mathbb{R}^{n_{b} \times 1}$. 
+For the loss function we use a simple mean squared error loss \textbf{We can try different loss 
+functions and optimizers} and use the
+neural network, $\Gamma(z, y)$, to learn a $\hat{\mu}$ and $\hat{\sigma}^{2}$ to parametize 
+a normal proposal. For $R1$, this means $\Gamma_{r1}(z,y) \rightarrow \hat{\mu_{r1}},  \hat{\sigma_{r1}}^{2}$  
+and so the proposal $q(z_{1} | z_{2}) = \mathcal{N}(\hat{\mu_{r1}},  \hat{\sigma_{r1}}^{2})$. 
+Once learned we can then efficiently sample from the parameterized normal distribution, which
+represents the density of the sub-program represented by $R1$. 
+This is then replaced in the simulator, during inference time. 
+
+\textbf{Add results from current experiments}
 
 \subsection{2nd Baseline}
-Instead of using a single guassain, use a proposal that is a mixture of gaussians. 
+Instead of using a single Gaussian, use a proposal that is a mixture of Gaussians. 
+That is, for $R1$,   $q(z_{1} | z_{2}) = \sum^{N}_{i=1}K_{i}\mathcal{N}(\hat{\mu^{i}_{r1}},  \hat{\sigma^{i}_{r1}}^{2})$
+under the constraint that $\sum^{N}_{i=1}K_{i} = 1$. Maybe $N$ can be treated as a hyper-parameter. 
 \textbf{TODO: Add math tomorrow}
 \subsection{More complicated: Conditional Density estimation}
 
@@ -422,9 +439,8 @@ the probability density of the new random variable $z\prime$ under the flow init
 r(z\prime) = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi^{-1}}{\partial z'}\right| = r(\pi^{-1}(z\prime)) \left|\det \frac{\partial \pi}{\partial z\prime}\right|^{-1} 
 \end{equation}
 
-Flows availabile are MVP and Neural Spline flows [add citations]. 
-
-for other techniques ask Guens. 
+Flows available are Real-NVP~\cite{dinh2016density} and Neural Spline flows~\cite{durkan2019neural}.
+There are several others, for other techniques ask Gunes. 
 
 \begin{itemize}
   \item Do we need to know the base distribution that the RS block is sampling from? i.e there maybe be multiple $r(z)$ in each 
@@ -451,6 +467,16 @@ full density of the program.
 
 
 \section{ Questions for Tom}
+
+\textbf{New questions to ask Tom}
+
+\begin{itemize}
+  \item Isn't what we are doing just conditional density estimation? It seems
+  like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
+  \item It does seem like this field has a large extensive past, but we still have a small neesh .
+\end{itemize}
+
+\textbf{Old questions for Tom}
 \begin{itemize}
   \item Whilst the variational posterior we choose as our proposal has a functional form  
   and can be sampled, the functional form of the rejection sampling loops is not explicitly known,
@@ -466,18 +492,6 @@ full density of the program.
   \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399} - Answered - Quite finickity to set up. 
 \end{itemize}
 
-New questions to ask Tom
-
-\begin{itemize}
-  \item Isn't what we are doing just conditional density estimation? It seems
-  like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
-  \item It does seem like this field has a large extensive past, but we still have a small neesh .
-\end{itemize}
-=======
-
-
-
->>>>>>> e2910a3683b657af5fa91292c678419ec3b427c7
 \section{Additional TODOs}
 
 
