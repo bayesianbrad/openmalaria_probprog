@@ -4,6 +4,7 @@ from torch.utils.cpp_extension import load
 import torch as th
 from torch import optim
 import torch.distributions as dist 
+from time import strftime
 # from utils import RejectionDataset
 # from torch.utils.data import DataLoader
 import os
@@ -78,6 +79,7 @@ def test(test_iterations,model_name):
 
 def objective(zlearn, *args, **kwargs):
     ''' This has to be representative of the objective, equation 2'''
+
 if __name__ == '__main__':
     loss_fn = th.nn.MSELoss()
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")
