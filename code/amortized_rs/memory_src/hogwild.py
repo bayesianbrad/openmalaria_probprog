@@ -15,16 +15,28 @@ amortized_rs = load(name="amortized_rs",
 def get_batch(data_flag, batch_size, count, load_data=False):
     if not load_data:
         data = th.stack([amortized_rs.f() for _ in range(batch_size)]) 
-    if data_flag == 'R1':
-        inR1 = data[count:batch_size+count*batch_size,0].view(128,1)
-        outR1 = data[count:batch_size+count*batch_size,1].view(128,1)
+    if data_flag == 'R1' and not load_data:
+        inR1 = data[0:batch_size,0]
+        outR1 = data[0:batch_size,1]
+        count = count + 1 # not actually need if load_data == True
+        return inR1.to(device),outR1.to(device), count
+    elif data_flag == 'R1' and load_data:
+        inR1 = data[count:batch_size+count*batch_size,0]
+        outR1 = data[count:batch_size+count*batch_size,1]
         count = count + 1
         return inR1.to(device),outR1.to(device), count
-    elif data_flag == 'R2':
-        inR2 = th.stack([data[count:batch_size+count*batch_size,1], data[count:batch_size+count*batch_size,2]], dim=1).t()
-        outR2 = data[count:batch_size+count*batch_size,3].view(batch_size,1)
+    elif data_flag == 'R2'and not load_data:
+        inR2 = th.stack([data[0:batch_size,1], data[0:batch_size,2]], dim=1)
+        outR2 = data[0:batch_size,3]
         count = count + 1
-    return inR2.to(device),outR2.to(device), count
+        return inR2.to(device),outR2.to(device), count
+    elif data_flag == 'R2' and load_data:
+        inR2 = th.stack([data[count:batch_size+count*batch_size,1], data[count:batch_size+count*batch_size,2]], dim=1)
+        outR2 = data[count:batch_size+count*batch_size,1]
+        count = count + 1
+        return inR2.to(device), outR2.to(device), count
+
+
     
 def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False):
     model.train()
@@ -36,6 +48,7 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False)
         data = data[0:n_samples,:]
     optimizer.zero_grad()
     count  = 0
+    _outLoss = 0
 
     # The network needs to learn z1 -> z2 and z2,z3 -> z4
     for i in range(N):
@@ -51,7 +64,7 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False)
             _outLoss += _loss.item()
 
             if i % 100 == 0:
-                print("iteration {:04d}/{:d}: loss: {:6.3f}".format(i,_outloss // batch_size))
+                print("iteration {}: loss: {:6.3f}".format(i,_outLoss))
             # print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, outloss))
     if not os.path.exists('../model/'):
         os.makedirs('../model/')
