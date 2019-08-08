@@ -64,7 +64,8 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
             _outLoss += _loss.item()
 
             if i % 10 == 0:
-                print("iteration {}: loss: {:6.3f}".format(i,_outLoss))
+                avgLoss = _outLoss / (i+1)
+                print("iteration {}: Average loss: {:6.3f}".format(i,avgLoss))
             # print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, outloss))
     if not os.path.exists('../model/'):
         os.makedirs('../model/')
