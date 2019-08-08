@@ -62,10 +62,11 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
             optimizer.step()
 
             _outLoss += _loss.item()
-
-            if i % 10 == 0:
+            # if _outLoss == nan:
+            #     break
+            if i % 100 == 0:
                 avgLoss = _outLoss / (i+1)
-                print("iteration {}: Average loss: {:6.3f}".format(i,avgLoss))
+                print("iteration {}: Average loss: {}".format(i,avgLoss))
             # print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, outloss))
     if not os.path.exists('../model/'):
         os.makedirs('../model/')
@@ -73,10 +74,12 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
     th.save(model.state_dict(), fname)
     print(' Model is saved at : {}'.format(fname))
 
-def test(test_iterations,model_name):
-    model = th.load(model_name)
+def test(model, test_iterations,model_name):
+    model_name = '../model/' +model_name
+    model.load_state_dict(th.load(model_name))
     model.eval()
     _outloss = 0
+    count = 0
     with th.no_grad():
         for i in range(test_iterations):
             inData, outData, count = get_batch(data_flag, batch_size, count)
@@ -84,7 +87,9 @@ def test(test_iterations,model_name):
             pred = proposal.rsample()
             _loss = loss_fn(outData, pred)
             _outloss += _loss.item()
-        print('Test loss: {:.4f}\n'.format(_outloss.item()/test_iterations))
+            if i % 100 == 0:
+                print('{} Iteration , Test avg loss: {}\n'.format(i+1,_outloss/(i+1)))
+        print('Test loss: {}\n'.format(_outloss/test_iterations))
 
 def objective(zlearn, *args, **kwargs):
     ''' This has to be representative of the objective, equation 2'''
@@ -93,19 +98,18 @@ if __name__ == '__main__':
     loss_fn = th.nn.MSELoss()
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")
     device = th.device("cpu")
-    lr = 4e-5
+    lr = 0.001
+    momentum= 0.9
     load_data=False
-    # inputs = DataLoader(RejectionDataset(split='train', l_data=128, train_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True, norma num_workers=cpu_count-2)
-    # outputs = DataLoader(RejectionDataset(split='test', l_data=128, test_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True,num_workers=cpu_count-2)
     batch_size = 128
     inputSize = batch_size
     data_flag= 'R1'
     outputSize = 1 # for R1
     model = density_estimator(inputSize, outputSize)
     num_processes = mp.cpu_count() - 1
-    N = 100
+    N = 1000
     # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
-    optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
     # NOTE: this is required for the ``fork`` method to work
     model.share_memory()
     processes = []
@@ -115,3 +119,8 @@ if __name__ == '__main__':
         processes.append(p)
     for p in processes:
         p.join()
+    test = False
+    if test:
+        model_name = 'model_2019-08-08_19-15_rejectionBlock_R1_process_2'
+        n_test = 1000
+        test(model, n_test, model_name)
