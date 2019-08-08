@@ -38,7 +38,7 @@ def get_batch(data_flag, batch_size, count, load_data=False):
 
 
     
-def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False):
+def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=False):
     model.train()
     n_samples = batch_size*N
     # data = th.stack([amortized_rs.f() for _ in range(batch_size)]) # hmm, shouldn't this be the number of training samples, rather than batch_size?
@@ -63,12 +63,12 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, load_data=False)
 
             _outLoss += _loss.item()
 
-            if i % 100 == 0:
+            if i % 10 == 0:
                 print("iteration {}: loss: {:6.3f}".format(i,_outLoss))
             # print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, outloss))
     if not os.path.exists('../model/'):
         os.makedirs('../model/')
-    fname = '../model/model_{}_rejectionBlock_{}'.format(strftime("%Y-%m-%d_%H-%M"), data_flag)
+    fname = '../model/model_{}_rejectionBlock_{}_process_{}'.format(strftime("%Y-%m-%d_%H-%M"), data_flag, rank)
     th.save(model.state_dict(), fname)
     print(' Model is saved at : {}'.format(fname))
 
@@ -93,6 +93,7 @@ if __name__ == '__main__':
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")
     device = th.device("cpu")
     lr = 4e-5
+    load_data=False
     # inputs = DataLoader(RejectionDataset(split='train', l_data=128, train_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True, norma num_workers=cpu_count-2)
     # outputs = DataLoader(RejectionDataset(split='test', l_data=128, test_percentage=0.8,fname_test, fname_train, InIndx, OutIndx), batch_size=128, shuffle=True,num_workers=cpu_count-2)
     batch_size = 128
@@ -101,16 +102,15 @@ if __name__ == '__main__':
     outputSize = 1 # for R1
     model = density_estimator(inputSize, outputSize)
     num_processes = mp.cpu_count() - 1
-    N = 10000
+    N = 100
     # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
-    train(model,optimizer,loss_fn, N,data_flag, batch_size)
     # NOTE: this is required for the ``fork`` method to work
-    # model.share_memory()
-    # processes = []
-    # for rank in range(num_processes):
-    #     p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size))
-    #     p.start()
-    #     processes.append(p)
-    # for p in processes:
-    #     p.join()
+    model.share_memory()
+    processes = []
+    for rank in range(num_processes):
+        p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank, load_data))
+        p.start()
+        processes.append(p)
+    for p in processes:
+        p.join()
