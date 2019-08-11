@@ -16,8 +16,8 @@ def get_batch(data_flag, batch_size, count, load_data=False):
     if not load_data:
         data = th.stack([amortized_rs.f() for _ in range(batch_size)]) 
     if data_flag == 'R1' and not load_data:
-        inR1 = data[0:batch_size,0]
-        outR1 = data[0:batch_size,1]
+        inR1 = data[0:batch_size,0].view([batch_size,1]).view([1,batch_size])
+        outR1 = data[0:batch_size,1].view([batch_size,1]).view([1,batch_size])
         count = count + 1 # not actually need if load_data == True
         return inR1.to(device),outR1.to(device), count
     elif data_flag == 'R1' and load_data:
@@ -26,8 +26,8 @@ def get_batch(data_flag, batch_size, count, load_data=False):
         count = count + 1
         return inR1.to(device),outR1.to(device), count
     elif data_flag == 'R2'and not load_data:
-        inR2 = th.stack([data[0:batch_size,1], data[0:batch_size,2]], dim=1)
-        outR2 = data[0:batch_size,3]
+        inR2 = th.stack([data[0:batch_size,1], data[0:batch_size,2]], dim=0).view([2,batch_size])
+        outR2 = data[0:batch_size,3].view([1,batch_size])
         count = count + 1
         return inR2.to(device),outR2.to(device), count
     elif data_flag == 'R2' and load_data:
@@ -84,7 +84,7 @@ def test(model, test_iterations,model_name):
         for i in range(test_iterations):
             inData, outData, count = get_batch(data_flag, batch_size, count)
             proposal = dist.Normal(*model(inData))
-            pred = proposal.rsample()
+            pred = proposal.rsample(sample_shape=th.Size([batch_size])).view(batch_size)
             _loss = loss_fn(outData, pred)
             _outloss += _loss.item()
             if i % 100 == 0:
@@ -103,10 +103,10 @@ if __name__ == '__main__':
     load_data=False
     batch_size = 128
     inputSize = batch_size
-    data_flag= 'R1'
-    outputSize = 1 # for R1
+    data_flag= 'R2'
+    outputSize = 128 # for R1 and R2
     model = density_estimator(inputSize, outputSize)
-    num_processes = 1
+    num_processes = mp.cpu_count() -11
     N = 2000
     trainOn = True
     loss_fn = th.nn.MSELoss()
