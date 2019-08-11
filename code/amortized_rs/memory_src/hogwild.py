@@ -93,9 +93,9 @@ def test(model, test_iterations,model_name):
 
 def objective(zlearn, *args, **kwargs):
     ''' This has to be representative of the objective, equation 2'''
+    return 0
 
 if __name__ == '__main__':
-    loss_fn = th.nn.MSELoss()
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")
     device = th.device("cpu")
     lr = 0.001
@@ -106,21 +106,25 @@ if __name__ == '__main__':
     data_flag= 'R1'
     outputSize = 1 # for R1
     model = density_estimator(inputSize, outputSize)
-    num_processes = mp.cpu_count() - 1
-    N = 1000
+    num_processes = 1
+    N = 2000
+    trainOn = True
+    loss_fn = th.nn.MSELoss()
     # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+    # train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
-    model.share_memory()
-    processes = []
-    for rank in range(num_processes):
-        p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank, load_data))
-        p.start()
-        processes.append(p)
-    for p in processes:
-        p.join()
-    test = False
-    if test:
+    if trainOn:
+        model.share_memory()
+        processes = []
+        for rank in range(num_processes):
+            p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+    testOn = False
+    if testOn:
         model_name = 'model_2019-08-08_19-15_rejectionBlock_R1_process_2'
         n_test = 1000
         test(model, n_test, model_name)
