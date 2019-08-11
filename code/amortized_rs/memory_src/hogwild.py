@@ -104,7 +104,8 @@ if __name__ == '__main__':
     batch_size = 128
     inputSize = batch_size
     data_flag= 'R2'
-    outputSize = 128 # for R1 and R2
+    outputSize = 1
+    # outputSize = 128 # for R1 and R2
     model = density_estimator(inputSize, outputSize)
     num_processes = mp.cpu_count() -11
     N = 2000
