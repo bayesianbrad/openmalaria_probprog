@@ -9,7 +9,7 @@ import os
 import time
 import shutil
 import logging
-
+import seaborn as sns
 amortized_rs = load(name="amortized_rs",
                     sources=["amortized_rs.cpp"])
 
@@ -206,6 +206,7 @@ class Inference():
                 inData, outData, count = self.get_batch(self.address, self.batchSize, count)
                 proposal = dist.Normal(*model(inData))
                 pred = proposal.rsample(sample_shape=[self.batchSize]).view(1, 128)
+
                 # learns a \hat{y} for the whole batch and then generates n_batch_size samples to predict the output.
                 _loss = self.loss_fn(outData, pred)
                 _outloss += _loss.item()

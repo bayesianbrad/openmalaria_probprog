@@ -460,7 +460,16 @@ Once learned we can then efficiently sample from the parameterized normal distri
 represents the density of the sub-program represented by $R1$. 
 This is then replaced in the simulator, during inference time. 
 
-\textbf{Add results from current experiments}
+\paragraph{observations} As the functions are relatively simple the loss functions it gets t
+to a loss of around 0.6 and stops decreasing. Although, this seems low, I don't think that it is
+actually good, because that would mean on average, for each data point there is a loss of $\pm$ 0.6
+which per data point is quite bad. That may be for a number of reasons, using MSE loss, using a simple
+model architecture. It really struggles to model the tails. It may require a much larger batch input size. 
+. Increasing the batch size helped to correct for the peaked density, however the behavior is still odd.
+The peaked behaviour still does not disappear, this, I believe is due to the loss function averaging 
+over all points, 
+
+ \textbf{Add results from current experiments}
 
 \subsection{2nd Baseline}
 Instead of using a single Gaussian, use a proposal that is a mixture of Gaussians. 

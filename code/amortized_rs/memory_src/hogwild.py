@@ -6,6 +6,8 @@ from torch import optim
 import torch.distributions as dist 
 from time import strftime
 import os
+import seaborn as sns
+import matplotlib.pyplot as plt
 import time
 
 amortized_rs = load(name="amortized_rs",
@@ -26,7 +28,7 @@ def get_batch(data_flag, batch_size, count, load_data=False):
         count = count + 1
         return inR1.to(device),outR1.to(device), count
     elif data_flag == 'R2'and not load_data:
-        inR2 = th.cat([data[0:batch_size,1], data[0:batch_size,2]], dim=0).view(1,256)
+        inR2 = th.cat([data[0:batch_size,1], data[0:batch_size,2]], dim=0).view(1,batch_size*2)
         outR2 = data[0:batch_size,3].view([1,batch_size])
         count = count + 1
         return inR2.to(device),outR2.to(device), count
@@ -36,6 +38,11 @@ def get_batch(data_flag, batch_size, count, load_data=False):
         count = count + 1
         return inR2.to(device), outR2.to(device), count
 
+def center_data(data):
+    mean = th.mean(data,dim =0)
+    zeroed = data - mean*th.ones(data.shape)
+    stddata  = th.std(data, dim=0)
+    return zeroed / stddata
 def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=False):
     model.train()
     n_samples = batch_size*N
@@ -46,12 +53,16 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
     count  = 0
     _outLoss = 0
 
+    if not os.path.exists('../plots/'):
+        os.makedirs('../plots/')
+
     # The network needs to learn z1 -> z2 and z2,z3 -> z4
     for i in range(N):
             inData, outData, count =get_batch(data_flag, batch_size, count)
             proposal = dist.Normal(*model(inData))
-            pred = proposal.rsample(sample_shape=[batch_size]).view(1,128)
+            pred = proposal.rsample(sample_shape=[batch_size]).view(1,batch_size)
             optimizer.zero_grad()
+            plt.show()
             _loss = loss_fn(outData, pred)
             _loss.backward()
             optimizer.step()
@@ -59,7 +70,15 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
             _outLoss += _loss.item()
             # if _outLoss == nan:
             #     break
-            if i % 100 == 0:
+            if i % 1 == 0:
+                plt.show()
+                sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
+                sns.distplot(outData[0, :].detach().numpy(), kde=True, color='b')
+                # plot_pred= sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
+                # plot_true =sns.distplot(outData[0, :].detach().numpy(), kde=True, color='b')
+                # fnamePred = '../plot/' + 'predicted_iteration_{}_process_{}_rejectionBlock_{}'.format(i, rank, data_flag)
+                # fnameTrue = '../plot/' + 'true_iteration_{}_process_{}_rejectionBlock_{}'.format(i, rank, data_flag)
+                # plot_pred.savefig()
                 avgLoss = _outLoss / (i+1)
                 print("iteration {}: Average loss: {}".format(i,avgLoss))
             # print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, outloss))
@@ -79,52 +98,29 @@ def test(model, test_iterations,model_name):
         for i in range(test_iterations):
             inData, outData, count = get_batch(data_flag, batch_size, count)
             proposal = dist.Normal(*model(inData))
-            pred = proposal.rsample(sample_shape=th.Size([batch_size])).view(batch_size)
+            pred =proposal.rsample(sample_shape=[batch_size]).view(1,batch_size)
+            plt.show()
+            plt.title('Iteration : {}'.format(i))
+            sns.distplot(pred, kde=True, color='r')
+            sns.distplot(outData, kde=True, color='b')
+
             # learns a \hat{y} for the whole batch and then generates n_batch_size samples to predict the output.
-            _loss = loss_fn(outData, pred)
-            _outloss += _loss.item()
-            if i % 100 == 0:
-                print('{} Iteration , Test avg loss: {}\n'.format(i+1,_outloss/(i+1)))
-        print('Test loss: {}\n'.format(_outloss/test_iterations))
-
-def objective(zlearn, *args, **kwargs):
-    ''' This has to be representative of the objective, equation 2'''
-    return 0
-
-if __name__ == '__main__':
-    # device = th.device("cuda" if th.cuda.is_available() else "cpu")
-    device = th.device("cpu")
-    lr = 0.001
-    momentum= 0.9
-    load_data=False
-    batch_size = 128
-    data_flag= 'R1'
-    outputSize = 1
-    # outputSize = 128 # for R1 and R2
-    if data_flag =='R2':
-        inputSize = batch_size*2
-    if data_flag == 'R1':
-        inputSize = batch_size
-    model = density_estimator(inputSize, outputSize)
-    num_processes = mp.cpu_count()
-    N = 2000
-    trainOn = True
-    loss_fn = th.nn.MSELoss()
-    # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
-    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
-    # train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
+            _loss = loss_fn(outData, pred)t= th.nn.MSELoss()
+    optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
+    # optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+    train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
-    if trainOn:
-        model.share_memory()
-        processes = []
-        for rank in range(num_processes):
-            p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
-            p.start()
-            processes.append(p)
-        for p in processes:
-            p.join()
+    # if trainOn:
+    #     model.share_memory()
+    #     processes = []
+    #     for rank in range(num_processes):
+    #         p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
+    #         p.start()
+    #         processes.append(p)
+    #     for p in processes:
+    #         p.join()
     testOn = False
     if testOn:
-        model_name = 'model_2019-08-08_19-15_rejectionBlock_R1_process_2'
+        model_name = 'model_2019-08-12_09-35_rejectionBlock_R2_process_8'
         n_test = 1000
         test(model, n_test, model_name)
