@@ -26,7 +26,7 @@ def get_batch(data_flag, batch_size, count, load_data=False):
         count = count + 1
         return inR1.to(device),outR1.to(device), count
     elif data_flag == 'R2'and not load_data:
-        inR2 = th.stack([data[0:batch_size,1], data[0:batch_size,2]], dim=0).view([2,batch_size])
+        inR2 = th.cat([data[0:batch_size,1], data[0:batch_size,2]], dim=0).view(1,256)
         outR2 = data[0:batch_size,3].view([1,batch_size])
         count = count + 1
         return inR2.to(device),outR2.to(device), count
@@ -41,8 +41,6 @@ def get_batch(data_flag, batch_size, count, load_data=False):
 def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=False):
     model.train()
     n_samples = batch_size*N
-    # data = th.stack([amortized_rs.f() for _ in range(batch_size)]) # hmm, shouldn't this be the number of training samples, rather than batch_size?
-    # data = th.stack([amortized_rs.f() for _ in range(n_samples)]) # actually this loop needs to create multiple runs of the simulator of each z1, z2,z3 with
     if load_data == True:
         data = th.load('../data/all_batch_samples.pt')
         data = data[0:n_samples,:]
@@ -54,8 +52,7 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
     for i in range(N):
             inData, outData, count =get_batch(data_flag, batch_size, count)
             proposal = dist.Normal(*model(inData))
-            pred = proposal.rsample()
-
+            pred = proposal.rsample(sample_shape=[batch_size]).view(1,128)
             optimizer.zero_grad()
             _loss = loss_fn(outData, pred)
             _loss.backward()
@@ -85,6 +82,7 @@ def test(model, test_iterations,model_name):
             inData, outData, count = get_batch(data_flag, batch_size, count)
             proposal = dist.Normal(*model(inData))
             pred = proposal.rsample(sample_shape=th.Size([batch_size])).view(batch_size)
+            # learns a \hat{y} for the whole batch and then generates n_batch_size samples to predict the output.
             _loss = loss_fn(outData, pred)
             _outloss += _loss.item()
             if i % 100 == 0:
@@ -102,12 +100,15 @@ if __name__ == '__main__':
     momentum= 0.9
     load_data=False
     batch_size = 128
-    inputSize = batch_size
     data_flag= 'R2'
     outputSize = 1
     # outputSize = 128 # for R1 and R2
+    if data_flag =='R2':
+        inputSize = batch_size*2
+    if data_flag == 'R1':
+        inputSize = batch_size
     model = density_estimator(inputSize, outputSize)
-    num_processes = mp.cpu_count() -11
+    num_processes = mp.cpu_count()
     N = 2000
     trainOn = True
     loss_fn = th.nn.MSELoss()
