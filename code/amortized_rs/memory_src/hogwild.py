@@ -36,8 +36,6 @@ def get_batch(data_flag, batch_size, count, load_data=False):
         count = count + 1
         return inR2.to(device), outR2.to(device), count
 
-
-    
 def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=False):
     model.train()
     n_samples = batch_size*N
@@ -100,7 +98,7 @@ if __name__ == '__main__':
     momentum= 0.9
     load_data=False
     batch_size = 128
-    data_flag= 'R2'
+    data_flag= 'R1'
     outputSize = 1
     # outputSize = 128 # for R1 and R2
     if data_flag =='R2':
