@@ -105,7 +105,36 @@ def test(model, test_iterations,model_name):
             sns.distplot(outData, kde=True, color='b')
 
             # learns a \hat{y} for the whole batch and then generates n_batch_size samples to predict the output.
-            _loss = loss_fn(outData, pred)t= th.nn.MSELoss()
+            _loss = loss_fn(outData, pred)
+            _outloss += _loss.item()
+            if i % 100 == 0:
+                print('{} Iteration , Test avg loss: {}\n'.format(i+1,_outloss/(i+1)))
+        print('Test loss: {}\n'.format(_outloss/test_iterations))
+
+def objective(zlearn, *args, **kwargs):
+    ''' This has to be representative of the objective, equation 2'''
+    return 0
+
+if __name__ == '__main__':
+    # device = th.device("cuda" if th.cuda.is_available() else "cpu")
+    device = th.device("cpu")
+    lr = 0.001
+    momentum= 0.75
+    load_data=False
+    batch_size = 2**9
+    data_flag= 'R1'
+    outputSize = 1
+    # outputSize = 128 # for R1 and R2
+    if data_flag =='R2':
+        inputSize = batch_size*2
+    if data_flag == 'R1':
+        inputSize = batch_size
+    model = density_estimator(inputSize, outputSize)
+    num_processes = mp.cpu_count()
+    N = 1000
+    trainOn = True
+    # loss_fn = th.nn.CosineEmbeddingLoss()
+    loss_fn = th.nn.MSELoss()
     optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
     # optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
     train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)

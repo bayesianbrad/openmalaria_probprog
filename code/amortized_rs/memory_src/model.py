@@ -18,6 +18,6 @@ class density_estimator(nn.Module):
          # x is of shape [batch_size, input_dim]
         hidden = self.hidden(x) # return [batch_size//2, 2]
         mu = self.linear_mu(hidden)
-        sigma = F.softplus(self.linear_std(hidden))
+        sigma = F.softplus(self.linear_std(hidden)) + 1e-6
         return mu, sigma
 
