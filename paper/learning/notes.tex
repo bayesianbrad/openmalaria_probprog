@@ -346,9 +346,11 @@ to specify whether or not we want to collect samples to train, $1$, else replace
 the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
 the unknown densities that we wish to learn through an amortized approach.
 It is important to note that the expected running time of the rejection sampler is expected to geometric mean, we can show this as follows:
-\begin{equation}
-\text{derivation}
-\end{equation}
+\textbf{Bradley:  You only arrive at this, if the density is uniform}
+\begin{align*}
+P( X= x) = \sum^{\infty}_{n=1} P(\text{reject $n-1$ times}, \text{draw} Y = x) \\
+\text{todo} 
+\end{align*}
 
 In addition to this, if we have direct access to a rejection sampling loop then it is indeed 
 possible to construct the density, up to a constant of proportionality. 
@@ -444,7 +446,7 @@ separately.
   estimator to the ground truth, at least in the way it is currently defined? 
   \item All RS references I look at state that we must sample from a uniform distribution and
   then check if our proposed value is less than that uniformly sampled point, yet our RS do not have this,
-  nor what is the acceptance probability within our rejection sampling statements? The proof for rejection sampling seems to rely on the fact that you are drawing from a uniform distribution. 
+  nor what is the acceptance probability within our rejection sampling statements? The proof for rejection sampling seems to rely on the fact that you are drawing from a uniform distribution.  
 
   \end{itemize}
 \subsection{Ground truth}

@@ -71,9 +71,15 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
             # if _outLoss == nan:
             #     break
             if i % 1 == 0:
-                plt.show()
-                sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
-                sns.distplot(outData[0, :].detach().numpy(), kde=True, color='b')
+                # plt.show()
+                ax= sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r',label='pred')
+                ax = sns.distplot(outData[0, :].detach().numpy(), kde=True, color='b', label='ground truth')
+                ax.legend()
+                ax.set_title('Iteration_{}_Rejection_block_{}'.format(i,data_flag))
+                fig = ax.get_figure()
+                fname= '../plots/{}_compare_pred_vs_gt_iteration_rejection_block_{}.png'.format(strftime("%M:%S"),data_flag)
+                fig.savefig(fname=fname)
+
                 # plot_pred= sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
                 # plot_true =sns.distplot(outData[0, :].detach().numpy(), kde=True, color='b')
                 # fnamePred = '../plot/' + 'predicted_iteration_{}_process_{}_rejectionBlock_{}'.format(i, rank, data_flag)
@@ -119,7 +125,7 @@ if __name__ == '__main__':
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")
     device = th.device("cpu")
     lr = 0.001
-    momentum= 0.75
+    momentum= 0.9
     load_data=False
     batch_size = 2**9
     data_flag= 'R1'
@@ -131,12 +137,12 @@ if __name__ == '__main__':
         inputSize = batch_size
     model = density_estimator(inputSize, outputSize)
     num_processes = mp.cpu_count()
-    N = 1000
+    N =  200
     trainOn = True
     # loss_fn = th.nn.CosineEmbeddingLoss()
     loss_fn = th.nn.MSELoss()
-    optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
-    # optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+    # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
     train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
     # if trainOn:
