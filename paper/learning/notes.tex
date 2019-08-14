@@ -360,7 +360,7 @@ do something \\
 \mathtt{if} Bern(\alpha) = 1: \\
 return y
 \end{align*}
-thus the density of $y,\theta \propto q(\theta, y) \alpha$.
+thus the density of $y,\theta \propto q(\theta) \alpha$.
 However, in order to do construct this we need the input $\theta$, $y$, $\alpha$ and the distributions utilised for the rejection sampling loop. 
 For any arbitrary simulator, written in a generic code base, this is an incredibly hard 
 task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template
@@ -416,6 +416,7 @@ We start with the information projection we construct the variational objective 
 
 Thus, to define the objective for each subproblem $r  \in S_{R}$ as:
 \begin{equation}
+  \label{eq:objective}
   J_{r}(\eta_r) = -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\mathbb{I}(a_j = r)\ln(q_r(x_j;\eta_r, \phi_j))]
 \end{equation}
 
@@ -435,6 +436,17 @@ separately.
   methods~\cite{erraqabi2016pliable}. In addition to the methods listed in the 
   rejection sampling subsection. 
 \end{itemize}
+
+\paragraph{Tom Questions}
+
+\begin{itemize}
+  \item I don't understand how the objective function is comparing the generated samples from the density 
+  estimator to the ground truth, at least in the way it is currently defined? 
+  \item All RS references I look at state that we must sample from a uniform distribution and
+  then check if our proposed value is less than that uniformly sampled point, yet our RS do not have this,
+  nor what is the acceptance probability within our rejection sampling statements? The proof for rejection sampling seems to rely on the fact that you are drawing from a uniform distribution. 
+
+  \end{itemize}
 \subsection{Ground truth}
 
 Because in this simple case we have direct access to $\alpha$, the rejection sampler acceptance probability,
@@ -467,9 +479,12 @@ which per data point is quite bad. That may be for a number of reasons, using MS
 model architecture. It really struggles to model the tails. It may require a much larger batch input size. 
 . Increasing the batch size helped to correct for the peaked density, however the behavior is still odd.
 The peaked behaviour still does not disappear, this, I believe is due to the loss function averaging 
-over all points, 
+over all points.
+
+
 
  \textbf{Add results from current experiments}
+
 
 \subsection{2nd Baseline}
 Instead of using a single Gaussian, use a proposal that is a mixture of Gaussians. 
@@ -530,9 +545,10 @@ full density of the program.
 \textbf{New questions to ask Tom}
 
 \begin{itemize}
+  \item How is Equation~\ref{eq:}
   \item Isn't what we are doing just conditional density estimation? It seems
   like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
-  \item It does seem like this field has a large extensive past, but we still have a small neesh .
+  \item It does seem like this field has a large extensive past, but we still have a small niche.
 \end{itemize}
 
 \textbf{Old questions for Tom}
