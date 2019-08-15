@@ -747,6 +747,60 @@ associated with $x_m$ (what does this first part mean?)
 \textbf{TODO: Add some of the plots generated from this model and an accompanying analysis to them.}
  
 
+\section{Stochastic Variational Inference}
+
+Using the standard notations we define the joint as follows:
+\begin{equation}
+  p(x, z ; \theta) = p_{\theta}(x,z) = p_{\theta}(x| z)p_{\theta}(z)
+\end{equation}
+
+
+We assume that the distributions that create the \emph{model} $p_{\theta}(x, z)$ can be:
+\begin{enumerate}
+  \item We can sample from each $p_i$
+  \item We can compute the pointwise log pdf of $p_i$
+  \item $p_i$ is differentiable w.r.t the parameters $\theta$
+  \end{enumerate}
+
+\subsection{Learning the model}
+
+Our objective will either want to maximize, or minimize, depending on what we want to discover. 
+
+\begin{equation}
+  \theta_{\text{min} \backslash \text{max} } = \text{argmax$\backslash$min}_{\theta}\log p_\theta(x)
+\end{equation}
+
+where the log evidence $p_\theta(x)$ is given by:
+\begin{equation}
+  \log p_{\theta}(x) = \log \int dz p_\theta(x,z)
+\end{equation}
+
+This is a doubly hard problem as even if $\theta$ is fixed the integral over the set
+of latent variables defined by $z$ is intractable. 
+Even if we know how to calculate the log evidence for all $\theta$, maximising or minimising, 
+the log evidence as a function of $\theta$ is in general a difficult non-convex problem. 
+
+In addition to finding the parameters $\theta$ we also require the posterior over
+the latent variables $z$:
+\begin{equation}
+  p_{\theta_{\text{max$\backslash$min}}}(z|x) \frac{p_{\theta}(x,z)}{\int dz p_{\theta_{\text{max$\backslash$min}}}(x,z)} 
+\end{equation}
+
+To this in the variational inference setting we learn an approximation to $p_{\theta_{\text{max$\backslash$min}}}(z|x)$
+denoted by $q_\phi(z)$ where $\phi$ are the variational parameters. 
+
+\section{The Objective}
+
+In many of these settings the ELBO loss characterises the problem that we 
+aim to solve. 
+
+\begin{equation}
+  ELBO = \mathbb{E}_{q_{\phi}(z)} [ \log p_{\theta}(x,z) - \log q_{\phi}(z) ]
+\end{equation}
+and we have for all choices of $\theta$ and $\phi$ that:
+\begin{equation}
+  \log p_{\theta}(x) \geq ELBO 
+\end{equation}
 \section{An Example: Modelling Parasite Densities in Simulation}
 % \begin{wrapfigure}{r}{0.4\textwidth}
   \begin{figure}[h!]
