@@ -244,16 +244,30 @@ stochastic simulators into probabilistic programs systems.
 Rejection samplers are heavily used when designing simulators [ add SHERPA etc], due to their ease of use and ability to model 
 any arbitrary distribution on $\mathbb{R}^{D}$, with a sufficiently well designed rejection sampling scheme~\cite{MEYER20083408,martino2012improved,casella} 
 
-In the standard setting we let $X$ be a random variable whose density is $f(x)$ that we cannot easily 
-sample from, but can evaluate. Using a random variable $Z$, whose density is $g(z)$  that we can efficiently
-sample from, then we can generate a sample $X$ by sampling $Z$ and accept $Z$ with probability
+There are two different forms of rejection samplers found with in simulators and program code. 
+In both instances we we have $X$, a random variable whose density is $f(x)$ that we cannot easily 
+sample from, but can evaluate.
+We then define a proposal using a random variable $Z$, whose density is $g(z)$  that we can efficiently
+sample from.
+Where the two methods diverge is in how the acceptance probability is defined and how the samples are generated.
+In the standard statistical setting, see algorithm~\ref{alg:rsstats}, we generate a sample $X$ by sampling $Z$ and accept $Z$ with probability
 $p_{accept} = \frac{f(x)}{Mg(x)}$, which we can do until acceptance. 
-M is constant that has a finite bound, $M \in (1, \infty)$, on the likelihood ratio $\frac{f(x)}{g(x)}$ over the 
-support of $X$. $M$ must also satify the following inequality $f(x) \leq M g(x)  \forall x$. 
+Here $M$ is a constant that has a finite bound, $M \in (1, \infty)$ and the likelihood ratio $\frac{f(x)}{g(x)}$ is defined over the 
+support of $X$. 
+$M$ must also satisfy the following inequality $f(x) \leq M g(x)  \forall x$. 
 This implies that the support of $Z$ must also contained the support of $X$, that is
 $g(x) > 0$ whenever $f(x)>0$. 
+We construct this acceptance probability by sampling from a uniform distribution defined on the interval 
+$(0,1)$, which the proof ultimately relies on to ensure that a sample generated from the rejection sampler directly 
+corresponds to a sample from the true, normalized, target density $f(x)$. 
+But, provided we can calculate $P_{\text{accept}}(\mathcal{D} \leq \mathcal{C})$ for the given density, or mass, function
+ $\mathcal{D}$ and condition $\mathcal{C}$, we can also satisfy the standard proof with a little more work.
+ However, as we will demonstrate, rejection samplers 
+ need not take this form and arise in many nested structures within probabilistic programs~\cite{rainforth2018nesting} and simulators~\cite{smith2008towards,bershteyn2018implementation,gleisberg2009event}.
+
 The standard algorithm is defined as follows:
 \begin{algorithm}
+  \label{alg:rsstats}
   \small
    \caption{Rejection Sampling}
     \begin{algorithmic}\small
@@ -272,7 +286,9 @@ As useful rejection sampling is, it has many short comings.
 In particular, to simulate proposals for certain distributions,
 such as truncated normal distributions, regardless of the easy to sample from proposal
 chosen the computational running time of such rejection statements can be shown to have an
-expectation equal to infinity. Thus, the ability to learn and replace such rejection
+expectation equal to infinity. \textbf{Bradley: Is this true?}
+
+Thus, the ability to learn and replace such rejection
 sampling blocks with learnt surrogate functions, that are expressive enough to 
 reciprocate the behavior of the rejection sampling block buys the user two things. 
 A) It reduces the computational complexity of the simulator. 
@@ -439,16 +455,7 @@ separately.
   rejection sampling subsection. 
 \end{itemize}
 
-\paragraph{Tom Questions}
 
-\begin{itemize}
-  \item I don't understand how the objective function is comparing the generated samples from the density 
-  estimator to the ground truth, at least in the way it is currently defined? 
-  \item All RS references I look at state that we must sample from a uniform distribution and
-  then check if our proposed value is less than that uniformly sampled point, yet our RS do not have this,
-  nor what is the acceptance probability within our rejection sampling statements? The proof for rejection sampling seems to rely on the fact that you are drawing from a uniform distribution.  
-
-  \end{itemize}
 \subsection{Ground truth}
 
 Because in this simple case we have direct access to $\alpha$, the rejection sampler acceptance probability,
@@ -483,6 +490,13 @@ model architecture. It really struggles to model the tails. It may require a muc
 The peaked behaviour still does not disappear, this, I believe is due to the loss function averaging 
 over all points.
 
+After my meeting with Tom, by using a loss function the problem of the network collapsing on a particular value was always going to 
+happen as we should be optimizing our function via some objective, rather than looking at point-wise differences. 
+
+We had defined an objective above but it was not clear how this was supposed to be implemented in practice with the given notations. 
+
+We discussed at length how to correctly define the objective, I have now updated the objective with the one derivied in the revised discussion,
+along with additional notes on rejection sampling. 
 
 
  \textbf{Add results from current experiments}
@@ -546,15 +560,14 @@ full density of the program.
 
 \textbf{New questions to ask Tom}
 
-\begin{itemize}
-  \item How is Equation~\ref{eq:}
-  \item Isn't what we are doing just conditional density estimation? It seems
-  like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
-  \item It does seem like this field has a large extensive past, but we still have a small niche.
-\end{itemize}
-
 \textbf{Old questions for Tom}
 \begin{itemize}
+  \item I don't understand how the objective function is comparing the generated samples from the density 
+  estimator to the ground truth, at least in the way it is currently defined? Answered - we updated the objective defined and added more comments
+  \item All RS references I look at state that we must sample from a uniform distribution and
+  then check if our proposed value is less than that uniformly sampled point, yet our RS do not have this. Answered - Rejection samplers we have are valid rejection samplers, this just might not define the density we expect them to. ..?
+  nor what is the acceptance probability within our rejection sampling statements? The proof for rejection sampling seems to rely on the fact that you are drawing from a uniform distribution.  
+
   \item Whilst the variational posterior we choose as our proposal has a functional form  
   and can be sampled, the functional form of the rejection sampling loops is not explicitly known,
   which leads to problems when calculating the $KL$-divergence - reparametrize a with a function from a family of easy to sample distribution. 
@@ -565,8 +578,8 @@ full density of the program.
   \item An issue with approach 2) is that if I can approximate the density in functional form aren't there more efficient methods that we can use? - There are other methods out there and it would maybe make sense to compare some of those methods. However, it may still be difficult to sample. 
   \item Or, if assuming that the rejection sampling block can be arbitrary dimension, are we first learning a flow to represent that density and then learn a variational approximation of something that we can easily sample from. 
   \item But, this is very much the idea behind normalising flows, take a simple distribution that you can sample and then map it to the ``complicated'' density - Question not well defined. 
-  \item Stein Variational inference may be quite nice to use here~\cite{feng2017learning}, but it does make explicit assumptions in requiring the densities to be differentiable. - Yes this metod is good, but only works in the continuous domain. 
-  \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399} - Answered - Quite finickity to set up. 
+  \item Stein Variational inference may be quite nice to use here~\cite{feng2017learning}, but it does make explicit assumptions in requiring the densities to be differentiable. - Yes this method is good, but only works in the continuous domain. 
+  \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399} - Answered - Quite finicky to set up. 
 \end{itemize}
 
 \section{Additional TODOs}
