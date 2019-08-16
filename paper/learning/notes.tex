@@ -541,13 +541,54 @@ full density of the program.
 
 
 
+\section{Friday morning}
+The subprograms within the simulator should be treated as nested probabilistic programs. 
 
+There are three ways we can do these things, rather than just an amortization
+
+\subsection{Method 1: Learn the $\gamma_{a_{j}}(\cdot ; \eta_{a_{j}}, \cdot)$}
+
+As per we are currently planning. Relies on generating exact samples, which 
+we have access due to the rejection sampling loops.
+
+In this setting we can approximate the output
+\subsection{Method 2: Proper amortized inference of sub-programs}
+
+Learn a $q_{a_{j}}(z_{1:j}; \eta_{a_j}, \phi_j)$ and uses this as a proposal for the 
+inner inference. 
+I.e. if we learn that $q$ we could develop a more efficient rejection sampler by replacing the proposal. 
+
+I.e we are calibrating the proposal to make it more amenable to accepting samples. 
+We can do this by using self normalized importance sampling on the inner program. 
+
+The likelihood is just a $\{0,1\}$ likelihood, ie Bernoulli. 
+
+\subsection{Method 3: Learn marginal likelihood $p(\cdot)$ approximation}
+
+\begin{equation}
+  p(x) = 
+  \begin{cases}
+  \prod^{n_x}_{j=1,{a_j}\in S_{R}} f_{a_j}(x_j ; \psi_j) \prod^{n_x}_{j=1,{a_j}\in S_{R}} \frac{P^{in}_{a_j}(x_j,\psi_j)}{P^{in}_{a_j}(\psi_j)} \\
+  0
+  \end{cases}
+\end{equation}
+The normalising constant inside (in) the rejection sampler is intractable. 
+
+The things inside of the rejection sampler are proportional to the following:
+% \begin{equation}
+%   \begin{cases}
+%   \end{cases}
+% \end{equation}
+
+It is really important to ensure that these pairs of samples are unbiased. 
+
+If you minimise an $L_2$ norm the optimal 
 \section{ Questions for Tom}
 
 \textbf{New questions to ask Tom}
 
 \begin{itemize}
-  \item How is Equation~\ref{eq:}
+  \item How is Equation 
   \item Isn't what we are doing just conditional density estimation? It seems
   like there is a lot of prior work here. I.e see this paper here for a good overview ~\cite{greenberg2019automatic}
   \item It does seem like this field has a large extensive past, but we still have a small niche.
