@@ -124,10 +124,10 @@ def objective(zlearn, *args, **kwargs):
 if __name__ == '__main__':
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")
     device = th.device("cpu")
-    lr = 0.001
+    lr = 0.0001
     momentum= 0.9
     load_data=False
-    batch_size = 2**9
+    batch_size = 2**13
     data_flag= 'R1'
     outputSize = 1
     # outputSize = 128 # for R1 and R2
@@ -136,24 +136,24 @@ if __name__ == '__main__':
     if data_flag == 'R1':
         inputSize = batch_size
     model = density_estimator(inputSize, outputSize)
-    num_processes = mp.cpu_count()
+    num_processes = mp.cpu_count() - 2
     N =  200
     trainOn = True
     # loss_fn = th.nn.CosineEmbeddingLoss()
     loss_fn = th.nn.MSELoss()
     # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
-    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
-    train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=0.01)
+    # train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
-    # if trainOn:
-    #     model.share_memory()
-    #     processes = []
-    #     for rank in range(num_processes):
-    #         p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
-    #         p.start()
-    #         processes.append(p)
-    #     for p in processes:
-    #         p.join()
+    if trainOn:
+        model.share_memory()
+        processes = []
+        for rank in range(num_processes):
+            p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
     testOn = False
     if testOn:
         model_name = 'model_2019-08-12_09-35_rejectionBlock_R2_process_8'
