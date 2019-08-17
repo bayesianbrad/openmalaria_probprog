@@ -266,8 +266,7 @@ But, provided we can calculate $P_{\text{accept}}(\mathcal{D} \leq \mathcal{C})$
  $\mathcal{D}$ and condition $\mathcal{C}$, we can also satisfy the standard proof with a little more work.
  However, as we will demonstrate, rejection samplers 
  need not take this form and arise in many nested structures within probabilistic programs~\cite{rainforth2018nesting} and simulators~\cite{smith2008towards,bershteyn2018implementation,gleisberg2009event}.
-
-The standard algorithm is defined as follows:
+ More generally speaking we can write a rejection sampler in the form of Algorithm~\ref{alg:rssim}
 \begin{algorithm}
   \label{alg:rsstats}
   \small
@@ -284,9 +283,9 @@ The standard algorithm is defined as follows:
 \end{algorithmic}
 \end{algorithm}
 
-but more generally speaking we can write a rejection sampler as follows:
+
 \begin{algorithm}
-  \label{alg:rsstats}
+  \label{alg:rssim}
   \small
    \caption{Simulator: Rejection Sampling}
     \begin{algorithmic}\small
