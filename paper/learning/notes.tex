@@ -41,6 +41,8 @@
 \usepackage{amsmath,amsthm}
 \usepackage{amssymb}
 \usepackage{cancel}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
 \tikzset{>=latex}
 \usetikzlibrary{bayesnet}
 \usetikzlibrary{arrows,shapes,automata}
@@ -60,7 +62,7 @@
 \newcommand{\traces}[2]{\ensuremath{\textit{tr}^{#1}_{#2}}}
 \newcommand{\stoc}[2]{\ensuremath{f^{#1}_{#2}(\rvv{x})}}
 % \usepackage[binary-units=true]{siunitx}
-\title{Hijacking Simulators with Universal Probabilistic Programming}
+\title{AIRS: Amortized Inference for Rejection Samplers for Fast Simulator Inference}
 
 % neurlps classification
 % Primary: Applications
@@ -269,7 +271,7 @@ The standard algorithm is defined as follows:
 \begin{algorithm}
   \label{alg:rsstats}
   \small
-   \caption{Rejection Sampling}
+   \caption{ABC: Rejection Sampling}
     \begin{algorithmic}\small
        \State {At iteration $i$ s.t $i \geq 1$}
        \State $X_{i} \sim g(X_{i})$ 
@@ -282,7 +284,29 @@ The standard algorithm is defined as follows:
 \end{algorithmic}
 \end{algorithm}
 
-As useful rejection sampling is, it has many short comings. 
+but more generally speaking we can write a rejection sampler as follows:
+\begin{algorithm}
+  \label{alg:rsstats}
+  \small
+   \caption{Simulator: Rejection Sampling}
+    \begin{algorithmic}\small
+       \State {At iteration $i$ s.t $i \geq 1$}
+       \State $X_{i} \sim p(x)$ 
+       \State $\mathbb{I}(g(x) > 0)$
+       \State $ Y \sim p(X=x | \mathbb{I}(g(x) > 0))$
+       \State accept $X_i$ with $p(\mathbb{I}(g(x) > 0))$
+\end{algorithmic}
+\end{algorithm}
+Thus, the probability of generating a sample $X = x$ from the true distribution can be defined, using Bayes rule, 
+as: 
+\begin{equation}
+  p(X=x| \mathbb{I}) = \frac{p(\mathbb{I} | X=x)p(X=x)}{p(\mathbb{I})} 
+\end{equation}
+where $p(\mathbb{I} | X=x) = \{0,1\}$.
+
+
+
+  As useful rejection sampling is, it has many short comings. 
 In particular, to simulate proposals for certain distributions,
 such as truncated normal distributions, regardless of the easy to sample from proposal
 chosen the computational running time of such rejection statements can be shown to have an
@@ -352,6 +376,15 @@ def $R_2(z_2, z_3)$:
   end
   return $y$
 \end{lstlisting}\\
+% \begin{lstlisting}[mathescape=true]
+%   def $R_3(z_4)$:
+%     $y \sim \mathcal{U}(0,1)$
+%     $x \sim \mathcal{U}(0,1.5)$
+%     while $y < z_2$:
+%       $y \sim \mathcal{N}(z_3,1)$
+%     end
+%     return $y$
+%   \end{lstlisting}\\
 \hline
 $P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z_{2},z_{3})$ \\
 \hline
@@ -407,11 +440,23 @@ can efficiently sample from, we must correctly specify our variational objective
 
 \subsection{Constructing the Objective}
 
-The framework we present in this section is generally applicable to stochastic simulator 
-environment, where there exists rejection sampling loops. 
+The framework we present in this section is generally applicable to any stochastic simulator 
+environment, where there exists any form of rejection sampling blocks.
+To perform the inferences that we require, we construct a variational approximation of the rejection sampling 
+blocks via an amortization procedure
+and note that the variational approximation in the context of our setting is specified by three things:
+\begin{enumerate}
+  \itemsep0em 
+  \item Makes use of existing parts of the outer program including all deterministic operations.
+  \item Form of the $\gamma_{a_j}(x_j ; \eta_{a_j}, \psi_j) \forall a_j \in S_r$. 
+  \item There exists variational parameters $\eta_{a_j} \forall a_j \in S_r$.
+\end{enumerate}
+where $a_j \in \{1, \ldots, L\}$ corresponds to the set of all addresses, $S_r$ denotes the set of addresses $a_j$ that correspond directly to the locations 
+of the rejection sampling blocks, that is $a_j \cup S_r = \{1, \ldots, L\}$, $\gamma_{a_j}$ denotes the variational approximation at address $a_j$, 
+for example, $\gamma_{a_j} = \mathcal{N}(x_j ; \mu_{a_j}(\psi_j; \eta_{a_j}), \Sigma_{a_j}(\psi_j ; \eta_{a_j}))$, with $\eta_{a_j}$ representing the variational
+parameters and $\psi_j$ representing all variables that input into the given program. 
 
-We start by noting that the prior, defined in the context of the outer samples is 
-defined as: 
+We start by noting that the prior, defined in the context of the outer samples is defined as: 
 \begin{equation}
   p(x) = 
   \begin{cases}
@@ -419,9 +464,20 @@ defined as:
     0
   \end{cases}
 \end{equation}
-We start with the information projection we construct the variational objective as follows:
+next, we state for a given program $\mathcal{P}$ we denote the proposal for the program as:
+\begin{equation}
+  q(\mathbf{x}; \kappa) = 
+  \begin{cases}
+  \prod^{n_x}_{j=1, j\notin S_{r}} f_{a_j}(x_j ; \psi_j)(\prod^{n_x}_{j=1, j \in S_{r}} \gamma_{a_j}(x_j; \eta_{a_j}, \psi_{j})) \texttt{ if } \mathcal{B}(x_{1:n_{x}} = 1)\\
+  0
+  \end{cases}
+\end{equation}
+where $\kappa = \{\eta_{a_j} ; a_j \in S_{r}\}$ are the variational parameters.
+As we now have the density of the proposal and the density of the program we can construct a variational objective as follows:
+
+using the information projection we construct the variational objective as follows:
 \begin{align*}
-  J(\eta) = KL(p(x) || q(x; \eta)) \\
+  J(\eta) = KL(p(x) || q(x; \kappa)) \\
    = \int p(x)\ln\left(\frac{p(x)}{q(x;\eta)}\right) dx \\
   %  \int p(x')dx' \gets 1 \\
   %  &= \mathbb{E}_{p(x)}[\ln(p(x))]  - \mathbb{E}_{p(x)}[\ln(q(x;\eta))]\\
@@ -429,14 +485,22 @@ We start with the information projection we construct the variational objective 
   %  &= -\mathbb{E}_{p(x)}[\ln(q(x;\eta))] \\
   %  &= -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\ln(q_{a_j}(x_j;\eta))] \\
    \text{Let } a_{j} \in \{1, \ldots, L\} , S_{R} \subset \{1, \ldots, L\} \\
-   = \cancelto{\text{no dependence on } \eta}{\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \notin S_{R}}\ln(p(x))]}-\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \in S_{R}}\ln(q_{a_j}(x_j;\eta))]\\
+   \kappa^{*} = \operatorname*{argmin}_{\kappa} \mathbb{E}_{X \sim p(x)}[-\log(q(X=x; \kappa))] \\
+   = \operatorname*{argmax}_{\kappa} \mathbb{E}_{X \sim p(x)}[\sum^{n_x}_{j=1, j \in S_r} \log( \gamma_{a_j}(X_j = x_j ; \eta_{a_j}, \psi_j))] \\
+   \forall r \in S_r, \eta^{*}_r = \operatorname*{argmax}_{r} \mathbb{E}_{x \sim p(x)}[\sum^{n_x}_{j=1}\mathbb{I}(a_j =r) \log(\gamma_r (X_j = x_j ; \eta_r, \psi_j))] \\
+   \nabla_{\kappa} J(\kappa) = \nabla_{\kappa} \mathbb{E}_{X \sim p(x)}[\sum^{n_x}_{j=1}\mathbb{I}(a_j =r) \log(\gamma_r (X_j = x_j ; \eta_r, \psi_j))] \\
+   = \mathbb{E}_{X \sim p(x)}[ \sum^{n_x}_{j=1, j \in S_r} \nabla_\kappa \log(\gamma_r (X_j = x_j ; \eta_r, \psi_j)]\\
+   \approx \frac{1}{N} \sum^{N}_{n=1} \sum^{n_x}_{j=1, j\in S_r} \nabla_{\kappa}\log(\gamma_r (x^{n}_j ; \eta_r, \psi_j))
+  %  = \cancelto{\text{no dependence on } \eta}{\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \notin S_{R}}\ln(p(x))]}-\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1,a_j \in S_{R}}\ln(q_{a_j}(x_j;\eta))]\\
 \end{align*}
-
-Thus, to define the objective for each subproblem $r  \in S_{R}$ as:
+ 
+Thus, to define the objective for each subproblem $r  \in S_{r}$ as:
 \begin{equation}
   \label{eq:objective}
-  J_{r}(\eta_r) = -\mathbb{E}_{p(x)}[\sum^{n_x}_{j=1}\mathbb{I}(a_j = r)\ln(q_r(x_j;\eta_r, \phi_j))]
+  \nabla_{\eta_r} J(\kappa) \approx \frac{1}{N} \sum^{N}_{n=1} \sum^{n_x}_{j=1} \mathbb{I}(r=a_j) \nabla_{\eta_r}\log(\gamma_r (x^{n}_j ; \eta_r, \psi_j))
 \end{equation}
+
+where $x^{n}_{1:n_x} \stackrel{iid}\sim p(x)$. 
 
 where during training we extract samples from each forward run and train each rejection sampler
 separately. 
@@ -578,8 +642,8 @@ We can do this by using self normalized importance sampling on the inner program
 
 The likelihood is just a $\{0,1\}$ likelihood, ie Bernoulli. 
 
-\subsection{Method 3: Learn marginal likelihood $p(\cdot)$ approximation}
-
+\subsection{Method 3: Learn marginal likelihood approximation}
+With $ p(\cdot)$ representing the marginal likelihood. 
 \begin{equation}
   p(x) = 
   \begin{cases}
