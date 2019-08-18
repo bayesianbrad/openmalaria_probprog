@@ -347,9 +347,9 @@ and two types of rejection sampler:
 
 
 \noindent
-\begin{tabular}{|p{3.6cm}|p{3.6cm}|p{3.6cm}|}
+\begin{tabular}{|p{3.6cm}|p{3.6cm}|p{3.6cm}|p{3.6cm}|}
 \hline
-Stochastic Simulator  & Rejection Sampler 1 & Rejection Sampler 2 \\
+Stochastic Simulator  &  R1 & R2 & R3 \\
 \hline
 \begin{lstlisting}[mathescape=true]
     def f():
@@ -357,6 +357,7 @@ Stochastic Simulator  & Rejection Sampler 1 & Rejection Sampler 2 \\
       $z_{2} \gets R_{1}(z_1, 1)$
       $z_{3} \sim \mathcal{U}(0,2)$
       $z_{4} \gets R_{2}(z_2,z_3, 1)$
+      $z_{5} \sim R_{3}(z_4, 1)$
     return $g(z_{1:4})$
 \end{lstlisting}&
 \begin{lstlisting}[mathescape=true]
@@ -374,18 +375,21 @@ def $R_2(z_2, z_3)$:
     $y \sim \mathcal{N}(z_3,1)$
   end
   return $y$
+\end{lstlisting}&
+\begin{lstlisting}[mathescape=true]
+def $R_3(z_4)$:
+  $f(x) = \mathcal{N}(30,10^2) +$
+  $\mathcal{N}(80,20^2)$
+  $g(x) = \mathcal{N}(50,30^2)$
+  $y \sim \mathcal{N}(50,30^2)$
+  $u \sim \mathcal{U}(0,1.5)$
+  if $u \leq f(y)$:
+    return $y$
+  else:
+    return $R_3(z_4)$
 \end{lstlisting}\\
-% \begin{lstlisting}[mathescape=true]
-%   def $R_3(z_4)$:
-%     $y \sim \mathcal{U}(0,1)$
-%     $x \sim \mathcal{U}(0,1.5)$
-%     while $y < z_2$:
-%       $y \sim \mathcal{N}(z_3,1)$
-%     end
-%     return $y$
-%   \end{lstlisting}\\
 \hline
-$P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z_{2},z_{3})$ \\
+$P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z_{2},z_{3})$ & $q(z_5 |z_4 )$ \\
 \hline
 \end{tabular} 
 
@@ -412,7 +416,7 @@ return y
 \end{align*}
 thus the density of $y,\theta \propto q(\theta) \alpha$.
 However, in order to do construct this we need the input $\theta$, $y$, $\alpha$ and the distributions utilised for the rejection sampling loop. 
-For any arbitrary simulator, written in a generic code base, this is an incredibly hard 
+For any rejection sampling block, written in a generic code base, not in the form of R3, this is an incredibly hard 
 task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template
 \textbf{Add examples in a supplement.  Need to demonstrate to YW that this is challenging to do, even if you know where 
 the rejection sampling loops are. Hypothesis, RS loops are not written in a templated form}. With the PPX protocols previously developed in \cite{baydin2018efficient,gram2019hijacking} we can however, 
@@ -901,7 +905,7 @@ the log evidence as a function of $\theta$ is in general a difficult non-convex 
 In addition to finding the parameters $\theta$ we also require the posterior over
 the latent variables $z$:
 \begin{equation}
-  p_{\theta_{\text{max$\backslash$min}}}(z|x) \frac{p_{\theta}(x,z)}{\int dz p_{\theta_{\text{max$\backslash$min}}}(x,z)} 
+  p_{\theta_{\text{max$\backslash$min}}}(z|x) =  \frac{p_{\theta}(x,z)}{\int dz p_{\theta_{\text{max$\backslash$min}}}(x,z)} 
 \end{equation}
 
 To this in the variational inference setting we learn an approximation to $p_{\theta_{\text{max$\backslash$min}}}(z|x)$
