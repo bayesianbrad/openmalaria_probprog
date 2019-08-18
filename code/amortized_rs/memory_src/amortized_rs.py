@@ -28,8 +28,9 @@ import math
 import numpy as np
 import torch
 from torch.distributions import Normal, Uniform
+import scipy.stats as ss
 
-def f():
+def s():
     z1 = Normal(0,1).sample()
     ctr = 1
     z2 = R1(z1)
@@ -64,9 +65,43 @@ def R1(z1, i=0):
             return math.inf
         i += bs
 
+
+def f(x):
+    return ss.norm(30, 10).pdf(x) + ss.norm(80,20).pdf(x)
+
+
+def g(x):
+    return ss.norm(50, 30).pdf(x)
+
+
+x = np.arange(-50, 151)
+k = max(f(x) / g(x))
+
+
+def R3(iter=1000):
+    samples = []
+
+    for i in range(iter):
+        y = np.random.normal(50, 30)
+        u = np.random.uniform(0, k*g(y))
+
+        if u <= f(y):
+            samples.append(y)
+
+    return np.array(samples)
+
+
+# def plotR3(x)
+#     plt.plot(x, f(x))
+#     plt.plot(x, k*g(x))
+#     plt.show()
+#
+#     s = R3(iter=100000)
+#     sns.distplot(s)
+
 import timeit
 torch.manual_seed(7)
-print(f())
+print(s())
 print(timeit.timeit("f()", setup="from __main__ import f", number=2000))
 
 amortized_rs_std = load(name="amortized_rs_std",
