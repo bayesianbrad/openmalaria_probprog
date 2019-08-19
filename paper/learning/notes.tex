@@ -357,8 +357,9 @@ Stochastic Simulator  &  R1 & R2 & R3 \\
       $z_{2} \gets R_{1}(z_1, 1)$
       $z_{3} \sim \mathcal{U}(0,2)$
       $z_{4} \gets R_{2}(z_2,z_3, 1)$
-      $z_{5} \sim R_{3}(z_4, 1)$
-    return $g(z_{1:4})$
+      $z_{5} \sim \mathcal{U}(50,30^2)$
+      $z_{6} \sim R_{3}(z_5, 1)$
+    return $g(z_{1:6})$
 \end{lstlisting}&
 \begin{lstlisting}[mathescape=true]
 def $R_1(z_1)$:
@@ -377,19 +378,18 @@ def $R_2(z_2, z_3)$:
   return $y$
 \end{lstlisting}&
 \begin{lstlisting}[mathescape=true]
-def $R_3(z_4)$:
+def $R_3(z_5)$:
   $f(x) = \mathcal{N}(30,10^2) +$
   $\mathcal{N}(80,20^2)$
   $g(x) = \mathcal{N}(50,30^2)$
-  $y \sim \mathcal{N}(50,30^2)$
-  $u \sim \mathcal{U}(0,1.5)$
-  if $u \leq f(y)$:
-    return $y$
+  $u \sim \mathcal{U}(0,M*g(z_5))$
+  if $u \leq f(z_5)$:
+    return $z_5$
   else:
-    return $R_3(z_4)$
+    return $R_3(z_5)$
 \end{lstlisting}\\
 \hline
-$P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z_{2},z_{3})$ & $q(z_5 |z_4 )$ \\
+$P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z_{2},z_{3})$ & $q(z_5)$ \\
 \hline
 \end{tabular} 
 
@@ -397,39 +397,40 @@ Here the rejection sampling functions take an additional argument $1$, or $0$,
 to specify whether or not we want to collect samples to train, $1$, else replace with 
 the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
 the unknown densities that we wish to learn through an amortized approach.
-It is important to note that the expected running time of the rejection sampler is expected to geometric mean, we can show this as follows:
-\textbf{Bradley:  You only arrive at this, if the density is uniform}
-\begin{align*}
-P( X= x) = \sum^{\infty}_{n=1} P(\text{reject $n-1$ times}, \text{draw} Y = x) \\
-\text{todo} 
-\end{align*}
+% It is important to note that the expected running time of the rejection sampler is expected to geometric mean, we can show this as follows:
+% \textbf{Bradley:  You only arrive at this, if the density is uniform} i.e R3
+% \begin{align*}
+% P( X= x) = \sum^{\infty}_{n=1} P(\text{reject $n-1$ times}, \text{draw} Y = x) \\
+% \text{todo} 
+% \end{align*}
 
-In addition to this, if we have direct access to a rejection sampling loop then it is indeed 
+If we have direct access to a rejection sampling loop then it is indeed 
 possible to construct the density, up to a constant of proportionality. 
 That is:
 \begin{align*}
-y \sim q(\theta) \\
+z \sim g(\theta) \\
 do something \\
-\alpha = p_{accept}(y,\theta) \\
+\alpha = p_{accept}(z,\theta) \\
 \mathtt{if} Bern(\alpha) = 1: \\
-return y
+return z
 \end{align*}
 thus the density of $y,\theta \propto q(\theta) \alpha$.
 However, in order to do construct this we need the input $\theta$, $y$, $\alpha$ and the distributions utilised for the rejection sampling loop. 
 For any rejection sampling block, written in a generic code base, not in the form of R3, this is an incredibly hard 
-task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template
+task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template such as R1 and R2. 
 \textbf{Add examples in a supplement.  Need to demonstrate to YW that this is challenging to do, even if you know where 
-the rejection sampling loops are. Hypothesis, RS loops are not written in a templated form}. With the PPX protocols previously developed in \cite{baydin2018efficient,gram2019hijacking} we can however, 
+the rejection sampling loops are. Hypothesis, RS loops are not written in a templated form}.
+y leveraging the PPX protocols previously developed in \cite{baydin2018efficient,gram2019hijacking} we can however, 
 extract all variables, other than $\alpha$ in an automated way.
 However, without being able to easily extract $\alpha$ this means that we are unable to 
-correctly build the form of the density and thus we limited in our ability to leverage 
+correctly build the form of the density and thus are limited in our ability to leverage 
 powerful inference methods such as MCMC and Variational inference.
-Thus, we propose another approach, automating the amortization of rejection sampling loops. 
-To learn functions that we can easily sample from and use to construct the density of the entire
+Thus, we propose another approach, automating the amortization of rejection sampling loops of type R1, R2 and R3. 
+This enables us to learn functions that we can easily sample from and via the amortization process construct the density of the entire
 simulator. 
 
 
-The simulated densities for both each rejection sampling block can be seen in Figure~\ref{fig:rs_simulated}.
+The simulated densities for the rejection sampling block can be seen in Figure~\ref{fig:rs_simulated}.
 \begin{figure}
   \centering
   \includegraphics[width=0.2\textwidth, height=0.2\textheight, keepaspectratio]{rs_plots.png}
