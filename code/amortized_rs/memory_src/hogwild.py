@@ -60,7 +60,7 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
     for i in range(N):
             inData, outData, count =get_batch(data_flag, batch_size, count)
             proposal = dist.Normal(*model(inData))
-            pred = proposal.rsample(sample_shape=[batch_size]).view(1,batch_size)
+            pred = proposal.rsample(sample_shape=[batch_size]).view(1,batch_size))
             optimizer.zero_grad()
             plt.show()
             _loss = loss_fn(outData, pred)
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     lr = 0.0001
     momentum= 0.9
     load_data=False
-    batch_size = 2**13
+    batch_size = 2**10
     data_flag= 'R1'
     outputSize = 1
     # outputSize = 128 # for R1 and R2
@@ -143,18 +143,18 @@ if __name__ == '__main__':
     loss_fn = th.nn.MSELoss()
     # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=0.01)
-    # train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
+    train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
-    if trainOn:
-        model.share_memory()
-        processes = []
-        for rank in range(num_processes):
-            p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
-            p.start()
-            processes.append(p)
-        for p in processes:
-            p.join()
-    testOn = False
+    # if trainOn:
+    #     model.share_memory()
+    #     processes = []
+    #     for rank in range(num_processes):
+    #         p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
+    #         p.start()
+    #         processes.append(p)
+    #     for p in processes:
+    #         p.join()
+    # testOn = False
     if testOn:
         model_name = 'model_2019-08-12_09-35_rejectionBlock_R2_process_8'
         n_test = 1000

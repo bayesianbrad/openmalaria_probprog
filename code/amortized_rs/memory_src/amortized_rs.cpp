@@ -30,6 +30,7 @@ at::Tensor f(void) {
   //std::cout << ctr;
   Scalar z_3 = at::empty({1}, kFloat).uniform_(0,2).item();
   Scalar z_4 = R2(z_2, z_3);
+  Scalar z_5 = R3(z_4);
   //std::cout << z_1 << "|" << z_2 << "|" << z_3 << "|" << z_4;
   //float data[] = {z_1.to<float>(), z_2.to<float>(), z_3.to<float>(), z_4.to<float>()};
   auto ret = torch::empty({4}, kFloat);
@@ -72,7 +73,6 @@ Scalar R2(Scalar z_2, Scalar z_3) {
     }
     return temp;
 }
-
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("f", &f, "f");

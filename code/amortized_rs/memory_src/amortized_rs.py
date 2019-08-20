@@ -49,7 +49,7 @@ def s():
     z4 = R2(z2,z3)
     z5 = Normal(50,30).sample()
     M = torch.tensor(3.0337) # determined via x = torch.linsapce(-50.0,151.0, nsamples); torch.max(f(x)/g(x))
-    z6, gz, fz = R3(z5,M)
+    z6 = R3(z5,M)
     while z6 == math.inf:
         # we resample again to increase chance of acceptance.
         # This does not change acceptance probabilities. This is just for
@@ -109,23 +109,6 @@ def R1(z1, i=0):
             return math.inf
         i += bs
 
-
-def f(x, mu1, sigma1, mu2, sigma2):
-    return 1 / (2*np.pi*sigma1**2)**0.5 * torch.exp(-(x-mu1)**2 / 2*sigma1**2)  + 1 / (2*np.pi*sigma2**2)**0.5 * torch.exp(-(x-mu2)**2 / 2*sigma2**2)
-
-def g(x,mu1, sigma1):
-    return 1 / (2 * np.pi * sigma1 ** 2) ** 0.5 * torch.exp(-(x - mu1) ** 2 / 2 * sigma1 ** 2)
-
-def R3(z5):
-    k = max(f(z5,30,10,80,20)/g(z5,50,30))
-    u = Uniform(0, k*g(z5, 50,30)).item()
-    x = True
-    while x:
-        if u <= f(z5, 30, 10, 80, 20).item():
-            x = False
-        else:
-            continue
-    return z5
 
 
 # def plotR3(x)
