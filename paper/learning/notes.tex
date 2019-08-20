@@ -252,7 +252,7 @@ sample from, but can evaluate.
 We then define a proposal using a random variable $Z$, whose density is $g(z)$  that we can efficiently
 sample from.
 Where the two methods diverge is in how the acceptance probability is defined and how the samples are generated.
-In the standard statistical setting, see algorithm~\ref{alg:rsstats}, we generate a sample $X$ by sampling $Z$ and accept $Z$ with probability
+In the standard statistical setting, see Algorithm~\ref{alg:rsstats}, we generate a sample $X$ by sampling $Z$ and accept $Z$ with probability
 $p_{accept} = \frac{f(x)}{Mg(x)}$, which we can do until acceptance. 
 Here $M$ is a constant that has a finite bound, $M \in (1, \infty)$ and the likelihood ratio $\frac{f(x)}{g(x)}$ is defined over the 
 support of $X$. 
@@ -268,9 +268,9 @@ But, provided we can calculate $P_{\text{accept}}(\mathcal{D} \leq \mathcal{C})$
  need not take this form and arise in many nested structures within probabilistic programs~\cite{rainforth2018nesting} and simulators~\cite{smith2008towards,bershteyn2018implementation,gleisberg2009event}.
  More generally speaking we can write a rejection sampler in the form of Algorithm~\ref{alg:rssim}
 \begin{algorithm}
-  \label{alg:rsstats}
   \small
    \caption{ABC: Rejection Sampling}
+   \label{alg:rsstats}
     \begin{algorithmic}\small
        \State {At iteration $i$ s.t $i \geq 1$}
        \State $X_{i} \sim g(X_{i})$ 
@@ -285,9 +285,9 @@ But, provided we can calculate $P_{\text{accept}}(\mathcal{D} \leq \mathcal{C})$
 
 
 \begin{algorithm}
-  \label{alg:rssim}
   \small
    \caption{Simulator: Rejection Sampling}
+   \label{alg:rssim}
     \begin{algorithmic}\small
        \State {At iteration $i$ s.t $i \geq 1$}
        \State $X_{i} \sim p(x)$ 
@@ -393,6 +393,7 @@ $P(\mathcal{T}= x_{1:n_x} | \lambda)$ & $q_{1}(z_{2} | z_{1})$ & $q_{2}(z_{4} |z
 \hline
 \end{tabular} 
 
+
 Here the rejection sampling functions take an additional argument $1$, or $0$,
 to specify whether or not we want to collect samples to train, $1$, else replace with 
 the learnt function, $0$. $P$ represents the program density and $q_{1}$ and $q_{2}$ represents 
@@ -417,7 +418,7 @@ return z
 thus the density of $y,\theta \propto q(\theta) \alpha$.
 However, in order to do construct this we need the input $\theta$, $y$, $\alpha$ and the distributions utilised for the rejection sampling loop. 
 For any rejection sampling block, written in a generic code base, not in the form of R3, this is an incredibly hard 
-task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template such as R1 and R2. 
+task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template. 
 \textbf{Add examples in a supplement.  Need to demonstrate to YW that this is challenging to do, even if you know where 
 the rejection sampling loops are. Hypothesis, RS loops are not written in a templated form}.
 y leveraging the PPX protocols previously developed in \cite{baydin2018efficient,gram2019hijacking} we can however, 
@@ -432,12 +433,19 @@ simulator.
 
 The simulated densities for the rejection sampling block can be seen in Figure~\ref{fig:rs_simulated}.
 \begin{figure}
-  \centering
-  \includegraphics[width=0.2\textwidth, height=0.2\textheight, keepaspectratio]{rs_plots.png}
-  \caption{ Simulated densities for rejection sampling block 1, \emph{blue} and rejection
-  sampling block 2, \emph{orange}.}
   \label{fig:rs_simulated}
-\end{figure}
+  \centering
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth, height=0.6\textheight, keepaspectratio]{rs_plots.png}
+  \end{minipage}%
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \includegraphics[width=0.6\textwidth, height=0.6\textheight, keepaspectratio]{rs3_plot.png}
+  \end{minipage}
+  \caption{ Simulated densities for rejection sampling block 1, \emph{blue} and rejection
+  sampling block 2, \emph{orange} and rejection sampling block 3, \emph{red}.}
+ \end{figure}
 
 In order to replace such rejection sampling blocks with learnt functions that we 
 can efficiently sample from, we must correctly specify our variational objective.
@@ -549,7 +557,9 @@ Once learned we can then efficiently sample from the parameterized normal distri
 represents the density of the sub-program represented by $R1$. 
 This is then replaced in the simulator, during inference time. 
 
-\paragraph{observations} As the functions are relatively simple the loss functions it gets t
+\paragraph{observations} 
+Using a standard $L2$-loss function $L_{2} = (y_{pred} - y_{true})^{2}$
+As the functions are relatively simple the loss functions it gets t
 to a loss of around 0.6 and stops decreasing. Although, this seems low, I don't think that it is
 actually good, because that would mean on average, for each data point there is a loss of $\pm$ 0.6
 which per data point is quite bad. That may be for a number of reasons, using MSE loss, using a simple

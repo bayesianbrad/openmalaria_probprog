@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: notes.aux
+The style file: plain.bst
+Database file #1: refs.bib
+Warning--can't use both author and editor fields in casella
+You've used 24 entries,
+            2118 wiz_defined-function locations,
+            645 strings with 9298 characters,
+and the built_in function-call counts, 9272 in all, are:
+= -- 853
+> -- 642
+< -- 3
++ -- 256
+- -- 230
+* -- 765
+:= -- 1637
+add.period$ -- 72
+call.type$ -- 24
+change.case$ -- 181
+chr.to.int$ -- 0
+cite$ -- 25
+duplicate$ -- 279
+empty$ -- 566
+format.name$ -- 230
+if$ -- 1818
+int.to.chr$ -- 0
+int.to.str$ -- 24
+missing$ -- 24
+newline$ -- 123
+num.names$ -- 48
+pop$ -- 163
+preamble$ -- 1
+purify$ -- 159
+quote$ -- 0
+skip$ -- 198
+stack$ -- 0
+substring$ -- 447
+swap$ -- 48
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 94
+warning$ -- 1
+while$ -- 73
+width$ -- 26
+write$ -- 259
+(There was 1 warning)
