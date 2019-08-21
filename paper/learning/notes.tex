@@ -305,20 +305,39 @@ as:
 \end{equation}
 where $p(\mathbb{I} | X=x) = \{0,1\}$.
 
+However, in many of the non-standard ABC forms of the rejection samplers, the acceptance 
+probability is completely intractable, or is very difficult to calculate. 
+Thus, as useful rejection sampling is for generating samples from densities that we 
+would not be able to sample from, it has many short comings. 
+These are of course well known and it is the reason for developing more sophisticated 
+sampling schemes, such as importance sampling based methods.
+However, in the setting of such complex simulators, written over many years and
+in convoluted code bases, there is no easy way to re-implement such sampling 
+schemes.
+Hence, to leverage existing frameworks we can make use of the probabilistic 
+programming executation (PPX) protocols~\cite{baydin2018efficient}. 
+These protocols allow one to exact all raw sample calls $f_{a_j}$ from the
+simulator. This then enables one to easily construct a prior for the full program
+$P(\mathcal{T} = x_{1:n_{x}}| \lambda)$. 
+In addition to this, once such rejection schemes, \emph{nested programs}, are located, we have a number of 
+primatives that we can leverage to isolate calls to those addresses during training, to collect the samples generated during 
+\texttt{.forward()} runs of the simulator, 
+and during the inference procedure replace calls to those addresses $a_j$ with a
+learnt proposal $\gamma_{a_j}(x_j ; \eta_{a_j}, \phi_j ) $. 
 
-
-  As useful rejection sampling is, it has many short comings. 
-In particular, to simulate proposals for certain distributions,
-such as truncated normal distributions, regardless of the easy to sample from proposal
-chosen the computational running time of such rejection statements can be shown to have an
-expectation equal to infinity. \textbf{Bradley: Is this true?}
+% In particular, to simulate proposals for certain distributions,
+% such as truncated normal distributions, it can be very difficult to
+% hand-craft a proposal such that the acceptance rate.
 
 Thus, the ability to learn and replace such rejection
 sampling blocks with learnt surrogate functions, that are expressive enough to 
-reciprocate the behavior of the rejection sampling block buys the user two things. 
-A) It reduces the computational complexity of the simulator. 
-B) As we now have a direct functional form of the density, we can correctly leverage
-more computationally and sample efficient inference schemes. 
+reciprocate the behavior of the rejection sampling block provides the user with three things. 
+\begin{itemize}
+  \item It reduces the computational complexity of the simulator.  
+  \item As we now have a direct functional form of the density, we can correctly leverage more computationally and sample efficient inference schemes. 
+  \item By only amortizing sub-programs and not amortizing the whole simulator, the larger structure of the simulator remains interpretable, in the sense that we can 
+  still decode the decisions that it is making.  
+\end{itemize}
 
 \begin{figure}
   % \begin{minipage}[c]{0.67\textwidth}
@@ -337,24 +356,31 @@ more computationally and sample efficient inference schemes.
 \end{figure}
 
 
-We do this by replacing the rejection sampling blocks with 
-learnt functions from an amortized inference procedure Figure~\ref{fig:amortized_sampling}.
-This then enables us to replace rejection sampling loops with amortized functions that 
-are quick to evaluate, provide a functional form to the density and significantly reduce 
-memory over-heads, as compared to~\cite{baydin2018efficient}, due to not having to track the 
-thousands of raw sample calls $f_{a_i}$ generated in standard simulators. 
+% We do this by replacing the rejection sampling blocks with 
+% learnt functions from an amortized inference procedure Figure~\ref{fig:amortized_sampling}.
+% This then enables us to replace rejection sampling loops with amortized functions that 
+% are quick to evaluate, provide a functional form to the density and significantly reduce 
+% memory over-heads, as compared to~\cite{baydin2018efficient}, due to not having to track the 
+% thousands of raw sample calls $f_{a_i}$ generated in standard simulators. 
 
+\section{A Stochastic Simulator}
+
+In this section, we present a simple stochastic simulator and povide 
+examples of the rejection blocks found within standard stochastic
+simulators~\cite{smith2008towards,bershteyn2018implementation, gleisberg2009event}. 
+This simulator will form the basis for our experiemnts in Section~\ref{sec:experiments}.
 Consider the following program, that is representative of a simple stochastic simulator
 and two types of rejection sampler:
 
 
 \noindent
 \begin{tabular}{|p{3.6cm}|p{3.6cm}|p{3.6cm}|p{3.6cm}|}
+
 \hline
 Stochastic Simulator  &  R1 & R2 & R3 \\
 \hline
 \begin{lstlisting}[mathescape=true]
-    def f():
+    def s():
       $z_{1} \sim \mathcal{N}(0,1)$
       $z_{2} \gets R_{1}(z_1, 1)$
       $z_{3} \sim \mathcal{U}(0,2)$
@@ -409,25 +435,25 @@ the unknown densities that we wish to learn through an amortized approach.
 
 If we have direct access to a rejection sampling loop then it is indeed 
 possible to construct the density, up to a constant of proportionality. 
-That is:
-\begin{align*}
-z \sim g(\theta) \\
-do something \\
-\alpha = p_{accept}(z,\theta) \\
-\mathtt{if} Bern(\alpha) = 1: \\
-return z
-\end{align*}
-thus the density of $y,\theta \propto q(\theta) \alpha$.
-However, in order to do construct this we need the input $\theta$, $y$, $\alpha$ and the distributions utilised for the rejection sampling loop. 
+% That is:
+% \begin{align*}
+% z \sim g(\theta) \\
+% do something \\
+% \alpha = p_{accept}(z,\theta) \\
+% \mathtt{if} Bern(\alpha) = 1: \\
+% return z
+% \end{align*}
+ $x,z \propto f(\theta) p(accept)$.
+However, in order to do construct this we need the input $z$, the sample from the proposal $x$ and $p(accept)$ (should use the notation above).
 For any rejection sampling block, written in a generic code base, not in the form of R3, this is an incredibly hard 
 task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template. 
 \textbf{Add examples in a supplement.  Need to demonstrate to YW that this is challenging to do, even if you know where 
 the rejection sampling loops are. Hypothesis, RS loops are not written in a templated form}.
 y leveraging the PPX protocols previously developed in \cite{baydin2018efficient,gram2019hijacking} we can however, 
-extract all variables, other than $\alpha$ in an automated way.
-However, without being able to easily extract $\alpha$ this means that we are unable to 
+extract all variables, other than $P(accept)$ in an automated way.
+As without being able to easily extract $p(accept)$ this means that we are unable to 
 correctly build the form of the density and thus are limited in our ability to leverage 
-powerful inference methods such as MCMC and Variational inference.
+powerful inference methods such as MCMC and Variational methods.
 Thus, we propose another approach, automating the amortization of rejection sampling loops of type R1, R2 and R3. 
 This enables us to learn functions that we can easily sample from and via the amortization process construct the density of the entire
 simulator. 
@@ -474,7 +500,7 @@ We start by noting that the prior, defined in the context of the outer samples i
 \begin{equation}
   p(x) = 
   \begin{cases}
-    \prod^{n_{x}}_{j=1} f_{a_j}(x_j ; \psi_j) if \mathcal{B}(x) = 1 \\
+    \prod^{n_{x}}_{j=1} f_{a_j}(x_j ; \psi_j) \texttt{ if } \mathcal{B}(x) = 1 \\
     0
   \end{cases}
 \end{equation}
@@ -521,7 +547,7 @@ separately.
 
 
 \section{Experiments: Amortizing Stochastic Processes}
-
+\label{sec:experiments}
 \paragraph{TODO list}
 \begin{itemize}
   \item Implement baselines
@@ -542,6 +568,9 @@ we can calculate the true density up to a constant of proportionality.
 YW today. 
 
 \subsection{Baseline}
+For gif plots see the plots folder in code$\backslash$amortized\_rs$\backslash$plots 
+
+
 As a first approach, we train a regressor to learn a function to map
 between the input / output pairs that are outputted from the rejection
 sampling blocks with in the simulator. 
@@ -634,14 +663,40 @@ However, to utilise powerful inference engines, we must be able to construct the
 full density of the program. 
 
 
+\section{The difference between this paper and Inference compilation paper}
 
+The main fundemental difference is that IC cares about the full global program, 
+we only care about the local (sub / nested programs). 
+
+We are not interesting in calculating the weights $w^k$ since the method that we 
+develop here is applicable to any inference scheme, in theory. 
+
+In the IC paper you are approximating $p(x|y)$ the \emph{the global} program, where 
+as you can view this work as learning an approximation for the \emph{local}, sub-programs
+$P^{in}(x|\nu)$ where the nuissince parameters in this paper are represented by $\psi$.
+
+
+In the notation of the inference compilation paper we essentailly learn $q_{a_{t},i_{t}}(x_t| x_{1:t-1}, y)$
+where the indicies are part of the set $S_r$.
+ The difference here though, is that we only care about the input at that address, your proposals 
+ are condiitoning on everything upto that point of the executation trace $\mathcal{T}$
+ in the simulator. 
+ The training data represented by (11) in the IC paper is not the training data we use in this paper,
+ we only care about the $x^{m}_t$ or $z$'s and $x$'s in this paper (notation is not entirely consitant throuhg out this paper yet)
+ But these are the parameters that are generated from raw sample calls within side the RS loop $f_{a_i \in S_r}(\cdot))$.
+
+Thus the density of the full joint of the program in this setting is given as:
+\begin{equation}
+  p(x,y) = \prod_{t=1, t \notin S_r} f_{a_t}(x_t | \psi_t) \prod_{n=1} g_{b_n}(y_n | \phi) \prod_{h=1}\gamma_{a_j \in S_r}(\cdot)
+\end{equation}
 \section{Friday morning}
 The subprograms within the simulator should be treated as nested probabilistic programs. 
 
 There are three ways we can do these things, rather than just an amortization
 
-\subsection{Method 1: Learn the}
-$\gamma_{a_{j}}(\cdot ; \eta_{a_{j}}, \cdot)$
+\subsection{Method 1: Learn the maoritzation of the sub-programs}
+That is learn $\gamma_{a_{j}}(\cdot ; \eta_{a_{j}}, \cdot)$ for each program in the set $S_r$. 
+
 
 As per we are currently planning. Relies on generating exact samples, which 
 we have access due to the rejection sampling loops.
@@ -670,14 +725,31 @@ With $ p(\cdot)$ representing the marginal likelihood.
 The normalising constant inside (in) the rejection sampler is intractable. 
 
 The things inside of the rejection sampler are proportional to the following:
-% \begin{equation}
-%   \begin{cases}
-%   \end{cases}
-% \end{equation}
+\begin{equation}
+  P_{a_j}^{in}(x_j ; \phi_j) \propto
+  \begin{cases}
+  \prod^{n^{z}_{a_j}} f^{in}_{i}(z_{ij} | \theta_i) \prod_{k=1}^{n^{y}_{b_k}}g^{in}_{k}(y_i ; \phi_{i}) \texttt{ if } \mathcal{B}(z_{1:n^{z}_{a_j}}) = 1 \\
+  0
+  \end{cases}
+\end{equation}
+
+Thus, we need a regression from $\phi_j \rightarrow P^{in}){a_j}(\phi_j) $.
+We have access to pairs $\{\phi_j, \hat{P}^{in}_{a_j}(\phi_j)\}$ for which 
+the expectation $\mathbb{E}[\hat{P}^{in}_{a_j}( \phi_j)| \phi_j] = P^{in}_{a_j} (\phi_j)$ where
+$\hat{P}$ is \textbf{Play back convo to find out}
 
 It is really important to ensure that these pairs of samples are unbiased. 
 
-If you minimise an $L_2$ norm the optimal 
+If you minimise an $\mathcal{L}_2$ norm for this given problem then the optimal proposal natural arises, see~\ref{fig:tomfig} 
+The training regime would still need to be non-bias. 
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{tom_derivation.jpg}
+  \caption{Tom's derivation proving that the $\mathcal{L}_2$ norm in this problem set-up enables us to learn a proposal that exactly
+  matches the true distribution.  }
+  \label{fig:tomfig}
+\end{figure}
 \section{ Questions for Tom}
 
 \textbf{New questions to ask Tom}
