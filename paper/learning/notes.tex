@@ -37,16 +37,17 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{wrapfig}
-
 \usepackage{amsmath,amsthm}
 \usepackage{amssymb}
 \usepackage{cancel}
+\usepackage{wrapfig}
 \setlength{\abovedisplayskip}{3pt}
 \setlength{\belowdisplayskip}{3pt}
 \tikzset{>=latex}
 \usetikzlibrary{bayesnet}
 \usetikzlibrary{arrows,shapes,automata}
 \usetikzlibrary{positioning}
+
 \newcommand{\n}[1]{\ensuremath{n_{#1}}}
 \newcommand{\rv}[1]{\ensuremath{{#1}_{1:n_{#1}}}}
 \newcommand{\rvv}[1]{\ensuremath{{#1}_{1:n_{#1'}}}}
@@ -213,7 +214,8 @@ We provide both of these in this paper. As to implement this in practice we are 
 \end{itemize}
 
 To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
-where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can be thought of as prior 
+where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can be thought of as prior terms. 
+
 \textbf{To finish - Linked back to figure 1}
 In order to correctly characterize this problem we first provide a useful diagram demonstrating 
 the density of the system~\ref{fig:systemoverview}. \textbf{Lots to do}
@@ -269,11 +271,13 @@ But, provided we can calculate $P_{\text{accept}}(\mathcal{D} \leq \mathcal{C})$
  However, as we will demonstrate, rejection samplers 
  need not take this form and arise in many nested structures within probabilistic programs~\cite{rainforth2018nesting} and simulators~\cite{smith2008towards,bershteyn2018implementation,gleisberg2009event}.
  More generally speaking we can write a rejection sampler in the form of Algorithm~\ref{alg:rssim}
-\begin{algorithm}
-  \small
+\begin{wrapfigure}{L}{0.40\textwidth}
+ \begin{minipage}{0.40\textwidth}
+  \null 
+   \begin{algorithm}[H]
    \caption{ABC: Rejection Sampling}
    \label{alg:rsstats}
-    \begin{algorithmic}\small
+      \begin{algorithmic}
        \State {At iteration $i$ s.t $i \geq 1$}
        \State $X_{i} \sim g(X_{i})$ 
        \State $U_{i} \sim \mathcal{U}(0,1)$
@@ -282,22 +286,28 @@ But, provided we can calculate $P_{\text{accept}}(\mathcal{D} \leq \mathcal{C})$
        \Else
        \State{$i \gets i + 1$, repeat}
        \EndIf
-\end{algorithmic}
-\end{algorithm}
+      \end{algorithmic}
+    \end{algorithm}
+  \end{minipage}%
+\end{wrapfigure}
 
 
-\begin{algorithm}
-  \small
-   \caption{Simulator: Rejection Sampling}
-   \label{alg:rssim}
-    \begin{algorithmic}\small
-       \State {At iteration $i$ s.t $i \geq 1$}
-       \State $X_{i} \sim p(x)$ 
-       \State $\mathbb{I}(g(x) > 0)$
-       \State $ Y \sim p(X=x | \mathbb{I}(g(x) > 0))$
-       \State accept $X_i$ with $p(\mathbb{I}(g(x) > 0))$
-\end{algorithmic}
-\end{algorithm}
+\begin{wrapfigure}{L}{0.40\textwidth}
+  \begin{minipage}{0.40\textwidth}
+   \begin{algorithm}[H]
+    \caption{Simulator: Rejection Sampling}
+    \label{alg:rssim}
+      \begin{algorithmic}
+        \State {At iteration $i$ s.t $i \geq 1$}
+        \State $X_{i} \sim p(x)$ 
+        \State $\mathbb{I}(g(x) > 0)$
+        \State $ Y \sim p(X=x | \mathbb{I}(g(x) > 0))$
+        \State accept $X_i$ with $p(\mathbb{I}(g(x) > 0))$
+      \end{algorithmic}
+    \end{algorithm}
+  \end{minipage}
+\end{wrapfigure}
+
 Thus, the probability of generating a sample $X = x$ from the true distribution can be defined, using Bayes rule, 
 as: 
 \begin{equation}
