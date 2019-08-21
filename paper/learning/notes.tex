@@ -62,7 +62,7 @@
 \newcommand{\traces}[2]{\ensuremath{\textit{tr}^{#1}_{#2}}}
 \newcommand{\stoc}[2]{\ensuremath{f^{#1}_{#2}(\rvv{x})}}
 % \usepackage[binary-units=true]{siunitx}
-\title{AIRS: Amortized Inference for Rejection Samplers for Fast Simulator Inference}
+\title{Automating the Amortization of Sub-programs \\ for Fast Simulator Inference}
 
 % neurlps classification
 % Primary: Applications
@@ -128,7 +128,7 @@ Paper ID: 1010 }
 \section{Introduction}
 \label{sec:intro}
 Simulators arise in a myriad of scientific and industrial settings; epidemiology, physics, engineering, climate modelling and so forth [add citations].
-One interesting class of simulators are population-based simulators, using in epidemiology, reinforcement learning
+One interesting class of simulators are population-based simulators, used in epidemiology, reinforcement learning
 and financial modelling [add citations].
 Performing inference in such population-based simulators is challenging, because we have nested-programs, 
 which come in the form of rejection sampling blocks. 
@@ -137,19 +137,19 @@ can interact with other members, in certain instances, which can lead to a combi
 to explore. 
 Equally, in many simulated settings we cannot correctly construct the functional form of the density of the desired program,
 since we do not have explicit access to the density of the \emph{program}.
-Where program density refers to the joint density constructed by the program, which in this case is represented by the simulator.
+Where density refers to the joint density constructed by the program, which in this case is represented by the simulator.
 This inability to evaluate the joint density has spawned research into how to perform 
-inference in this likelihood free setting~\cite{greenberg2019automatic} \textbf{Add normalising flow citations}
+inference in likelihood free settings~\cite{greenberg2019automatic, mohamed2016learning, papamakarios2018sequential,brehmer2018mining}
 for conditional density estimation. However, whilst many of these methods look to generate a surragote 
 for the entire simulator, we propose amortizing only computational expensive sub-components 
-of the simulator, which we can do in an automated way with probabilistic programming. 
+of the simulator, which we can automate with probabilistic programming. 
 This enables three things. 
 1) It reduces the loss of information, as when simulators are amortized with in current
-settings we require, potentially infinite samples, to provide a useful learnt representation of the simulator. 
+settings we require, a potentially infinite number of samples, to provide a useful learnt representation of the simulator. 
 2) It increases computational efficiency, whilst maintaining expressivity. 
 3) It converts expensive rejection sampling loops into to learnt functions that can be 
 easily sampled from and used to construct a functional form of the likelihood, that enables the 
-target density to be fully constructed, enabling one to leverage a large class of sample effient inference schemes, namely MCMC.
+target density to be fully constructed, enabling one to leverage a large class of sample efficient inference schemes, namely MCMC.
 
 
 % To model a single population member quantum-based methods leveraging 
@@ -162,28 +162,30 @@ In particular, we focus on combining the hijacking of simulators via probabilist
 state-of-the-art amortization schemes for density estimation \textbf{ Do home work on current papers}.
 This enables such a process to happen in automatic way, simplifying existing set-ups, whilst providing
 more expressive modelling capabilities. 
-We are able to demonstrate this by replacing rejection sampling blocks, which are utilised within 
-many prominent simulators to simulate densities that have no well defined cumulative density 
+We are able to demonstrate this by replacing sub-programs, in particular, rejection sampling blocks.
+Rejection sampling blocks arise in many non-standard forms within simulator to simulate densities that have no well defined cumulative density 
 function, nor no known process to efficiently sample from such a density exists. 
 By amortizing the rejection sampling blocks, during the inference stage when a simulator is run \emph{forword} we 
 can replace such blocks with their leant surrogate, from which we can then construct the entire 
-density of the simulator, which can then be utilized, \emph{correctly}, contrary to ~\cite{baydin2018efficient},
+density of the simulator.
+This can then be utilized, \emph{correctly}, contrary to ~\cite{baydin2018efficient},
 by sample efficient Markov chain Monte Carlo inference schemes, such as Hamiltonian Monte Carlo~(HMC),
-random-walk Metropolis Hastings~(RMH), Light-weight Metropolis Hastings~(LMH) and many other schemes.
+random-walk Metropolis Hastings~(RMH), Light-weight Metropolis Hastings~(LMH) and other schemes.
 Whilst also significantly reducing memory consumption and computational running time of 
-both the simulator and of the probabilistic programming system, as evaluating amortized functions 
+both the \texttt{forward()} runs of the simulator and the inferences performed via a probabilistic programming system.
+This is because evaluating amortized functions 
 is cheap and the reduction in rejection sampling blocks significantly reduces the number of 
-unnecessary latent variables tracked~\cite{baydin2018efficient}.  
+unnecessary latent variables tracked by the system developed in \cite{baydin2018efficient}.  
 
-Without the amortization procedure, as updates are made sequentially MCMC methods are typically not-well suited this type of recursive
-estimation problem. 
-As each time we get a new data point $y_{t+1}$ we have to run new MCMC simulations 
-for $P(x_{0:t_1}| y_{0:t+1})$, we also cannot directly reuse the samples $\{x^{i}_{0:t}\}$. 
-However, as we can only run the simulator $\texttt{forward()}$ we cannot return back to a previous state and re-run. 
-So adapting existing inference techniques is the only viable option. 
-MCMC methods can be effective with a well designed amortized inference procedure (\textbf{Note: This is not guaranteed}).
-Non-MCMC based methods such as importance sampling (IS) and sequential monte carlo (SMC), may also be
-sensible inference engines, although we shall discuss the limitations within the simulator context in the proceeding sections.  
+% Without the amortization procedure, as updates are made sequentially, MCMC methods are typically not-well suited this type of recursive
+% estimation problem. 
+% As each time we get a new data point $y_{t+1}$ we have to run new MCMC simulations 
+% for $P(x_{0:t_1}| y_{0:t+1})$, we also cannot directly reuse the samples $\{x^{i}_{0:t}\}$. 
+% However, as we can only run the simulator $\texttt{forward()}$ we cannot return back to a previous state and re-run. 
+% So adapting existing inference techniques is the only viable option. 
+% MCMC methods can be effective with a well designed amortized inference procedure (\textbf{Note: This is not guaranteed}).
+% Non-MCMC based methods such as importance sampling (IS) and sequential monte carlo (SMC), may also be
+% sensible inference engines, although we shall discuss the limitations within the simulator context in the proceeding sections.  
 
 However, to construct this hybrid procedure requires both substantial engineering contributions 
 and a description of the mathematical framework for these non-standard probabilistic programs. 
@@ -192,14 +194,14 @@ We provide both of these in this paper. As to implement this in practice we are 
     \item An automated training procedure for any given simulator.
     \item Extend the protocols of existing probabilistic programming systems that hijack simulators, to enable:
     \begin{enumerate} \item 1) Only the necessary raw samples from the desired rejection sampling addresses to be collected for training.
-                       \item 2) A function at inference time that replaces those given addresses with a learnt surrogate.
+                       \item 2) A process at inference time that replaces those given addresses with a learnt surrogate.
     \end{enumerate}
-    \item Finer grained control over the actual latent variables of interest, to avoid unnecessary memory consumption and ensure that inference problems remain tractable.
+    \item Finer grained control over the actual latent variables of interest, to avoid unnecessary memory consumption and ensure that inference problem encountered remain tractable.
   \end{itemize}
 
-\textbf{There is no doubt that implementing some fo these features will be more invasive to the underlying simulator code than previously
-just hijacking the raw-random number draws, but, it would enable us to attack difficulties in the inference procedures that are
-currently not amenable to the current approach.}
+% \textbf{There is no doubt that implementing some fo these features will be more invasive to the underlying simulator code than previously
+% just hijacking the raw-random number draws, but, it would enable us to attack difficulties in the inference procedures that are
+% currently not amenable to the current approach.}
 
 \section{Nested-Programs within Simulators}
 
