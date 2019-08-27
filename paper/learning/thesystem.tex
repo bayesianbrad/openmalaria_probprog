@@ -22,13 +22,14 @@
  text width=3cm, 	% max text width
  yshift=0cm, 		% move 2cm in y
  node distance=0cm, 	% distance to Sample
- anchor=center] (Sample) 
+ anchor=center,
+ fill=purple] (Sample) 
 {%
 \begin{tabular}{l} 	% content
-  \textbf{Sample}\\
+  \textcolor{white}{\textbf{Sample}}\\
   \parbox{4cm}{
-   \small{Program call:\\
-   \emph{Program}.\texttt{forward()}}
+  \textcolor{white}{\small{Program call:\\
+  \emph{Program}.\texttt{forward()}}}
  }
  \end{tabular}};
   
@@ -37,13 +38,14 @@
  yshift=-2cm, 		% move 2cm in y
  below of=Sample, 	% Position is to the right of Sample
  node distance=0cm, 	% distance to Sample
- anchor=center] (OBSERVE) 	% posistion relative to the center of the 'box'
+ anchor=center,
+ fill= purple] (OBSERVE) 	% posistion relative to the center of the 'box'
 {%
 \begin{tabular}{l} 	% content
- \textbf{Observe}\\
+  \textcolor{white}{\textbf{Observe}}\\
  \parbox{4cm}{
-  \small{Program call:\\
-  \emph{Program}.\texttt{forward()}}
+  \textcolor{white}{\small{Program call:\\
+  \emph{Program}.\texttt{forward()}}}
 }
 \end{tabular}};
 
@@ -53,11 +55,12 @@
   yshift=0cm, 		% move 2cm in y
   right of=Sample, 	% Position is to the right of Sample
   node distance=6.5cm, 	% distance to Sample
-  anchor=center] (PyProb) 	% posistion relative to the center of the 'box'
+  anchor=center,
+  fill = black!50!green] (PyProb) 	% posistion relative to the center of the 'box'
  {%
  \begin{tabular}{l} 	% content
-  \textbf{System}\\ %system sample
-  \parbox{4cm}{Pyprob processes\\ \texttt{sample}}
+  \textcolor{white}{\textbf{System}}\\ %system sample
+  \parbox{4cm}{\textcolor{white}{Pyprob processes\\ \texttt{sample}}}
  \end{tabular}
  };
  
@@ -66,11 +69,12 @@
   below of=PyProb,
   yshift=-1cm,
   anchor=center,
-  text width=3cm] (System) 
+  text width=3cm,
+  fill = black!50!green] (System) 
  {%
  \begin{tabular}{l}
-  \textbf{System}\\
-  \parbox{4cm}{Pyprob processes \\\texttt{observe}}
+  \textcolor{white}{\textbf{System}}\\
+  \parbox{4cm}{\textcolor{white}{Pyprob processes \\\texttt{observe}}}
  \end{tabular}
  };
 
