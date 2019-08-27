@@ -123,14 +123,19 @@ Paper ID: 1010 }
 
 \begin{abstract}
 
-  In this work we devleop both a formalism and framework for amortizing sub-programs
-  in simulators leveraging state-of-the-art variational inference techniques.
+  In this work we develop both a formalism and framework for amortizing sub-programs
+  in simulators leveraging state-of-the-art probabilistic programming and variational inference techniques.
   In many real world scenarios, simulators are deployed to model computationally expensive
   and hard, or expensive, to observe scenarios.
-   These may represent a set of events, or a population of interacting agents. 
-
-
-   \end{abstract}
+  The simulators may represent a set of events, or a population of interacting agents. 
+  Recent work by \citet{baydin2018efficient} provided a framework for converting event-based simulators 
+  to probabilistic programs, without having to re-implement the simulator within a given probabilistic
+  programming system (PPS).
+  However, issues arise with both memory and inference when \emph{nested}, or sub-programs within the simulator are simulating 
+  some random process. 
+  We demonstrate that by amortizing such sub-programs not only do we significantly reduce memory consumption, but
+  we also enable inference to be performed in a statistically valid framework. 
+\end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
@@ -198,12 +203,12 @@ However, to construct this hybrid procedure requires both substantial engineerin
 and a description of the mathematical framework for these non-standard probabilistic programs. 
 We provide both of these in this paper. As to implement this in practice we are required to do the following:
  \begin{itemize}
+  \item A mathematical framework to amortize sub-programs within simulators. 
     \item An automated training procedure for any given simulator.
-    \item Extend the protocols of existing probabilistic programming systems that hijack simulators, to enable:
-    \begin{enumerate} \item 1) Only the necessary raw samples from the desired rejection sampling addresses to be collected for training.
-                       \item 2) A process at inference time that replaces those given addresses with a learnt surrogate.
-    \end{enumerate}
-    \item Finer grained control over the actual latent variables of interest, to avoid unnecessary memory consumption and ensure that inference problem encountered remain tractable.
+    \item Extend the protocols of existing probabilistic programming systems that hijack simulators, 
+    to enable only the necessary raw samples from the desired rejection sampling addresses to be collected for training.
+    \item A process at inference time that replaces those given addresses with a learnt surrogate.
+        % \item Finer grained control over the actual latent variables of interest, to avoid unnecessary memory consumption and ensure that inference problem encountered remain tractable.
   \end{itemize}
 
 % \textbf{There is no doubt that implementing some fo these features will be more invasive to the underlying simulator code than previously
