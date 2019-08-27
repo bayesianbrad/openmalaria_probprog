@@ -10,8 +10,7 @@
 
 % to compile a preprint version, e.g., for submission to arXiv, add add the
 % [preprint] option:
-\usepackage[preprint]{neurips_2019}
-
+\usepackage{iclr2020_conference,times}
 % to compile a camera-ready version, add the [final] option, e.g.:
      % \usepackage[final]{neurips_2019}
 
@@ -41,6 +40,7 @@
 \usepackage{amssymb}
 \usepackage{cancel}
 \usepackage{wrapfig}
+
 \setlength{\abovedisplayskip}{3pt}
 \setlength{\belowdisplayskip}{3pt}
 \tikzset{>=latex}
@@ -63,7 +63,7 @@
 \newcommand{\traces}[2]{\ensuremath{\textit{tr}^{#1}_{#2}}}
 \newcommand{\stoc}[2]{\ensuremath{f^{#1}_{#2}(\rvv{x})}}
 % \usepackage[binary-units=true]{siunitx}
-\title{Automating the Amortization of Sub-programs \\ for Fast Simulator Inference}
+\title{Amortization of Sub-programs in Simulators }%\\ for Fast Simulator Inference}
 
 % neurlps classification
 % Primary: Applications
@@ -123,8 +123,14 @@ Paper ID: 1010 }
 
 \begin{abstract}
 
-    Notes on how to develop a formalism to perform inference in population based simulators.
-\end{abstract}
+  In this work we devleop both a formalism and framework for amortizing sub-programs
+  in simulators leveraging state-of-the-art variational inference techniques.
+  In many real world scenarios, simulators are deployed to model computationally expensive
+  and hard, or expensive, to observe scenarios.
+   These may represent a set of events, or a population of interacting agents. 
+
+
+   \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
@@ -801,7 +807,7 @@ for the paper and understand the feasibility of the entire approach.
 \end{itemize}
 
 \bibliography{refs}
-\bibliographystyle{plain}
+\bibliographystyle{iclr2020_conference}
 \appendix
 
 \section{The unconditional acceptance probability}

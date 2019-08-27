@@ -1,156 +1,204 @@
-\begin{thebibliography}{10}
+\begin{thebibliography}{27}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem{basseville2013divergence}
+\bibitem[Basseville(2013)]{basseville2013divergence}
 Michele Basseville.
 \newblock Divergence measures for statistical data processing—an annotated
   bibliography.
-\newblock {\em Signal Processing}, 93(4):621--633, 2013.
+\newblock \emph{Signal Processing}, 93\penalty0 (4):\penalty0 621--633, 2013.
 
-\bibitem{baydin2018efficient}
+\bibitem[Baydin et~al.(2018)Baydin, Heinrich, Bhimji, Gram-Hansen, Louppe,
+  Shao, Cranmer, Wood, et~al.]{baydin2018efficient}
 Atilim~Gunes Baydin, Lukas Heinrich, Wahid Bhimji, Bradley Gram-Hansen, Gilles
   Louppe, Lei Shao, Kyle Cranmer, Frank Wood, et~al.
 \newblock Efficient probabilistic inference in the quest for physics beyond the
   standard model.
-\newblock {\em arXiv preprint arXiv:1807.07706}, 2018.
+\newblock \emph{arXiv preprint arXiv:1807.07706}, 2018.
 
-\bibitem{beier1994plasmodium}
+\bibitem[Beier et~al.(1994)Beier, Oster, Onyango, Bales, Sherwood, Perkins,
+  Chumo, Koech, Whitmire, Roberts, et~al.]{beier1994plasmodium}
 John~C Beier, Charles~N Oster, Fred~K Onyango, James~D Bales, James~A Sherwood,
   Peter~V Perkins, David~K Chumo, Davy~V Koech, Richard~E Whitmire, Clifford~R
   Roberts, et~al.
 \newblock Plasmodium falciparum incidence relative to entomologic inoculation
   rates at a site proposed for testing malaria vaccines in western kenya.
-\newblock {\em The American journal of tropical medicine and hygiene},
-  50(5):529--536, 1994.
+\newblock \emph{The American journal of tropical medicine and hygiene},
+  50\penalty0 (5):\penalty0 529--536, 1994.
 
-\bibitem{bershteyn2018implementation}
+\bibitem[Bershteyn et~al.(2018)Bershteyn, Gerardin, Bridenbecker, Lorton,
+  Bloedow, Baker, Chabot-Couture, Chen, Fischle, Frey,
+  et~al.]{bershteyn2018implementation}
 Anna Bershteyn, Jaline Gerardin, Daniel Bridenbecker, Christopher~W Lorton,
   Jonathan Bloedow, Robert~S Baker, Guillaume Chabot-Couture, Ye~Chen, Thomas
   Fischle, Kurt Frey, et~al.
 \newblock Implementation and applications of emod, an individual-based
   multi-disease modeling platform.
-\newblock {\em Pathogens and disease}, 76(5):fty059, 2018.
+\newblock \emph{Pathogens and disease}, 76\penalty0 (5):\penalty0 fty059, 2018.
 
-\bibitem{casella}
+\bibitem[Brehmer et~al.(2018)Brehmer, Louppe, Pavez, and
+  Cranmer]{brehmer2018mining}
+Johann Brehmer, Gilles Louppe, Juan Pavez, and Kyle Cranmer.
+\newblock Mining gold from implicit models to improve likelihood-free
+  inference.
+\newblock \emph{arXiv preprint arXiv:1805.12244}, 2018.
+
+\bibitem[Casella et~al.(2004)Casella, Robert, and Wells]{casella}
 George Casella, Christian~P. Robert, and Martin~T. Wells.
-\newblock {\em Generalized Accept-Reject sampling schemes}, volume Volume 45 of
-  {\em Lecture Notes--Monograph Series}, pages 342--347.
+\newblock \emph{Generalized Accept-Reject sampling schemes}, volume Volume 45
+  of \emph{Lecture Notes--Monograph Series}, pp.\  342--347.
 \newblock Institute of Mathematical Statistics, Beachwood, Ohio, USA, 2004.
+\newblock \doi{10.1214/lnms/1196285403}.
+\newblock URL \url{https://doi.org/10.1214/lnms/1196285403}.
 
-\bibitem{dinh2016density}
+\bibitem[Dinh et~al.(2016)Dinh, Sohl-Dickstein, and Bengio]{dinh2016density}
 Laurent Dinh, Jascha Sohl-Dickstein, and Samy Bengio.
 \newblock Density estimation using real nvp.
-\newblock {\em arXiv preprint arXiv:1605.08803}, 2016.
+\newblock \emph{arXiv preprint arXiv:1605.08803}, 2016.
 
-\bibitem{durkan2019neural}
+\bibitem[Durkan et~al.(2019)Durkan, Bekasov, Murray, and
+  Papamakarios]{durkan2019neural}
 Conor Durkan, Artur Bekasov, Iain Murray, and George Papamakarios.
 \newblock Neural spline flows.
-\newblock {\em arXiv preprint arXiv:1906.04032}, 2019.
+\newblock \emph{arXiv preprint arXiv:1906.04032}, 2019.
 
-\bibitem{erraqabi2016pliable}
+\bibitem[Erraqabi et~al.(2016)Erraqabi, Valko, Carpentier, and
+  Maillard]{erraqabi2016pliable}
 Akram Erraqabi, Michal Valko, Alexandra Carpentier, and Odalric Maillard.
 \newblock Pliable rejection sampling.
-\newblock In {\em International Conference on Machine Learning}, pages
+\newblock In \emph{International Conference on Machine Learning}, pp.\
   2121--2129, 2016.
 
-\bibitem{feng2017learning}
+\bibitem[Feng et~al.(2017)Feng, Wang, and Liu]{feng2017learning}
 Yihao Feng, Dilin Wang, and Qiang Liu.
 \newblock Learning to draw samples with amortized stein variational gradient
   descent.
-\newblock {\em arXiv preprint arXiv:1707.06626}, 2017.
+\newblock \emph{arXiv preprint arXiv:1707.06626}, 2017.
 
-\bibitem{gleisberg2009event}
+\bibitem[Gleisberg et~al.(2009)Gleisberg, H{\"o}che, Krauss, Sch{\"o}nherr,
+  Schumann, Siegert, and Winter]{gleisberg2009event}
 Tanju Gleisberg, Stefan H{\"o}che, F~Krauss, M~Sch{\"o}nherr, S~Schumann,
   F~Siegert, and J~Winter.
 \newblock Event generation with sherpa 1.1.
-\newblock {\em Journal of High Energy Physics}, 2009(02):007, 2009.
+\newblock \emph{Journal of High Energy Physics}, 2009\penalty0 (02):\penalty0
+  007, 2009.
 
-\bibitem{gram2019hijacking}
+\bibitem[Gram-Hansen et~al.(2019)Gram-Hansen, de~Witt, Rainforth, Torr, Teh,
+  and Baydin]{gram2019hijacking}
 Bradley Gram-Hansen, Christian~Schr{\"o}der de~Witt, Tom Rainforth, Philip~HS
   Torr, Yee~Whye Teh, and At{\i}l{\i}m~G{\"u}ne{\c{s}} Baydin.
 \newblock Hijacking malaria simulators with probabilistic programming.
-\newblock {\em arXiv preprint arXiv:1905.12432}, 2019.
+\newblock \emph{arXiv preprint arXiv:1905.12432}, 2019.
 
-\bibitem{greenberg2019automatic}
+\bibitem[Greenberg et~al.(2019)Greenberg, Nonnenmacher, and
+  Macke]{greenberg2019automatic}
 David~S Greenberg, Marcel Nonnenmacher, and Jakob~H Macke.
 \newblock Automatic posterior transformation for likelihood-free inference.
-\newblock {\em arXiv preprint arXiv:1905.07488}, 2019.
+\newblock \emph{arXiv preprint arXiv:1905.07488}, 2019.
 
-\bibitem{maire2006model}
+\bibitem[Maire et~al.(2006)Maire, Smith, Ross, Owusu-Agyei, Dietz, and
+  Molineaux]{maire2006model}
 Nicolas Maire, Thomas Smith, Amanda Ross, Seth Owusu-Agyei, Klaus Dietz, and
   Louis Molineaux.
 \newblock A model for natural immunity to asexual blood stages of plasmodium
   falciparum malaria in endemic areas.
-\newblock {\em The American journal of tropical medicine and hygiene},
-  75(2\_suppl):19--31, 2006.
+\newblock \emph{The American journal of tropical medicine and hygiene},
+  75\penalty0 (2\_suppl):\penalty0 19--31, 2006.
 
-\bibitem{martino2012improved}
+\bibitem[Martino et~al.(2012)Martino, Read, and Luengo]{martino2012improved}
 Luca Martino, Jesse Read, and David Luengo.
 \newblock Improved adaptive rejection metropolis sampling algorithms.
-\newblock {\em arXiv preprint arXiv:1205.5494}, 2012.
+\newblock \emph{arXiv preprint arXiv:1205.5494}, 2012.
 
-\bibitem{MEYER20083408}
+\bibitem[Meyer et~al.(2008)Meyer, Cai, and Perron]{MEYER20083408}
 Renate Meyer, Bo~Cai, and François Perron.
 \newblock Adaptive rejection metropolis sampling using lagrange interpolation
   polynomials of degree 2.
-\newblock {\em Computational Statistics and Data Analysis}, 52(7):3408 -- 3423,
-  2008.
+\newblock \emph{Computational Statistics and Data Analysis}, 52\penalty0
+  (7):\penalty0 3408 -- 3423, 2008.
+\newblock ISSN 0167-9473.
+\newblock \doi{https://doi.org/10.1016/j.csda.2008.01.005}.
 
-\bibitem{rainforth2017automating}
+\bibitem[Mohamed \& Lakshminarayanan(2016)Mohamed and
+  Lakshminarayanan]{mohamed2016learning}
+Shakir Mohamed and Balaji Lakshminarayanan.
+\newblock Learning in implicit generative models.
+\newblock \emph{arXiv preprint arXiv:1610.03483}, 2016.
+
+\bibitem[Papamakarios et~al.(2018)Papamakarios, Sterratt, and
+  Murray]{papamakarios2018sequential}
+George Papamakarios, David~C Sterratt, and Iain Murray.
+\newblock Sequential neural likelihood: Fast likelihood-free inference with
+  autoregressive flows.
+\newblock \emph{arXiv preprint arXiv:1805.07226}, 2018.
+
+\bibitem[Rainforth(2017)]{rainforth2017automating}
 Thomas William~Gamlen Rainforth.
-\newblock {\em Automating inference, learning, and design using probabilistic
+\newblock \emph{Automating inference, learning, and design using probabilistic
   programming}.
 \newblock PhD thesis, University of Oxford, 2017.
 
-\bibitem{rainforth2018nesting}
+\bibitem[Rainforth(2018)]{rainforth2018nesting}
 Tom Rainforth.
 \newblock Nesting probabilistic programs.
-\newblock {\em arXiv preprint arXiv:1803.06328}, 2018.
+\newblock \emph{arXiv preprint arXiv:1803.06328}, 2018.
 
-\bibitem{rezende2015variational}
+\bibitem[Rezende \& Mohamed(2015)Rezende and Mohamed]{rezende2015variational}
 Danilo~Jimenez Rezende and Shakir Mohamed.
 \newblock Variational inference with normalizing flows.
-\newblock {\em arXiv preprint arXiv:1505.05770}, 2015.
+\newblock \emph{arXiv preprint arXiv:1505.05770}, 2015.
 
-\bibitem{smith2008towards}
+\bibitem[Smith et~al.(2008)Smith, Maire, Ross, Penny, Chitnis, Schapira,
+  Studer, Genton, Lengeler, Tediosi, et~al.]{smith2008towards}
 T~Smith, N~Maire, A~Ross, M~Penny, N~Chitnis, A~Schapira, A~Studer, B~Genton,
   C~Lengeler, Fabrizio Tediosi, et~al.
 \newblock Towards a comprehensive simulation model of malaria epidemiology and
   control.
-\newblock {\em Parasitology}, 135(13):1507--1516, 2008.
+\newblock \emph{Parasitology}, 135\penalty0 (13):\penalty0 1507--1516, 2008.
 
-\bibitem{smith2006mathematical}
+\bibitem[Smith et~al.(2006{\natexlab{a}})Smith, Killeen, Maire, Ross,
+  Molineaux, Tediosi, Hutton, Utzinger, Dietz, and
+  Tanner]{smith2006mathematical}
 Thomas Smith, Gerry~F Killeen, Nicolas Maire, Amanda Ross, Louis Molineaux,
   Fabrizio Tediosi, Guy Hutton, J{\"u}rg Utzinger, Klaus Dietz, and Marcel
   Tanner.
 \newblock Mathematical modeling of the impact of malaria vaccines on the
   clinical epidemiology and natural history of plasmodium falciparum malaria:
   Overview.
-\newblock {\em The American journal of tropical medicine and hygiene},
-  75(2\_suppl):1--10, 2006.
+\newblock \emph{The American journal of tropical medicine and hygiene},
+  75\penalty0 (2\_suppl):\penalty0 1--10, 2006{\natexlab{a}}.
 
-\bibitem{smith2006relationship}
+\bibitem[Smith et~al.(2006{\natexlab{b}})Smith, Maire, Dietz, Killeen,
+  Vounatsou, Molineaux, and Tanner]{smith2006relationship}
 Thomas Smith, Nicolas Maire, Klaus Dietz, Gerry~F Killeen, Penelope Vounatsou,
   Louis Molineaux, and Marcel Tanner.
 \newblock Relationship between the entomologic inoculation rate and the force
   of infection for plasmodium falciparum malaria.
-\newblock {\em The American journal of tropical medicine and hygiene},
-  75(2\_suppl):11--18, 2006.
+\newblock \emph{The American journal of tropical medicine and hygiene},
+  75\penalty0 (2\_suppl):\penalty0 11--18, 2006{\natexlab{b}}.
 
-\bibitem{smith2008estimation}
+\bibitem[Smith(2008)]{smith2008estimation}
 Thomas~A Smith.
 \newblock Estimation of heterogeneity in malaria transmission by stochastic
   modelling of apparent deviations from mass action kinetics.
-\newblock {\em Malaria journal}, 7(1):12, 2008.
+\newblock \emph{Malaria journal}, 7\penalty0 (1):\penalty0 12, 2008.
 
-\bibitem{tucker1959generalization}
+\bibitem[Tucker(1959)]{tucker1959generalization}
 Howard~G Tucker.
 \newblock A generalization of the glivenko-cantelli theorem.
-\newblock {\em The Annals of Mathematical Statistics}, 30(3):828--830, 1959.
+\newblock \emph{The Annals of Mathematical Statistics}, 30\penalty0
+  (3):\penalty0 828--830, 1959.
 
-\bibitem{8588399}
+\bibitem[{Zhang} et~al.(2019){Zhang}, {Bütepage}, {Kjellström}, and
+  {Mandt}]{8588399}
 C.~{Zhang}, J.~{Bütepage}, H.~{Kjellström}, and S.~{Mandt}.
 \newblock Advances in variational inference.
-\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
-  41(8):2008--2026, Aug 2019.
+\newblock \emph{IEEE Transactions on Pattern Analysis and Machine
+  Intelligence}, 41\penalty0 (8):\penalty0 2008--2026, Aug 2019.
+\newblock ISSN 0162-8828.
+\newblock \doi{10.1109/TPAMI.2018.2889774}.
 
 \end{thebibliography}
