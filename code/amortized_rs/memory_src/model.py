@@ -22,16 +22,20 @@ from torch.nn import functional as F
 #         return mu, sigma
 #
 class density_estimator(nn.Module):
-    def __init__(self, inputSize, outputSize):
+    def __init__(self, inputSize, outputSize, batchSize):
         super(density_estimator, self).__init__()
+        # if batchSize % inputSize == 1:
+        #     outputSize = inputSize
+        # else:
+        #     outputSize = batchSize
         self.hidden = nn.Sequential(
             nn.Linear(inputSize, inputSize, bias=True),
             nn.ReLU(),
             nn.Linear(inputSize , inputSize, bias=True)
             # ensures that the output would be 2, assuming inputsize = 2^n
         )
-        self.linear_mu = nn.Linear(inputSize, inputSize)
-        self.linear_std = nn.Linear(inputSize, inputSize)
+        self.linear_mu = nn.Linear(inputSize, batchSize)
+        self.linear_std = nn.Linear(inputSize, batchSize)
 
     def forward(self, x):
          # x is of shape [batch_size, input_dim]

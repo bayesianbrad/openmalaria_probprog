@@ -251,7 +251,7 @@ if __name__ == '__main__':
     lr = 0.001
     momentum = 0.9
     self.loadData = False
-    batch_size = 128
+    self.batchSize = 128
     self.address = 'R2'
     outputSize = 1
     # outputSize = 128 # for R1 and R2
@@ -259,7 +259,7 @@ if __name__ == '__main__':
         inputSize = batch_size * 2
     if self.address == 'R1':
         inputSize = batch_size
-    model = density_estimator(inputSize, outputSize)
+    model = density_estimator(inputSize, outputSize, batchSize)
     num_processes = mp.cpu_count()
     N = 2000
     trainOn = True
