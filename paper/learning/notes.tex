@@ -854,7 +854,8 @@ simulators at CERN.
   \hline
   \begin{cpp}
 double Decay_Channel::GenerateMass(const double& max,
-const double& width) const
+const double& width) 
+const
 {
  double mass=-1.0;
  double decaymin = MinimalMass();
@@ -874,13 +875,14 @@ const double& width) const
    mc-=mb;
    double b=sqr(mb);
    double c=sqr(mc);
-   double spmax=2.0*b+2.0*c+sqrt(sqr(b)+14.0*b*c+sqr(c));
+   double spmax=2.0*b+2.0*c+\\
+   sqrt(sqr(b)+14.0*b*c+sqr(c));
    double wmax=MassWeight(s,spmax,b,c);
    double w=0.0;
    int trials(0);
    do {
      mass=m_flavours[0].RelBWMass(decaymin, max,
-                                  p_ms->Mass(m_flavours[0]), width);
+     p_ms->Mass(m_flavours[0]), width);
      double sp=sqr(mass);
      w=MassWeight(s,sp,b,c);
      ++trials;
