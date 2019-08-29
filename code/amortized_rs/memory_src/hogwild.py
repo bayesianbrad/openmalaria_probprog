@@ -132,7 +132,7 @@ if __name__ == '__main__':
     momentum= 0.60
     load_data=False
     batchSize = 2**7
-    data_flag= 'R2'
+    data_flag= 'R1'
     outputSize = 1
     # outputSize = 128 # for R1 and R2
     if data_flag =='R2':
@@ -146,7 +146,7 @@ if __name__ == '__main__':
     testOn=False
     # loss_fn = th.nn.CosineEmbeddingLoss()
     loss_fn = th.nn.MSELoss()
-    optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
+    optimizer = optim.Ada lr=lr, amsgrad=True)
     # optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=0.01)
     train(model, optimizer, loss_fn, N, data_flag, batchSize, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
