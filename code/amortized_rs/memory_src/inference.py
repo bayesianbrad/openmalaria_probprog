@@ -2,6 +2,7 @@ import torch.multiprocessing as mp
 from model import density_estimator
 from torch.utils.cpp_extension import load
 import torch as th
+import torch.nn.functional as F
 from torch import optim
 import torch.distributions as dist
 from time import strftime
@@ -200,6 +201,8 @@ class Inference():
         :param checkpoint :type bool If you want to store avg loss data, for each iteration, model weights etc
         :return:
         '''
+
+        #TODO: Add device option to transfer to the preset device.
         self.model.train()
 
 
@@ -303,33 +306,35 @@ class Inference():
 
         return checkpointData
 
-    def test(self, testIterations, modelName):
+    def test(self, testSamples, modelName, model=None):
         '''
+        Test learnt proposal
 
-        :param testIterations:
-        :param modelName:
+        :param testSamples: :type int Number of samples to generate from learnt proposal
+        :param modelName: :type str model name which to load.
         :return:
         '''
-        modelName = '../model/' + modelName
-        self.model.load_state_dict(th.load(modelName))
+        if model:
+            self.model = model
+        else:
+            modelName = '../model/' + modelName
+            self.model.load_state_dict(th.load(modelName))
         self.model.eval()
-        _outloss = 0
-        count = 0
+        totalKL = 0
         with th.no_grad():
-            for i in range(testIterations):
-                inData, outData, count = self.get_batch(self.address, self.batchSize, count)
-                proposal = dist.Normal(*model(inData))
-                pred = proposal.rsample(sample_shape=[self.batchSize]).view(1, self.batchSize)
+            for i in range(testSamples):
+                inData, outData, count = self.get_batch(self.address, testSamples,cout=0)
+                # may have to change this api for generating samples from the proposal later on.
+                # An efficient, analytically exact sample method must be implemented
 
-                _outloss += _loss.item()
+                learntProposal  = self.proposal(*self.model(inData)).sample()
+                # If we have learnt a good proposal then the KL will tend to zero.
+                # I think this is right TODO: Check KL code later
+                kl = F.kl_div(outData, learntProposal, reduction='batchmean')
+                totalKL += kl
                 if i % 100 == 0:
-                    print('{} Iteration , Test avg loss: {}\n'.format(i + 1, _outloss / (i + 1)))
-            print('Test loss: {}\n'.format(_outloss / testIterations))
+                    print('{} Iteration , Test avg KL: {}\n'.format(i + 1, totalKL / (i + 1)))
 
-
-    def objective(zlearn, *args, **kwargs):
-        ''' This has to be representative of the objective, equation 2'''
-        return 0
 
     def run(self, *args, **kwargs):
         '''
@@ -350,22 +355,24 @@ class Inference():
                 processes.append(p)
             for p in self.processes:
                 p.join()
-        testOn = False
+        testOn = kwargs['testOn'] if kwargs['testOn'] else False
         if testOn:
             model_name = 'model_2019-08-08_19-15_rejectionBlock_R1_process_2'
             n_test = 1000
             self.test(self.testIterations, self.modelName)
 
 
+def parse_args(self):
+    #TODO add argument parser
 if __name__ == '__main__':
+    #TODO Delete this and add parse args
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")
     device = th.device("cpu")
-    lr = 0.001
-    momentum = 0.9
-    self.loadData = False
-    self.batchSize = 128
+    optimizationParams = {'name': 'SGD', 'lr': 1e-5, 'momentum' : 0.6}
+    loadData = False
+    batchSize = 2**7
     self.address = 'R2'
-    outputSize = 1
+    outputSize = batchSize
     # outputSize = 128 # for R1 and R2
     if self.address == 'R2':
         inputSize = self.batchSize * 2
@@ -376,21 +383,3 @@ if __name__ == '__main__':
     N = 2000
     trainOn = True
     loss_fn = th.nn.MSELoss()
-    # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
-    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
-    # train(model, optimizer, loss_fn, N, self.address, self.batchSize, rank=0, self.loadData=False)
-    # NOTE: this is required for the ``fork`` method to work
-    if trainOn:
-        model.share_memory()
-        processes = []
-        for rank in range(num_processes):
-            p = mp.Process(target=train, args=(model, optimizer, loss_fn, N, self.address, self.batchSize, rank))
-            p.start()
-            processes.append(p)
-        for p in processes:
-            p.join()
-    testOn = False
-    if testOn:
-        model_name = 'model_2019-08-08_19-15_rejectionBlock_R1_process_2'
-        n_test = 1000
-        test(model, n_test, model_name)
