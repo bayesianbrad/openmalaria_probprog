@@ -59,26 +59,30 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
     # The network needs to learn z1 -> z2 and z2,z3 -> z4
     for i in range(N):
             inData, outData, count =get_batch(data_flag, batch_size, count)
-            proposal = dist.Normal(*model(inData))
-            pred = proposal.rsample(sample_shape=[batch_size]).view(1,batch_size))
+            mu, std = model(inData)
+            proposal = dist.Normal(mu, std)
+            # pred = proposal.rsample(sample_shape=[batch_size]).view(1,batch_size))
             optimizer.zero_grad()
-            plt.show()
-            _loss = loss_fn(outData, pred)
-            _loss.backward()
+            # plt.show()
+            # _loss = loss_fn(outData, pred)
+            _loss = -proposal.log_prob(outData)
+            total_loss = _loss.sum() / len(inData)
+            total_loss.backward()
             optimizer.step()
 
-            _outLoss += _loss.item()
+            _outLoss += total_loss.item()
+            iterationLoss = total_loss.item()
             # if _outLoss == nan:
             #     break
-            if i % 1 == 0:
+            if i % 20 == 0:
                 # plt.show()
-                ax= sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r',label='pred')
-                ax = sns.distplot(outData[0, :].detach().numpy(), kde=True, color='b', label='ground truth')
-                ax.legend()
-                ax.set_title('Iteration_{}_Rejection_block_{}'.format(i,data_flag))
-                fig = ax.get_figure()
-                fname= '../plots/{}_compare_pred_vs_gt_iteration_rejection_block_{}.png'.format(strftime("%M:%S"),data_flag)
-                fig.savefig(fname=fname)
+                # ax= sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r',label='pred')
+                # ax = sns.distplot(outData[0, :].detach().numpy(), kde=True, color='b', label='ground truth')
+                # ax.legend()
+                # ax.set_title('Iteration_{}_Rejection_block_{}'.format(i,data_flag))
+                # fig = ax.get_figure()
+                # fname= '../plots/{}_compare_pred_vs_gt_iteration_rejection_block_{}.png'.format(strftime("%M:%S"),data_flag)
+                # fig.savefig(fname=fname)
 
                 # plot_pred= sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
                 # plot_true =sns.distplot(outData[0, :].detach().numpy(), kde=True, color='b')
@@ -86,7 +90,7 @@ def train(model, optimizer, loss_fn,  N, data_flag, batch_size, rank, load_data=
                 # fnameTrue = '../plot/' + 'true_iteration_{}_process_{}_rejectionBlock_{}'.format(i, rank, data_flag)
                 # plot_pred.savefig()
                 avgLoss = _outLoss / (i+1)
-                print("iteration {}: Average loss: {}".format(i,avgLoss))
+                print("iteration {}: Average loss: {} Iteration loss: {}".format(i,avgLoss, iterationLoss))
             # print('====> Epoch: {:03d} Train loss: {:.4f}'.format(epoch, outloss))
     if not os.path.exists('../model/'):
         os.makedirs('../model/')
@@ -124,36 +128,29 @@ def objective(zlearn, *args, **kwargs):
 if __name__ == '__main__':
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")
     device = th.device("cpu")
-    lr = 0.0001
-    momentum= 0.9
+    lr = 0.00001
+    momentum= 0.60
     load_data=False
-    batch_size = 2**10
+    batchSize = 2**7
     data_flag= 'R1'
     outputSize = 1
     # outputSize = 128 # for R1 and R2
     if data_flag =='R2':
-        inputSize = batch_size*2
+        inputSize = batchSize*2
     if data_flag == 'R1':
-        inputSize = batch_size
-    model = density_estimator(inputSize, outputSize)
+        inputSize = batchSize
+    model = density_estimator(inputSize, outputSize,batchSize)
     num_processes = mp.cpu_count() - 2
-    N =  200
+    N =  10000
     trainOn = True
+    testOn=False
     # loss_fn = th.nn.CosineEmbeddingLoss()
     loss_fn = th.nn.MSELoss()
-    # optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
-    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=0.01)
-    train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
+    optimizer = optim.Ada lr=lr, amsgrad=True)
+    # optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=0.01)
+    train(model, optimizer, loss_fn, N, data_flag, batchSize, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
-    # if trainOn:
-    #     model.share_memory()
-    #     processes = []
-    #     for rank in range(num_processes):
-    #         p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
-    #         p.start()
-    #         processes.append(p)
-    #     for p in processes:
-    #         p.join()
+
     # testOn = False
     if testOn:
         model_name = 'model_2019-08-12_09-35_rejectionBlock_R2_process_8'

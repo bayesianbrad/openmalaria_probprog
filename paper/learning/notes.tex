@@ -40,14 +40,25 @@
 \usepackage{amssymb}
 \usepackage{cancel}
 \usepackage{wrapfig}
-
+\usepackage{amssymb}
 \setlength{\abovedisplayskip}{3pt}
 \setlength{\belowdisplayskip}{3pt}
 \tikzset{>=latex}
 \usetikzlibrary{bayesnet}
 \usetikzlibrary{arrows,shapes,automata}
 \usetikzlibrary{positioning}
-
+\lstnewenvironment{cpp}
+{\lstset{language=C++,
+  basicstyle=\footnotesize,
+  keywordstyle=\color{blue}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  commentstyle=\color{green}\ttfamily,
+  morecomment=[l][\color{magenta}]{\#},
+  breaklines = true,
+  stringstyle=\color{blue}\ttfamily, % typewriter type for strings, blue 
+  showstringspaces=false,
+  postbreak=\raisebox{0ex}[0ex][0ex]{\color{red}$\hookrightarrow$\space},
+}}{}
 \newcommand{\n}[1]{\ensuremath{n_{#1}}}
 \newcommand{\rv}[1]{\ensuremath{{#1}_{1:n_{#1}}}}
 \newcommand{\rvv}[1]{\ensuremath{{#1}_{1:n_{#1'}}}}
@@ -83,14 +94,14 @@
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2019}
 
-\lstset{language=C++,
-                basicstyle=\footnotesize,
-                keywordstyle=\color{blue}\ttfamily,
-                stringstyle=\color{red}\ttfamily,
-                commentstyle=\color{green}\ttfamily,
-                morecomment=[l][\color{magenta}]{\#},
-                breaklines = true
-}
+% \lstset{language=C++,
+%                 basicstyle=\footnotesize,
+%                 keywordstyle=\color{blue}\ttfamily,
+%                 stringstyle=\color{red}\ttfamily,
+%                 commentstyle=\color{green}\ttfamily,
+%                 morecomment=[l][\color{magenta}]{\#},
+%                 breaklines = true
+% }
 \pgfplotsset{width=7cm,compat=1.8}
 \author{%
 Paper ID: 1010 }
@@ -123,14 +134,19 @@ Paper ID: 1010 }
 
 \begin{abstract}
 
-  In this work we devleop both a formalism and framework for amortizing sub-programs
-  in simulators leveraging state-of-the-art variational inference techniques.
+  In this work we develop both a formalism and framework for amortizing sub-programs
+  in simulators leveraging state-of-the-art probabilistic programming and variational inference techniques.
   In many real world scenarios, simulators are deployed to model computationally expensive
   and hard, or expensive, to observe scenarios.
-   These may represent a set of events, or a population of interacting agents. 
-
-
-   \end{abstract}
+  The simulators may represent a set of events, or a population of interacting agents. 
+  Recent work by \citet{baydin2018efficient} provided a framework for converting event-based simulators 
+  to probabilistic programs, without having to re-implement the simulator within a given probabilistic
+  programming system (PPS).
+  However, issues arise with both memory and inference when \emph{nested}, or sub-programs within the simulator are simulating 
+  some random process. 
+  We demonstrate that by amortizing such sub-programs not only do we significantly reduce memory consumption, but
+  we also enable inference to be performed in a statistically valid framework. 
+\end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
@@ -198,19 +214,19 @@ However, to construct this hybrid procedure requires both substantial engineerin
 and a description of the mathematical framework for these non-standard probabilistic programs. 
 We provide both of these in this paper. As to implement this in practice we are required to do the following:
  \begin{itemize}
+  \item A mathematical framework to amortize sub-programs within simulators. 
     \item An automated training procedure for any given simulator.
-    \item Extend the protocols of existing probabilistic programming systems that hijack simulators, to enable:
-    \begin{enumerate} \item 1) Only the necessary raw samples from the desired rejection sampling addresses to be collected for training.
-                       \item 2) A process at inference time that replaces those given addresses with a learnt surrogate.
-    \end{enumerate}
-    \item Finer grained control over the actual latent variables of interest, to avoid unnecessary memory consumption and ensure that inference problem encountered remain tractable.
+    \item Extend the protocols of existing probabilistic programming systems that hijack simulators, 
+    to enable only the necessary raw samples from the desired rejection sampling addresses to be collected for training.
+    \item A process at inference time that replaces those given addresses with a learnt surrogate.
+        % \item Finer grained control over the actual latent variables of interest, to avoid unnecessary memory consumption and ensure that inference problem encountered remain tractable.
   \end{itemize}
 
 % \textbf{There is no doubt that implementing some fo these features will be more invasive to the underlying simulator code than previously
 % just hijacking the raw-random number draws, but, it would enable us to attack difficulties in the inference procedures that are
 % currently not amenable to the current approach.}
 
-\section{Nested-Programs within Simulators}
+\section{Sub-Programs within Simulators}
 
 \begin{itemize}
   \item Talk about how within simulators we have nested-structures which are \emph{nested-programs}
@@ -219,6 +235,7 @@ We provide both of these in this paper. As to implement this in practice we are 
   \item Define the density of the simulator in terms of these sub-programs. 
 \end{itemize}
 
+Sub-programs, all called nested programs~\cite{}
 To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
 where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can be thought of as prior terms. 
 
@@ -234,7 +251,7 @@ the density of the system~\ref{fig:systemoverview}. \textbf{Lots to do}
 %  \input{thesystem.tex}
 
 
-\section{Amortized Rejection Sampling}
+\section{Amortized Sub-programs}
 
 One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
 programming framework is that they rely heavily on rejection sampling 
@@ -749,7 +766,7 @@ The things inside of the rejection sampler are proportional to the following:
   \end{cases}
 \end{equation}
 
-Thus, we need a regression from $\phi_j \rightarrow P^{in}){a_j}(\phi_j) $.
+Thus, we need a regression from $\phi_j \rightarrow P^{in}{a_j}(\phi_j) $.
 We have access to pairs $\{\phi_j, \hat{P}^{in}_{a_j}(\phi_j)\}$ for which 
 the expectation $\mathbb{E}[\hat{P}^{in}_{a_j}( \phi_j)| \phi_j] = P^{in}_{a_j} (\phi_j)$ where
 $\hat{P}$ is \textbf{Play back convo to find out}
@@ -808,8 +825,76 @@ for the paper and understand the feasibility of the entire approach.
 
 \bibliography{refs}
 \bibliographystyle{iclr2020_conference}
+
+%%%%%%% Appendix %%%%%%%%
 \appendix
 
+\section{Code Examples of Stochastic Processes in Simulators }
+
+The following examples are taken from SHERPA~\cite{gleisberg2009event}
+a million-line plus code base used for the modelling of complex physics
+simulators at CERN. 
+
+\small\begin{table}[]
+  \begin{tabular}{|l|l|l|l|}
+  \hline
+  \textbf{Code} & \textbf{Base} & \textbf{Timed} & \textbf{Stochastic Control Flow} \\ \hline
+  \begin{cpp}
+  double Splitter_Base::SelectZ(const double & delta,
+  const bool & lead)
+   {double zmin(0.5*(1.-sqrt(1.-delta))),
+   zmax(0.5*(1.+sqrt(1.-delta))), z;
+    do {
+      z = zmin+ran->Get()*sqrt(1.-delta);
+        } 
+    while (1.-2.*z*(1.-z) < ran->Get());
+  return z;
+   }
+  \end{cpp}&Yes&No&Yes\\ 
+  \hline
+  \begin{cpp}
+double Decay_Channel::GenerateMass(const double& max,
+const double& width) 
+const
+{
+ double mass=-1.0;
+ double decaymin = MinimalMass();
+ if(decaymin>max) mass=-1.0;
+ else if (decaymin==0.0) {
+   mass=m_flavours[0].RelBWMass(decaymin, max,
+                p_ms->Mass(m_flavours[0]), width);
+      }
+ else {
+   double s=sqr(p_ms->Mass(GetDecaying()));
+   double mb(0.0), mc(0.0);
+   for (int i=0; i<NOut(); ++i) {
+     mc+=p_ms->Mass(GetDecayProduct(i));
+     if(p_ms->Mass(GetDecayProduct(i))>mb)
+       mb=p_ms->Mass(GetDecayProduct(i));
+   }
+   mc-=mb;
+   double b=sqr(mb);
+   double c=sqr(mc);
+   double spmax=2.0*b+2.0*c+\\
+   sqrt(sqr(b)+14.0*b*c+sqr(c));
+   double wmax=MassWeight(s,spmax,b,c);
+   double w=0.0;
+   int trials(0);
+   do {
+     mass=m_flavours[0].RelBWMass(decaymin, max,
+     p_ms->Mass(m_flavours[0]), width);
+     double sp=sqr(mass);
+     w=MassWeight(s,sp,b,c);
+     ++trials;
+   } while (w<ran->Get()*wmax && trials<1000);
+ }
+ return mass;
+}
+\end{cpp}
+        &  No             & Yes                     & No  \\ \hline
+                &               &                     &                                  \\ \hline
+  \end{tabular}
+  \end{table}
 \section{The unconditional acceptance probability}
 
 Given a collection of i.i.d random variables $\{X_{i}\}_{i = 1:n}$ with 
