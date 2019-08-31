@@ -19,7 +19,7 @@ torch::Tensor batch_f(unsigned int bs){
 }
 
 at::Tensor f(void) {
-  Scalar z_1 = at::empty({1}, kFloat).normal_(0.0, 1.0).item();
+  Scalar z_1 = at::empty({1}, kFloat).normal_(0.0, 0.1).item();
   Scalar z_2;
 
   int ctr = 0;
@@ -53,7 +53,7 @@ Scalar R1(Scalar z_1, unsigned int i) {
 //    }
     long j = 0;
     while (true){
-        temp = at::empty({1}, kFloat).normal_(z_1.to<float>(), 1.0).item();
+        temp = at::empty({1}, kFloat).normal_(z_1.to<float>(), 5).item();
         if (temp.to<float>() > 0){
             return temp;
         } else if (j == 10000){
