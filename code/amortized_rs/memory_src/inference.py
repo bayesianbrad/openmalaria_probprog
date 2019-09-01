@@ -14,6 +14,7 @@ import argparse
 import seaborn as sns
 import warnings
 import math
+import importlib
 amortized_rs = load(name="amortized_rs",
                     sources=["amortized_rs.cpp"])
 
@@ -24,7 +25,7 @@ class Inference():
     Class for training and testing the regressor.
     """
 
-    def __init__(self, parameters)
+    def __init__(self, parameters):
         '''
 
         :param address: :type str Which rejection sampling blocks to amortize
@@ -39,11 +40,16 @@ class Inference():
         :param loadDatafName :type str load file name
         :param logPath :type str log save path
         :param loadCheckpoint :type File to load to resume from checkpoint.
+        :param trainon :type bool Train netowrk to amortize address
+        :param teston :type bool Test learnt network.
+        :param modelname :type str PATH to existing model
         '''
         self.address = parameters.address
         self.batchSize = parameters.batchSize
         self.model = parameters.model
         self.optimizerParams = parameters.optimizerParams
+        self.testOn = parameters.teston
+        self.trainOn = parameters.trainon
         # self.optimizer = optimizer
         self.proposal = parameters.proposal
         self.loss = parameters.loss
@@ -54,18 +60,27 @@ class Inference():
         if parameters.loadCheckpoint:
            logging.info("Restoring parameters from {}".format('../checkpoint/'+loadCheckpoint))
            self.load_checkpoint(parameters.loadCheckpoint)
-
-        self.inputSize = parameters.inputSize
-        self.outpuSize = parameters.outputSize
         if parameters.ncores == math.inf:
             self.processes = mp.cpu_count()
         else:
             self.processes = parameters.ncores
+
+        if self.address == 'R2':
+            self.inputsize = 2*self.batchSize
+            self.outputsize = self.batchSize
+        if self.address == 'R1' or 'R3':
+            self.inputsize = self.batchSize
+            self.outputsize = self.batchSize
         if parameters.model:
-            eval('from model import {}'.format(parameters.model))
-            self.model = eval(parameters.model + '({},{},{})'.format(self.inputSize, self.outpuSize, self.batchSize))
+            self.modelModule = importlib.import_module('model.{}'.format(parameters.model))
+            self.model = self.modelModule('({},{},{}'.format(self.inputsize, self.outputsize, self.batchSize))
+        elif parameters.modelname:
+            self.modelName = '../model/' + parameters.modelName
+            self.model = self.model.load_state_dict(th.load(self.modelName))
         else:
             warnings.warn('*****Model must be specified*****')
+
+
 
     def optimizer_Fn(self):
         '''
@@ -208,7 +223,7 @@ class Inference():
 
         if self.loadData == True:
             nSamples = self.batchSize * self.nIterations
-            data = th.load('../data/all_batch_samples.pt')
+            data = th.load({}.format(self.loadData))
             data = data[0:nSamples, :]
 
         self.optimizer.zero_grad()
@@ -237,13 +252,12 @@ class Inference():
                     bestFlag = True
                     bestLoss = totalLoss.item()
             _outLoss += totalLoss.item()
-            # if _outLoss == nan:
-            #     break
+
             if i % 100 == 0:
                 avgLoss = _outLoss / (i + 1)
                 print("iteration {}: Average loss: {} Iteration loss: {}".format(i,avgLoss, totalLoss.item()))
                 if checkpoint:
-                    checkpointData = {'model': density_estimator(),
+                    checkpointData = {'model': self.modelModule,
                                       'state_dict': self.model.state_dict(),
                                       'iteration': i,
                                       'optimizer': self.optimizer.state_dict(),
@@ -262,6 +276,7 @@ class Inference():
                 fname = '../model/{}_process_{}_address_{}'.format(strftime("%Y-%m-%d_%H-%M"), process, self.address)
             th.save(self.model.state_dict(), fname)
             print(' Model is saved at : {}'.format(fname))
+            self.modelName = fname
 
     def save_checkpoint(self, state, bestFlag,saveName, process, address):
         """
@@ -288,6 +303,7 @@ class Inference():
 
         fName = '../checkpoints/' + os.path.join(name, '.pth.tar')
         th.save(state, fName)
+        print('{0} Saved checkpoint under file name : {1} {0}'.format(5*'*', fName))
     def load_checkpoint(self, checkpoint):
         """Loads model parameters (state_dict) from file_path.
 
@@ -306,7 +322,7 @@ class Inference():
 
         return checkpointData
 
-    def test(self, testSamples, modelName, model=None):
+    def test(self, testSamples):
         '''
         Test learnt proposal
 
@@ -314,12 +330,9 @@ class Inference():
         :param modelName: :type str model name which to load.
         :return:
         '''
-        if model:
-            self.model = model
-        else:
-            modelName = '../model/' + modelName
-            self.model.load_state_dict(th.load(modelName))
-        self.model.eval()
+
+        self.modelTest = self.model.load_state_dict(th.load(self.modelName))
+        self.modelTest.eval()
         totalKL = 0
         with th.no_grad():
             for i in range(testSamples):
@@ -327,7 +340,7 @@ class Inference():
                 # may have to change this api for generating samples from the proposal later on.
                 # An efficient, analytically exact sample method must be implemented
 
-                learntProposal  = self.proposal(*self.model(inData)).sample()
+                learntProposal  = self.proposal(*self.modelTest(inData)).sample()
                 # If we have learnt a good proposal then the KL will tend to zero.
                 # I think this is right TODO: Check KL code later
                 kl = F.kl_div(outData, learntProposal, reduction='batchmean')
@@ -355,9 +368,9 @@ class Inference():
                 processes.append(p)
             for p in self.processes:
                 p.join()
-        testOn = kwargs['testOn'] if kwargs['testOn'] else False
-        if testOn:
-            model_name = 'model_2019-08-08_19-15_rejectionBlock_R1_process_2'
+
+        if self.testOn:
+            model_name = self.modelName
             n_test = 1000
             self.test(self.testIterations, self.modelName)
 
@@ -379,6 +392,14 @@ def main(opt):
                             default='density_estimator', choices=['density_estimator'], type=str)
         parser.add_argument('--inputsize', '--is', help='size of inputs into model', default=128, type=int)
         parser.add_argument('--outputsize', '--os', help='size of outputs of model', default=128, type=int)
+        parser.add_argument('--trainon', help='If you want to perform amortized inference training, default True"', default=True,
+                            type=bool)
+        parser.add_argument('--teston', help='If you want to test your model. Default False', default=False, type=bool)
+        parser.add_argument('--loadcheckpoint', '--lp', help='PATH to load checkpoint "../checkpoints/"', default=None,
+                            type=str)
+
+        parser.add_argument('--modelname', '--mn', help='PATH to existing model "../mdoel/<modelname>"', default=None,
+                            type=str)
         parser.add_argument('--ncores', help='N cores to utilize. The default is all cores', default=math.inf,type=int )
         parser.add_argument('--optimizerparams' '--op',
                             help='A dict of params for optimizer {"name": <optim_name>, <optim_kwargs>}',
@@ -398,22 +419,14 @@ def main(opt):
 
         inference=Inference(opt)
 
+
+    except KeyboardInterrupt:
+        print('Stopped.')
+
+
+
 if __name__ == '__main__':
-    #TODO Delete this and add parse args
-    # device = th.device("cuda" if th.cuda.is_available() else "cpu")
-    device = th.device("cpu")
-    optimizationParams = {'name': 'SGD', 'lr': 1e-5, 'momentum' : 0.6}
-    loadData = False
-    batchSize = 2**7
-    self.address = 'R2'
-    outputSize = batchSize
-    # outputSize = 128 # for R1 and R2
-    if self.address == 'R2':
-        inputSize = self.batchSize * 2
-    if self.address == 'R1':
-        inputSize = self.batchSize
-    model = density_estimator(inputSize, outputSize, batchSize)
-    num_processes = mp.cpu_count()
-    N = 2000
-    trainOn = True
-    loss_fn = th.nn.MSELoss()
+    time_start = time.time()
+    main()
+    print('\nTotal duration: {}'.format(days_hours_mins_secs_str(time.time() - time_start)))
+    sys.exit(0)
