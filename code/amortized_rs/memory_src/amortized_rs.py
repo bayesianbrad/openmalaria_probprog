@@ -35,28 +35,36 @@ def s():
     {(z2,z3), z4}
     {z5
     '''
-    z1 = Normal(0,1).sample()
-    z2 = R1(z1)
+    z1 = Normal(0,0.1).sample()
+    nIterR1 = 0
+    z2, i = R1(z1)
+    nIterR1 += i
     # the following is used to avoid tail recursion  - simple solution and stops stack overflow
     # You can not use this trick straight forwardly if you wish to access multiple core / threads.
     while z2 == math.inf:
         # we resample again to increase chance of acceptance.
         # This does not change acceptance probabilities. This is just for
         # computational efficiency we generating samples.
-        z1 = Normal(0, 1).sample()
-        z2 = R1(z1)
+        z2,i = R1(z1)
+        nIterR1 += i
+
     z3 = Uniform(0,2).sample()
-    z4 = R2(z2,z3)
+    z4, nIterR2 = R2(z2,z3)
     z5 = Normal(50,30).sample()
     M = torch.tensor(3.0337) # determined via x = torch.linsapce(-50.0,151.0, nsamples); torch.max(f(x)/g(x))
-    z6 = R3(z5,M)
+    nIterR3= 0
+    z6,i = R3(z5,M)
+    nIterR3 += i
     while z6 == math.inf:
         # we resample again to increase chance of acceptance.
         # This does not change acceptance probabilities. This is just for
         # computational efficiency we generating samples.
         z5 = Normal(50,30).sample()
-        z6 = R3(z5, M)
-    return torch.tensor([z1,z2,z3,z4,z5,z6])
+        z6,i = R3(z5, M)
+        nIterR3 += i
+
+
+    return torch.tensor([z1,z2,z3,z4,z5,z6, nIterR1, nIterR2, nIterR2])
 
 def f(x, mu1, sigma1, mu2, sigma2):
     ' PDF of Mixture of gaussian that we want to sample from: N(mu1,sigma1) + N(mu2,sigma2)'
@@ -81,9 +89,9 @@ def R3(z,M):
     bs = 1
     while True:
         if u <= tempf:
-            return z
+            return z, i
         if i>=10000:
-            return math.inf
+            return math.inf,i
         i += bs
 
 
@@ -93,44 +101,66 @@ def R2(z2,z3):
     has not been generated from the while loop - although with R1 defined as it is
     this will never be the case'''
     temp = 0
+    i =0
     while temp < z2:
+        i += 1
         temp = Normal(z3,1).sample()
-    return temp
+    return temp, i
 
 # recursion-free
-def R1(z1, i=0):
+def R1(z1):
     i = 0
     bs = 1
     while True:
-        temp = Normal(z1, 1).sample()
+        temp = Normal(z1, 5).sample()
         if temp > 0:
-            return temp
+            return temp, i
         if i >= 10000:
-            return math.inf
+            return math.inf, i
         i += bs
 
 
+def forward(nIterations):
+    '''
+    Run simulator
+    :param nIterations:
+    :return:
+    '''
+    accept1 = 0
+    accept2 = 0
+    accept3 = 0
+    for i in range(nIterations):
+        data = s()
+        accept1 += data[6]
+        accept2 += data[7]
+        accept3 += data[8]
+        if i % 100 == 0:
+            print('{} iterations have been completed'.format(i))
 
-# def plotR3(x)
-#     plt.plot(x, f(x))
-#     plt.plot(x, k*g(x))
-#     plt.show()
+    print(' Expected acceptance ratios \nfor R1: {} \n R2:{} \n R3:{}'.format(torch.mean(accept1), torch.mean(accept2), torch.mean(accept3)))
+
+    return data
+
+nIterations = 200
+data = forward(nIterations)
+fname = '{}_samples.sh'
+torch.save(data, fname)
+
+
 #
-#     s = R3(iter=100000)
-#     sns.distplot(s)
-
-import timeit
-torch.manual_seed(7)
-print(s())
-print(timeit.timeit("f()", setup="from __main__ import f", number=2000))
-
-amortized_rs_std = load(name="amortized_rs_std",
-                    sources=["amortized_rs_std.cpp"])
-
-f_cpp = amortized_rs_std.f
-batch_f = amortized_rs_std.batch_f
-import timeit
-torch.manual_seed(7)
-print(f_cpp())
-print(timeit.timeit("f_cpp()", setup="from __main__ import f_cpp", number=2000))
-print(timeit.timeit("batch_f(2000)", setup="from __main__ import batch_f", number=1))
+#
+# import timeit
+# torch.manual_seed(7)
+# print(s())
+# print(timeit.timeit("f()", setup="from __main__ import f", number=2000))
+#
+# amortized_rs_std = load(name="amortized_rs_std",
+#                     sources=["amortized_rs_std.cpp"])
+#
+# f_cpp = amortized_rs_std.f
+# batch_f = amortized_rs_std.batch_f
+# import timeit
+# torch.manual_seed(7)
+# print(f_cpp())
+# print(timeit.timeit("f_cpp()", setup="from __main__ import f_cpp", number=2000))
+# print(timeit.timeit("batch_f(2000)", setup="from __main__ import batch_f", number=1))

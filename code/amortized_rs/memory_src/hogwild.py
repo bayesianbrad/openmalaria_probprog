@@ -146,7 +146,7 @@ if __name__ == '__main__':
     testOn=False
     # loss_fn = th.nn.CosineEmbeddingLoss()
     loss_fn = th.nn.MSELoss()
-    optimizer = optim.Ada lr=lr, amsgrad=True)
+    optimizer = optim.Adam(lr=lr, amsgrad=True)
     # optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=0.01)
     train(model, optimizer, loss_fn, N, data_flag, batchSize, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
