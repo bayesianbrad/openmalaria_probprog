@@ -10,9 +10,13 @@ import os
 import time
 import shutil
 import logging
+import argparse
 import seaborn as sns
+import warnings
+import math
 amortized_rs = load(name="amortized_rs",
                     sources=["amortized_rs.cpp"])
+
 
 
 class Inference():
@@ -20,18 +24,7 @@ class Inference():
     Class for training and testing the regressor.
     """
 
-    def __init__(self, address,
-                       batchSize,
-                       model,
-                       proposal,
-                       optimizerParams,
-                       lossFn,
-                       nIterations,
-                       device='cpu',
-                       loadData=False,
-                       loadDatafName=None,
-                       logPath=None,
-                       loadCheckpoint=None):
+    def __init__(self, parameters)
         '''
 
         :param address: :type str Which rejection sampling blocks to amortize
@@ -39,7 +32,7 @@ class Inference():
         :param model: :type class Neural network architecture 
         :param proposal: :type A class representing a proposal function
         :param optimizerparams :type dict Optimizer params: 'name
-        :param lossFn: :type torch.loss Pytorch loss function
+        :param loss: :type torch.loss Pytorch loss function
         :param nIterations: :type int Number of iterations for training
         :param device: :type str Device to be used for data generation
         :param loadData: :type bool determines whether to upload pre-loaded data (true), or generate data on the fly (False)
@@ -47,25 +40,32 @@ class Inference():
         :param logPath :type str log save path
         :param loadCheckpoint :type File to load to resume from checkpoint.
         '''
-        self.address = address
-        self.batchSize = batchSize
-        self.model = model
-        self.optimizerParams = optimizerParams
+        self.address = parameters.address
+        self.batchSize = parameters.batchSize
+        self.model = parameters.model
+        self.optimizerParams = parameters.optimizerParams
         # self.optimizer = optimizer
-        self.proposal = proposal
-        self.lossFn = lossFn
-        self.nIterations = nIterations
-        self.device = device
-        self.loadData = loadData
-        self.loadDatafName = loadDatafName
-        self.logPath = logPath
-        if loadCheckpoint:
+        self.proposal = parameters.proposal
+        self.loss = parameters.loss
+        self.nIterations = parameters.niterations
+        self.device = parameters.device
+        self.loadData = parameters.loaddata
+        self.logPath = parameters.logPath
+        if parameters.loadCheckpoint:
            logging.info("Restoring parameters from {}".format('../checkpoint/'+loadCheckpoint))
-           self.load_checkpoint(loadCheckpoint)
+           self.load_checkpoint(parameters.loadCheckpoint)
 
-        self.inputSize = inputSize
-        self.outpuSize = outputSize
-        self.processes = mp.cpu_count()
+        self.inputSize = parameters.inputSize
+        self.outpuSize = parameters.outputSize
+        if parameters.ncores == math.inf:
+            self.processes = mp.cpu_count()
+        else:
+            self.processes = parameters.ncores
+        if parameters.model:
+            eval('from model import {}'.format(parameters.model))
+            self.model = eval(parameters.model + '({},{},{})'.format(self.inputSize, self.outpuSize, self.batchSize))
+        else:
+            warnings.warn('*****Model must be specified*****')
 
     def optimizer_Fn(self):
         '''
@@ -166,7 +166,7 @@ class Inference():
                 outR* :type torch.tensor The output data from the rejection sampling block. 
                 count :type int Updated count
         '''
-        if not self.self.loadData:
+        if self.self.loadData is None:
             data = th.stack([amortized_rs.f() for _ in range(self.batchSize)])
         if self.address == 'R1' and not self.loadData:
             inR1 = data[0:self.batchSize, 0].view([self.batchSize, 1]).view([1, self.batchSize])
@@ -345,7 +345,7 @@ class Inference():
         '''
 
         if self.trainOn:
-            model.share_memory()
+            self.model.share_memory()
             processes = []
             keywords =  {'saveModel':kwargs['saveModel'], 'saveName':kwargs['saveName'],
                          'checkpoint':kwargs['checkpoint'], 'loadCheckpoint':kwargs['loadCheckpoint']}
@@ -361,9 +361,43 @@ class Inference():
             n_test = 1000
             self.test(self.testIterations, self.modelName)
 
+    def plotting(self):
+        '''
+        #TODO add plotting scripts
+        '''
 
-def parse_args(self):
-    #TODO add argument parser
+def main(opt):
+    try:
+        parser = argparse.ArgumentParser(description='Amortized sub-programs ',
+                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        parser.add_argument('--device', '--d', help='Set the compute device (cpu, cuda:0, cuda:1, etc.)', default='cpu',
+                            type=str)
+        parser.add_argument('--seed', help='Random number seed', default=None, type=int)
+        parser.add_argument('--address', '--a', help='Addreess to be amortized', default=None, type=str)
+        parser.add_argument('--batchsize', '--bs', help='Number of samples to pass into trainer', default=128, type=int)
+        parser.add_argument('--model', '--m', help='The name of the model to import from a local directory',
+                            default='density_estimator', choices=['density_estimator'], type=str)
+        parser.add_argument('--inputsize', '--is', help='size of inputs into model', default=128, type=int)
+        parser.add_argument('--outputsize', '--os', help='size of outputs of model', default=128, type=int)
+        parser.add_argument('--ncores', help='N cores to utilize. The default is all cores', default=math.inf,type=int )
+        parser.add_argument('--optimizerparams' '--op',
+                            help='A dict of params for optimizer {"name": <optim_name>, <optim_kwargs>}',
+                            choices=['Adadelta', 'Adagrad', 'Adam', 'AdamW', 'SparseAdam', 'Adamax', 'ASGD', 'RMSprop',
+                                     'Rprop', 'SGD'], default={'name': 'Adam', 'lr': 0.001, 'betas': (0.9, 0.999)},
+                            type=dir)
+        parser.add_argument('--proposal', '--pr', help='the name of the objective to use', type=str)
+        parser.add_arugment('--loss', '--l', help='The name of the loss function to use', default=None, type=str)
+        parser.add_argument('--niterations', '--n', help='The number of iterations (epochs) to run the learning for',
+                            default=1000, type=str)
+        parser.add_argument('--loaddata', '--ld', help='PATH to load data from', default=None, type=str)
+        parser.add_argument('--logpath', help='PATH to save log', default=None, type=str)
+        parser.add_argument('--loadcheckpoint', '--lp', help='PATH to load checkpoint "../checkpoints/"', default=None,
+                            type=str)
+
+        opt = parser.parse_args()
+
+        inference=Inference(opt)
+
 if __name__ == '__main__':
     #TODO Delete this and add parse args
     # device = th.device("cuda" if th.cuda.is_available() else "cpu")

@@ -69,7 +69,7 @@ def g(x,mu1, sigma1):
 def R3(z,M):
     ' This fucntion will always return z back, eventually'
     tempg = g(z, 50,30)
-    tempf = f(z,15,5,40,10)
+    tempf = f(z,49.5,1,51.5,1)
     u = Uniform(0,M*tempg).sample()
     i = 1
     bs = 1
