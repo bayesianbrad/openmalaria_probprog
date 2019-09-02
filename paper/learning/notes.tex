@@ -78,7 +78,7 @@
 
 % neurlps classification
 % Primary: Applications
-% Secodnary cat:Data, Challenges, Implementations, and Software
+% Secondary cat:Data, Challenges, Implementations, and Software
 % or Hijacking Malaria Simulators with Probabilistic Programming
 
 % The \author macro works with any number of authors. There are two commands
@@ -163,7 +163,7 @@ since we do not have explicit access to the density of the \emph{program}.
 Where density refers to the joint density constructed by the program, which in this case is represented by the simulator.
 This inability to evaluate the joint density has spawned research into how to perform 
 inference in likelihood free settings~\cite{greenberg2019automatic, mohamed2016learning, papamakarios2018sequential,brehmer2018mining}
-for conditional density estimation. However, whilst many of these methods look to generate a surragote 
+for conditional density estimation. However, whilst many of these methods look to generate a surrogate 
 for the entire simulator, we propose amortizing only computational expensive sub-components 
 of the simulator, which we can automate with probabilistic programming. 
 This enables three things. 
@@ -235,13 +235,29 @@ We provide both of these in this paper. As to implement this in practice we are 
   \item Define the density of the simulator in terms of these sub-programs. 
 \end{itemize}
 
-Sub-programs, all called nested programs~\cite{}
-To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
-where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can be thought of as prior terms. 
+Sub-programs, also called nested programs~\cite{rainforth2018nesting}, are an integral part of stochastic simulators.
+Within stochastic simulators they are used to simulate densities that cannot be sampled from in any known, or efficient way.
+Such nested-programs may be multi-tiered, in the sense that there exists several nested structures within a given sub-program. For example, given an outer sub-process $S_{out}$, that contains another sub-process $S_{in_{1}}$,
+which itself contains another sub-program, $S_{in_{2}}$, that is $S_{in_2} \in S_{in_1} \in S_{out}$. 
+Due to these recurrent dependency structures within simulators performing statistical inference becomes increasingly challenging, part of this
+difficulty is due to the exploration of the domain of the density $R^{d}$. 
+Because of the nested structures the inference strategy see a subset of the domain. 
+This happens due to stochastic control flow within the sub-processes, which means only a subset of paths are available 
+during the evaluation of the density. 
+\textbf{Talk about why this causes trouble for the inference procedures etc}
 
-\textbf{To finish - Linked back to figure 1}
-In order to correctly characterize this problem we first provide a useful diagram demonstrating 
-the density of the system~\ref{fig:systemoverview}. \textbf{Lots to do}
+Due to these complexities and the increase in computation time for both inference, \texttt{.backward()}, and the simulation, \texttt{.forward()},
+we leverage the use of amortization schemes to, as we show in Section~\ref{sec:amortizesubp}, correctly utilise MCMC inference procedures and reduce
+computation time. 
+
+Each nested process representing a different density, each simulating some statistical process. 
+
+% To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
+% where \emph{raw samples} are represented by $ f_{a_i}(x_i | \eta)$ and can be thought of as prior terms. 
+
+% \textbf{To finish - Linked back to figure 1}
+% In order to correctly characterize this problem we first provide a useful diagram demonstrating 
+% the density of the system~\ref{fig:systemoverview}. \textbf{Lots to do}
 
  \input{thesystem.tex}
 
@@ -253,10 +269,12 @@ the density of the system~\ref{fig:systemoverview}. \textbf{Lots to do}
 
 \section{Amortized Sub-programs}
 
+\label{sec:amortizesubp}
 One common problem in traditional simulators, \emph{programs}, outside of the standard probabilistic
 programming framework is that they rely heavily on rejection sampling 
-to generate samples from the target density. Not only is rejection sampling 
-computational inefficient, [especially if criteria in which samples are generated
+to generate samples from the target density. 
+Not only is rejection sampling 
+computational inefficient, [especially if the criteria in which samples are generated
 has been poorly calibrated] (may leave out this statement as it may make a reviewer
 question why would amortization work any better.), but it creates complications for inference.
 As the rejection sampling loops provide no explicit form of the target density,
@@ -348,12 +366,12 @@ However, in the setting of such complex simulators, written over many years and
 in convoluted code bases, there is no easy way to re-implement such sampling 
 schemes.
 Hence, to leverage existing frameworks we can make use of the probabilistic 
-programming executation (PPX) protocols~\cite{baydin2018efficient}. 
+programming execution (PPX) protocols~\cite{baydin2018efficient}. 
 These protocols allow one to exact all raw sample calls $f_{a_j}$ from the
 simulator. This then enables one to easily construct a prior for the full program
 $P(\mathcal{T} = x_{1:n_{x}}| \lambda)$. 
 In addition to this, once such rejection schemes, \emph{nested programs}, are located, we have a number of 
-primatives that we can leverage to isolate calls to those addresses during training, to collect the samples generated during 
+primitives that we can leverage to isolate calls to those addresses during training, to collect the samples generated during 
 \texttt{.forward()} runs of the simulator, 
 and during the inference procedure replace calls to those addresses $a_j$ with a
 learnt proposal $\gamma_{a_j}(x_j ; \eta_{a_j}, \phi_j ) $. 
@@ -586,7 +604,7 @@ separately.
   \item Implement baselines
   \item Implement plotting scripts and evaluation scripts
   \item testing code and infrastructure
-  \item litrature review on any methods to learn rejection sampling methods, 
+  \item literature review on any methods to learn rejection sampling methods, 
   and conditional density estimation. See this paper for kernel approximation 
   methods~\cite{erraqabi2016pliable}. In addition to the methods listed in the 
   rejection sampling subsection. 
@@ -614,7 +632,7 @@ For training purposes we generate $n_{b}$ batches of $n_{t}$ samples for trainin
 This means that $z^{r1}_{batch}\mathbb{R}^{n_{b} \times 1}$. 
 For the loss function we use a simple mean squared error loss \textbf{We can try different loss 
 functions and optimizers} and use the
-neural network, $\Gamma(z, y)$, to learn a $\hat{\mu}$ and $\hat{\sigma}^{2}$ to parametize 
+neural network, $\Gamma(z, y)$, to learn a $\hat{\mu}$ and $\hat{\sigma}^{2}$ to parameterize 
 a normal proposal. For $R1$, this means $\Gamma_{r1}(z,y) \rightarrow \hat{\mu_{r1}},  \hat{\sigma_{r1}}^{2}$  
 and so the proposal $q(z_{1} | z_{2}) = \mathcal{N}(\hat{\mu_{r1}},  \hat{\sigma_{r1}}^{2})$. 
 Once learned we can then efficiently sample from the parameterized normal distribution, which
@@ -637,7 +655,7 @@ happen as we should be optimizing our function via some objective, rather than l
 
 We had defined an objective above but it was not clear how this was supposed to be implemented in practice with the given notations. 
 
-We discussed at length how to correctly define the objective, I have now updated the objective with the one derivied in the revised discussion,
+We discussed at length how to correctly define the objective, I have now updated the objective with the one derived in the revised discussion,
 along with additional notes on rejection sampling. 
 
 
@@ -698,7 +716,7 @@ full density of the program.
 
 \section{The difference between this paper and Inference compilation paper}
 
-The main fundemental difference is that IC cares about the full global program, 
+The main fundamental difference is that IC cares about the full global program, 
 we only care about the local (sub / nested programs). 
 
 We are not interesting in calculating the weights $w^k$ since the method that we 
@@ -706,16 +724,16 @@ develop here is applicable to any inference scheme, in theory.
 
 In the IC paper you are approximating $p(x|y)$ the \emph{the global} program, where 
 as you can view this work as learning an approximation for the \emph{local}, sub-programs
-$P^{in}(x|\nu)$ where the nuissince parameters in this paper are represented by $\psi$.
+$P^{in}(x|\nu)$ where the nuisance parameters in this paper are represented by $\psi$.
 
 
-In the notation of the inference compilation paper we essentailly learn $q_{a_{t},i_{t}}(x_t| x_{1:t-1}, y)$
-where the indicies are part of the set $S_r$.
+In the notation of the inference compilation paper we essentially learn $q_{a_{t},i_{t}}(x_t| x_{1:t-1}, y)$
+where the indices are part of the set $S_r$.
  The difference here though, is that we only care about the input at that address, your proposals 
- are condiitoning on everything upto that point of the executation trace $\mathcal{T}$
+ are conditioning on everything up to that point of the execution trace $\mathcal{T}$
  in the simulator. 
  The training data represented by (11) in the IC paper is not the training data we use in this paper,
- we only care about the $x^{m}_t$ or $z$'s and $x$'s in this paper (notation is not entirely consitant throuhg out this paper yet)
+ we only care about the $x^{m}_t$ or $z$'s and $x$'s in this paper (notation is not entirely consistent through out this paper yet)
  But these are the parameters that are generated from raw sample calls within side the RS loop $f_{a_i \in S_r}(\cdot))$.
 
 Thus the density of the full joint of the program in this setting is given as:
@@ -727,7 +745,7 @@ The subprograms within the simulator should be treated as nested probabilistic p
 
 There are three ways we can do these things, rather than just an amortization
 
-\subsection{Method 1: Learn the maoritzation of the sub-programs}
+\subsection{Method 1: Learn the amortization of the sub-programs}
 That is learn $\gamma_{a_{j}}(\cdot ; \eta_{a_{j}}, \cdot)$ for each program in the set $S_r$. 
 
 
