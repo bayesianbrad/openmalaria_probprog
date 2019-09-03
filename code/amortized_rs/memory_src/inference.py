@@ -49,6 +49,8 @@ class Inference():
         self.batchSize = parameters.batchSize
         self.model = parameters.model
         self.optimizerParams = parameters.optimizerParams
+        # generate optimizer
+        self.optimizer_Fn()
         self.testOn = parameters.teston
         if self.testOn:
             try:
@@ -92,7 +94,7 @@ class Inference():
 
 
 
-
+    @classmethod
     def optimizer_Fn(self):
         '''
         Sets-up the optimizer
@@ -245,7 +247,7 @@ class Inference():
         for i in range(self.nIterations):
             inData, outData, count = self.get_batch(count)
 
-            proposal = self.proposalClass #TODO call proposal method,whcih relates to the proposal being used.d It requires using self.proposalName
+            proposal = self.proposalClass.__call__(inData=inData, batchSize=self.batchSize, model=self.model) #TODO call proposal method,whcih relates to the proposal being used.d It requires using self.proposalName
             self.optimizer.zero_grad()
             _loss = -proposal.log_prob(outData)
 
