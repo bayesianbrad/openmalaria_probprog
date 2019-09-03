@@ -17,10 +17,6 @@ class Proposal():
     def __init__(self, *args, **kwargs):
         args = args
         kwargs = kwargs
-        self.proposalMethod = kwargs['proposalMethod'] if kwargs['proposalMethod'] else warnings.warn('{} A valid proposal is required {}'.format(5*'*'))
-
-    def __call__(self, *args, **kwargs):
-        return exec(self.proposalMethod+'({},{})'.format(*args, **kwargs))
 
     def Normalapproximator(self, *args, **kwargs):
         '''
@@ -31,5 +27,4 @@ class Proposal():
         :return: prediction to the regression problem specified by inData
         '''
 
-        proposal = dist.Normal(*kwargs['model'](kwargs['inData']))
-        return proposal.rsample(sample_shape=[kwargs['batchSize']]).view(1, kwargs['batchSize'])
+        return dist.Normal(*kwargs['model'](kwargs['inData']))

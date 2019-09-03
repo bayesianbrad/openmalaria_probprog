@@ -62,7 +62,7 @@ class Inference():
         # self.optimizer = optimizer
         if parameters.proposal:
             self.proposalModule =  importlib.import_module('proposal.Proposal')
-            self.proposalClass = self.proposalModule(proposalMethod=parameters.proposal)
+            self.proposalClass = self.proposalModule()
             self.proposalMethod = parameters.proposal
         self.loss = parameters.loss
         self.nIterations = parameters.niterations
@@ -247,7 +247,7 @@ class Inference():
         for i in range(self.nIterations):
             inData, outData, count = self.get_batch(count)
 
-            proposal = self.proposalClass.__call__(inData=inData, batchSize=self.batchSize, model=self.model) #TODO call proposal method,whcih relates to the proposal being used.d It requires using self.proposalName
+            proposal = getattr(self.proposalClass,self.proposalMethod)(inData=inData, batchSize=self.batchSize, model=self.model)
             self.optimizer.zero_grad()
             _loss = -proposal.log_prob(outData)
 
@@ -375,13 +375,14 @@ class Inference():
             self.model.share_memory()
             processes = []
             keywords =  {'saveModel':kwargs['saveModel'], 'saveName':kwargs['saveName'],
-                         'checkpoint':kwargs['checkpoint'], 'loadCheckpoint':kwargs['loadCheckpoint']}
+                         'checkpoint':kwargs['checkpoint'], 'loadCheckpoint':kwargs['loadCheckpoint'] if kwargs['loadCheckpoint'] else None}
             for process in range(self.processes):
                 p = mp.Process(target=self.train, args=process, kwargs=keywords)
                 p.start()
                 processes.append(p)
             for p in self.processes:
                 p.join()
+
 
         if self.testOn:
             self.test(self.testIterations)
@@ -427,10 +428,16 @@ def main(opt):
         parser.add_argument('--logpath', help='PATH to save log', default=None, type=str)
         parser.add_argument('--loadcheckpoint', '--lp', help='PATH to load checkpoint "../checkpoints/"', default=None,
                             type=str)
+        parser.add_argument('--savename', '--sn', help='File name to save model to "../model/<savename>"', default=None,
+                            type=str)
+        parser.add_argument('--savemodel', '--sm', help='If you want the model saved, set to True, default True', default=True,
+                            type=bool)
+        parser.add_argument('--checkpoint', '--chk', help='If you want to save checkpoints. Default is True.  ', default= True, type=bool)
 
         opt = parser.parse_args()
 
         inference=Inference(opt)
+        inference.run(saveModel=opt.savemodel, saveName=opt.savename, loadCheckpoint=opt.loadcheckpoint, checkpoint=opt.checkpoint)
 
 
     except KeyboardInterrupt:
