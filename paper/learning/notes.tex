@@ -250,6 +250,9 @@ Due to these complexities and the increase in computation time for both inferenc
 we leverage the use of amortization schemes to, as we show in Section~\ref{sec:amortizesubp}, correctly utilise MCMC inference procedures and reduce
 computation time. 
 
+\subsection{Theory of Nested-programs}
+
+
 Each nested process representing a different density, each simulating some statistical process. 
 
 % To construct the mathematical framework in this setting we employ the notation of~\cite{rainforth2017automating}, 
@@ -431,14 +434,14 @@ and two types of rejection sampler:
 Stochastic Simulator  &  R1 & R2 & R3 \\
 \hline
 \begin{lstlisting}[mathescape=true]
-    def s():
-      $z_{1} \sim \mathcal{N}(0,1)$
-      $z_{2} \gets R_{1}(z_1, 1)$
-      $z_{3} \sim \mathcal{U}(0,2)$
-      $z_{4} \gets R_{2}(z_2,z_3, 1)$
-      $z_{5} \sim \mathcal{U}(50,30^2)$
-      $z_{6} \sim R_{3}(z_5, 1)$
-    return $g(z_{1:6})$
+def s():
+    $z_{1} \sim \mathcal{N}(0,1)$
+    $z_{2} \gets R_{1}(z_1, 1)$
+    $z_{3} \sim \mathcal{U}(0,2)$
+    $z_{4} \gets R_{2}(z_2,z_3, 1)$
+    $z_{5} \sim \mathcal{U}(50,30^2)$
+    $z_{6} \sim R_{3}(z_5, 1)$
+  return $g(z_{1:6})$
 \end{lstlisting}&
 \begin{lstlisting}[mathescape=true]
 def $R_1(z_1)$:
@@ -497,10 +500,9 @@ possible to construct the density, up to a constant of proportionality.
  $x,z \propto f(\theta) p(accept)$.
 However, in order to do construct this we need the input $z$, the sample from the proposal $x$ and $p(accept)$ (should use the notation above).
 For any rejection sampling block, written in a generic code base, not in the form of R3, this is an incredibly hard 
-task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template. 
-\textbf{Add examples in a supplement.  Need to demonstrate to YW that this is challenging to do, even if you know where 
-the rejection sampling loops are. Hypothesis, RS loops are not written in a templated form}.
-y leveraging the PPX protocols previously developed in \cite{baydin2018efficient,gram2019hijacking} we can however, 
+task to do, because rejection sampling blocks within simulators are not necessarily written in a standard template, see appendix~\ref{app:exampleprograms}. 
+
+We leveraging the PPX protocols previously developed in \cite{baydin2018efficient,gram2019hijacking} we can however, 
 extract all variables, other than $P(accept)$ in an automated way.
 As without being able to easily extract $p(accept)$ this means that we are unable to 
 correctly build the form of the density and thus are limited in our ability to leverage 
@@ -848,7 +850,7 @@ for the paper and understand the feasibility of the entire approach.
 \appendix
 
 \section{Code Examples of Stochastic Processes in Simulators }
-
+\label{app:exampleprograms}
 The following examples are taken from SHERPA~\cite{gleisberg2009event}
 a million-line plus code base used for the modelling of complex physics
 simulators at CERN. 
