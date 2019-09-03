@@ -1,5 +1,4 @@
 import torch.multiprocessing as mp
-from model import density_estimator
 from torch.utils.cpp_extension import load
 import torch as th
 import torch.nn.functional as F
@@ -15,6 +14,7 @@ import seaborn as sns
 import warnings
 import math
 import importlib
+import sys
 amortized_rs = load(name="amortized_rs",
                     sources=["amortized_rs.cpp"])
 
@@ -43,22 +43,32 @@ class Inference():
         :param trainon :type bool Train netowrk to amortize address
         :param teston :type bool Test learnt network.
         :param modelname :type str PATH to existing model
+        :param testiterations :type int Number of test epochs
         '''
         self.address = parameters.address
         self.batchSize = parameters.batchSize
         self.model = parameters.model
         self.optimizerParams = parameters.optimizerParams
         self.testOn = parameters.teston
+        if self.testOn:
+            try:
+                self.testIterations = parameters.testiterations
+            except:
+                ValueError
+
         self.trainOn = parameters.trainon
         # self.optimizer = optimizer
-        self.proposal = parameters.proposal
+        if parameters.proposal:
+            self.proposalModule =  importlib.import_module('proposal.Proposal')
+            self.proposalClass = self.proposalModule(proposalMethod=parameters.proposal)
+            self.proposalMethod = parameters.proposal
         self.loss = parameters.loss
         self.nIterations = parameters.niterations
         self.device = parameters.device
         self.loadData = parameters.loaddata
         self.logPath = parameters.logPath
         if parameters.loadCheckpoint:
-           logging.info("Restoring parameters from {}".format('../checkpoint/'+loadCheckpoint))
+           logging.info("Restoring parameters from {}".format('../checkpoint/'+parameters.loadCheckpoint))
            self.load_checkpoint(parameters.loadCheckpoint)
         if parameters.ncores == math.inf:
             self.processes = mp.cpu_count()
@@ -82,32 +92,33 @@ class Inference():
 
 
 
+
     def optimizer_Fn(self):
         '''
         Sets-up the optimizer
 
         '''
         if self.optimizerParams['name'] == 'Adadelta':
-            self.optimizer = th.optim.Adadelta(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, self.model.parameters()),
                                                lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
                                                rho=self.optimizerParams['rho'] if self.optimizerParams['rho'] else 0.9,
                                                eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-6,
                                                weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams['weight_decay'] else 0)
         if self.optimizerParams['name'] == 'Adagrad':
-            self.optimizer = th.optim.Adadelta(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, self.model.parameters()),
                                                lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
                                                lr_decay=self.optimizerParams['lr_decay'] if self.optimizerParams['lr_decay'] else 0,
                                                weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams['weight_decay'] else 0,
                                                initial_accumulator_value=self.optimizerParams['initial_accumulator_value'] if self.optimizerParams['initial_accumulator_value'] else 0,)
         if self.optimizerParams['name'] == 'Adam':
-            self.optimizer = th.optim.Adam(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.Adam(filter(lambda p: p.requires_grad, self.model.parameters()),
                                                lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.001,
                                                betas=self.optimizerParams['betas'] if self.optimizerParams['betas'] else (0.9,0.999),
                                                eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-8,
                                                weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams['weight_decay'] else 0,
                                                amsgrad=self.optimizerParams['amsgrad'] if self.optimizerParams['amsgrad'] else False)
         if self.optimizerParams['name'] == 'AdamW':
-            self.optimizer = th.optim.AdamW(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.AdamW(filter(lambda p: p.requires_grad, self.model.parameters()),
                                            lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.001,
                                            betas=self.optimizerParams['betas'] if self.optimizerParams['betas'] else (
                                            0.9, 0.999),
@@ -117,13 +128,13 @@ class Inference():
                                            amsgrad=self.optimizerParams['amsgrad'] if self.optimizerParams[
                                                'amsgrad'] else False)
         if self.optimizerParams['name'] == 'SparseAdam':
-            self.optimizer = th.optim.SparseAdam(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.SparseAdam(filter(lambda p: p.requires_grad, self.model.parameters()),
                                            lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.001,
                                            betas=self.optimizerParams['betas'] if self.optimizerParams['betas'] else (
                                            0.9, 0.999),
                                            eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-8)
         if self.optimizerParams['name'] == 'Adamax':
-            self.optimizer = th.optim.Adam(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.Adam(filter(lambda p: p.requires_grad, self.model.parameters()),
                                            lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.002,
                                            betas=self.optimizerParams['betas'] if self.optimizerParams['betas'] else (
                                            0.9, 0.999),
@@ -131,7 +142,7 @@ class Inference():
                                            weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams[
                                                'weight_decay'] else 0)
         if self.optimizerParams['name'] == 'ASGD':
-            self.optimizer = th.optim.ASGD(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.ASGD(filter(lambda p: p.requires_grad, self.model.parameters()),
                                            lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
                                            lambd=self.optimizerParams['lambd'] if self.optimizerParams['lambd'] else 1e-4,
                                            alpha=self.optimizerParams['alpha'] if self.optimizerParams['alpha'] else 0.75,
@@ -141,7 +152,7 @@ class Inference():
         # ignoring LBFGS as it is not well supported in pyTorch, they are working on it though. TODO: Revise at a later date
 
         if self.optimizerParams['name'] == 'RMSprop':
-            self.optimizer = th.optim.RMSprop(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.RMSprop(filter(lambda p: p.requires_grad, self.model.parameters()),
                                            lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
                                            momentum=self.optimizerParams['momentum'] if self.optimizerParams['momentum'] else 0,
                                            alpha=self.optimizerParams['alpha'] if self.optimizerParams['alpha'] else 0.99,
@@ -151,7 +162,7 @@ class Inference():
                                                'weight_decay'] else 0)
 
         if self.optimizerParams['name'] == 'Rprop':
-            self.optimizer = th.optim.Rprop(filter(lambda p: p.requires_grad, self.model.parameters()),
+            self.optimizer = optim.Rprop(filter(lambda p: p.requires_grad, self.model.parameters()),
                                               lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
                                               etas=self.optimizerParams['etas'] if self.optimizerParams[
                                                   'etas'] else (0.5,1.2),
@@ -159,7 +170,7 @@ class Inference():
                                                   'step_sizes'] else (1e-6,50))
 
         if self.optimizerParams['name'] == 'SGD':
-            self.optimizer = th.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
+            self.optimizer = optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()),
                                               lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
                                               momentum=self.optimizerParams['momentum'] if self.optimizerParams[
                                                   'momentum'] else 0,
@@ -233,7 +244,8 @@ class Inference():
         # The network needs to learn z1 -> z2 and z2,z3 -> z4
         for i in range(self.nIterations):
             inData, outData, count = self.get_batch(count)
-            proposal = dist.Normal(*self.model(inData))
+
+            proposal = self.proposalClass #TODO call proposal method,whcih relates to the proposal being used.d It requires using self.proposalName
             self.optimizer.zero_grad()
             _loss = -proposal.log_prob(outData)
 
@@ -370,9 +382,7 @@ class Inference():
                 p.join()
 
         if self.testOn:
-            model_name = self.modelName
-            n_test = 1000
-            self.test(self.testIterations, self.modelName)
+            self.test(self.testIterations)
 
     def plotting(self):
         '''
@@ -395,6 +405,7 @@ def main(opt):
         parser.add_argument('--trainon', help='If you want to perform amortized inference training, default True"', default=True,
                             type=bool)
         parser.add_argument('--teston', help='If you want to test your model. Default False', default=False, type=bool)
+        parser.add_argument('--testiterations', '--nti', help='The number of test iterations. Default 1000', default=1000, type=int)
         parser.add_argument('--loadcheckpoint', '--lp', help='PATH to load checkpoint "../checkpoints/"', default=None,
                             type=str)
 
@@ -406,7 +417,7 @@ def main(opt):
                             choices=['Adadelta', 'Adagrad', 'Adam', 'AdamW', 'SparseAdam', 'Adamax', 'ASGD', 'RMSprop',
                                      'Rprop', 'SGD'], default={'name': 'Adam', 'lr': 0.001, 'betas': (0.9, 0.999)},
                             type=dir)
-        parser.add_argument('--proposal', '--pr', help='the name of the objective to use', type=str)
+        parser.add_argument('--proposal', '--pr', help='the name of the objective to use deault NormalApproximator', type=str)
         parser.add_arugment('--loss', '--l', help='The name of the loss function to use', default=None, type=str)
         parser.add_argument('--niterations', '--n', help='The number of iterations (epochs) to run the learning for',
                             default=1000, type=str)
@@ -428,5 +439,5 @@ def main(opt):
 if __name__ == '__main__':
     time_start = time.time()
     main()
-    print('\nTotal duration: {}'.format(days_hours_mins_secs_str(time.time() - time_start)))
+    print('\nTotal duration: {}'.format((time.time() - time_start)))
     sys.exit(0)
