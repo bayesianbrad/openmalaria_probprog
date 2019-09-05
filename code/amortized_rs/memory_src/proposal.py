@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 '''
 Author: Bradley Gram-Hansen
 Time created:  17:30
@@ -7,10 +5,8 @@ Date created:  02/09/2019
 
 License: MIT
 '''
-
 import torch
 import torch.distributions as dist
-import warnings
 
 class Proposal():
 

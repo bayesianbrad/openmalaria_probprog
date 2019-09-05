@@ -131,26 +131,33 @@ if __name__ == '__main__':
     lr = 0.00001
     momentum= 0.60
     load_data=False
-    batchSize = 2**7
-    data_flag= 'R1'
+    batch_size = 2**10
+    data_flag= 'R'
     outputSize = 1
     # outputSize = 128 # for R1 and R2
     if data_flag =='R2':
-        inputSize = batchSize*2
+        inputSize = batch_size*2
     if data_flag == 'R1':
-        inputSize = batchSize
-    model = density_estimator(inputSize, outputSize,batchSize)
+        inputSize = batch_size
+    model = density_estimator(inputSize, outputSize)
     num_processes = mp.cpu_count() - 2
-    N =  10000
+    N =  1000
     trainOn = True
-    testOn=False
     # loss_fn = th.nn.CosineEmbeddingLoss()
     loss_fn = th.nn.MSELoss()
-    optimizer = optim.Adam(lr=lr, amsgrad=True)
+    optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
     # optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=0.01)
-    train(model, optimizer, loss_fn, N, data_flag, batchSize, rank=0, load_data=False)
+    # train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
-
+    if trainOn:
+        model.share_memory()
+        processes = []
+        for rank in range(num_processes):
+            p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
     # testOn = False
     if testOn:
         model_name = 'model_2019-08-12_09-35_rejectionBlock_R2_process_8'
