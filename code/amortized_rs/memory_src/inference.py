@@ -15,6 +15,7 @@ import warnings
 import math
 import importlib
 import sys
+import datetime
 amortized_rs = load(name="amortized_rs",
                     sources=["amortized_rs.cpp"])
 
@@ -44,6 +45,7 @@ class Inference():
         :param teston :type bool Test learnt network.
         :param modelname :type str PATH to existing model
         :param testiterations :type int Number of test epochs
+        :param savedata :type bool Save data
         '''
         self.address = parameters.address
         self.batchSize = parameters.batchSize
@@ -69,6 +71,7 @@ class Inference():
         self.device = parameters.device
         self.loadData = parameters.loaddata
         self.logPath = parameters.logPath
+        self.saveData = parameters.savedata
         if parameters.loadCheckpoint:
            logging.info("Restoring parameters from {}".format('../checkpoint/'+parameters.loadCheckpoint))
            self.load_checkpoint(parameters.loadCheckpoint)
@@ -91,6 +94,11 @@ class Inference():
             self.model = self.model.load_state_dict(th.load(self.modelName))
         else:
             warnings.warn('*****Model must be specified*****')
+        dateStr = str(datetime.datetime.now())
+        self.dataPath = '../data/{}/'.format(dateStr)
+        if self.saveData:
+            if not os.path.exists(self.dataPath):
+                os.makedirs(self.dataPath)
 
 
 
@@ -182,7 +190,7 @@ class Inference():
                                                   'weight_decay'] else 0)
 
     # no longer need write the batch loop in c - we can do that later
-    def get_batch(self, count):
+    def get_batch(self, count, iteration):
         '''
         This function gathers one batch of data, either from a pre-generated data source
         or generates the data on the fly, if there is no pre-generated data.
@@ -196,11 +204,15 @@ class Inference():
         '''
         if self.self.loadData is None:
             data = th.stack([amortized_rs.f() for _ in range(self.batchSize)])
+            if self.saveData:
+                fname = self.dataPath + str(iteration)+'_samples_.th'
+                th.save(data,fname)
+
         if self.address == 'R1' and not self.loadData:
             inR1 = data[0:self.batchSize, 0].view([self.batchSize, 1]).view([1, self.batchSize])
             outR1 = data[0:self.batchSize, 1].view([self.batchSize, 1]).view([1, self.batchSize])
             count = count + 1  # not actually need if self.loadData == True
-            return inR1.to(device), outR1.to(self.device), count
+            return inR1.to(self.device), outR1.to(self.device), count
         elif self.address == 'R1' and self.loadData:
             inR1 = data[count:self.batchSize + count * self.batchSize, 0]
             outR1 = data[count:self.batchSize + count * self.batchSize, 1]
@@ -233,11 +245,6 @@ class Inference():
         #TODO: Add device option to transfer to the preset device.
         self.model.train()
 
-
-        if self.loadData == True:
-            nSamples = self.batchSize * self.nIterations
-            data = th.load({}.format(self.loadData))
-            data = data[0:nSamples, :]
 
         self.optimizer.zero_grad()
         count = 0
@@ -387,12 +394,7 @@ class Inference():
         if self.testOn:
             self.test(self.testIterations)
 
-    def plotting(self):
-        '''
-        #TODO add plotting scripts
-        '''
-
-def main(opt):
+def main():
     try:
         parser = argparse.ArgumentParser(description='Amortized sub-programs ',
                                          formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -433,7 +435,7 @@ def main(opt):
         parser.add_argument('--savemodel', '--sm', help='If you want the model saved, set to True, default True', default=True,
                             type=bool)
         parser.add_argument('--checkpoint', '--chk', help='If you want to save checkpoints. Default is True.  ', default= True, type=bool)
-
+        parser.add_argument('--savedata', '--sd', help='True if you want to save data, else False. Default True',default=True, type=bool )
         opt = parser.parse_args()
 
         inference=Inference(opt)
