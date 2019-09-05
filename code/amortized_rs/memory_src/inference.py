@@ -16,8 +16,8 @@ import math
 import importlib
 import sys
 import datetime
-amortized_rs = load(name="amortized_rs",
-                    sources=["amortized_rs.cpp"])
+import ast
+import seaborn as sns
 
 
 
@@ -47,12 +47,14 @@ class Inference():
         :param testiterations :type int Number of test epochs
         :param savedata :type bool Save data
         '''
+        self.amortized_rs = load(name="amortized_rs",
+                            sources=["amortized_rs.cpp"])
         self.address = parameters.address
-        self.batchSize = parameters.batchSize
+        self.batchSize = parameters.batchsize
         self.model = parameters.model
-        self.optimizerParams = parameters.optimizerParams
+        self.optimizerParams = parameters.optimparams
+        self.optimizerParams = ast.literal_eval(self.optimizerParams)
         # generate optimizer
-        self.optimizer_Fn()
         self.testOn = parameters.teston
         if self.testOn:
             try:
@@ -63,23 +65,22 @@ class Inference():
         self.trainOn = parameters.trainon
         # self.optimizer = optimizer
         if parameters.proposal:
-            self.proposalModule =  importlib.import_module('proposal.Proposal')
-            self.proposalClass = self.proposalModule()
+            self.proposalModule =  importlib.import_module('proposal')
+            self.proposalClass = getattr(self.proposalModule, 'Proposal')()
             self.proposalMethod = parameters.proposal
-        self.loss = parameters.loss
-        self.nIterations = parameters.niterations
+        # self.loss = parameters.loss
+        self.nIterations = parameters.trainiterations
         self.device = parameters.device
         self.loadData = parameters.loaddata
-        self.logPath = parameters.logPath
+        self.logPath = parameters.logpath
         self.saveData = parameters.savedata
-        if parameters.loadCheckpoint:
+        if parameters.loadcheckpoint:
            logging.info("Restoring parameters from {}".format('../checkpoint/'+parameters.loadCheckpoint))
-           self.load_checkpoint(parameters.loadCheckpoint)
+           self.loadCheckpoint(parameters.loadCheckpoint)
         if parameters.ncores == math.inf:
             self.processes = mp.cpu_count()
         else:
             self.processes = parameters.ncores
-
         if self.address == 'R2':
             self.inputsize = 2*self.batchSize
             self.outputsize = self.batchSize
@@ -87,13 +88,16 @@ class Inference():
             self.inputsize = self.batchSize
             self.outputsize = self.batchSize
         if parameters.model:
-            self.modelModule = importlib.import_module('model.{}'.format(parameters.model))
-            self.model = self.modelModule('({},{},{}'.format(self.inputsize, self.outputsize, self.batchSize))
+            self.modelModule = importlib.import_module('model')
+            self.model = getattr(self.modelModule, parameters.model)(self.inputsize, self.outputsize, self.batchSize)
         elif parameters.modelname:
             self.modelName = '../model/' + parameters.modelName
             self.model = self.model.load_state_dict(th.load(self.modelName))
         else:
             warnings.warn('*****Model must be specified*****')
+
+        # intialize optimizer
+        self.optimizer_Fn(self.optimizerParams)
         dateStr = str(datetime.datetime.now())
         self.dataPath = '../data/{}/'.format(dateStr)
         if self.saveData:
@@ -102,95 +106,89 @@ class Inference():
 
 
 
-    @classmethod
-    def optimizer_Fn(self):
+    def optimizer_Fn(self,optimizerParams):
         '''
         Sets-up the optimizer
 
         '''
-        if self.optimizerParams['name'] == 'Adadelta':
+        if optimizerParams['name'] == 'Adadelta':
             self.optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                               lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
-                                               rho=self.optimizerParams['rho'] if self.optimizerParams['rho'] else 0.9,
-                                               eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-6,
-                                               weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams['weight_decay'] else 0)
-        if self.optimizerParams['name'] == 'Adagrad':
+                                               lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.01,
+                                               rho=optimizerParams['rho'] if optimizerParams['rho'] else 0.9,
+                                               eps=optimizerParams['eps'] if optimizerParams['eps'] else 1e-6,
+                                               weight_decay=optimizerParams['weight_decay'] if optimizerParams['weight_decay'] else 0)
+        if optimizerParams['name'] == 'Adagrad':
             self.optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                               lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
-                                               lr_decay=self.optimizerParams['lr_decay'] if self.optimizerParams['lr_decay'] else 0,
-                                               weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams['weight_decay'] else 0,
-                                               initial_accumulator_value=self.optimizerParams['initial_accumulator_value'] if self.optimizerParams['initial_accumulator_value'] else 0,)
-        if self.optimizerParams['name'] == 'Adam':
+                                               lr=optimizerParams.get('lr', 0.01),
+                                               lr_decay=optimizerParams.get('lr_decay', 0),
+                                               weight_decay=optimizerParams.get('weight_decay', 0),
+                                               initial_accumulator_value=optimizerParams.get('initial_accumulator_value', 0))
+        if optimizerParams['name'] == 'Adam':
             self.optimizer = optim.Adam(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                               lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.001,
-                                               betas=self.optimizerParams['betas'] if self.optimizerParams['betas'] else (0.9,0.999),
-                                               eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-8,
-                                               weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams['weight_decay'] else 0,
-                                               amsgrad=self.optimizerParams['amsgrad'] if self.optimizerParams['amsgrad'] else False)
-        if self.optimizerParams['name'] == 'AdamW':
+                                               lr=optimizerParams.get('lr',0.001),
+                                               betas=optimizerParams.get('betas',(0.9,0.999)),
+                                               eps= optimizerParams.get('eps', 1e-8),
+                                               weight_decay=optimizerParams.get('weight_decay',0),
+                                               amsgrad=optimizerParams.get('amsgrad',False))
+        if optimizerParams['name'] == 'AdamW':
             self.optimizer = optim.AdamW(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.001,
-                                           betas=self.optimizerParams['betas'] if self.optimizerParams['betas'] else (
-                                           0.9, 0.999),
-                                           eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-8,
-                                           weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams[
-                                               'weight_decay'] else 0,
-                                           amsgrad=self.optimizerParams['amsgrad'] if self.optimizerParams[
-                                               'amsgrad'] else False)
-        if self.optimizerParams['name'] == 'SparseAdam':
+                                               lr=optimizerParams.get('lr',0.001),
+                                               betas=optimizerParams.get('betas',(0.9,0.999)),
+                                               eps= optimizerParams.get('eps', 1e-8),
+                                               weight_decay=optimizerParams.get('weight_decay',0),
+                                               amsgrad=optimizerParams.get('amsgrad',False))
+        #TODO change everything to <dict_name>.get
+        if optimizerParams['name'] == 'SparseAdam':
             self.optimizer = optim.SparseAdam(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.001,
-                                           betas=self.optimizerParams['betas'] if self.optimizerParams['betas'] else (
+                                           lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.001,
+                                           betas=optimizerParams['betas'] if optimizerParams['betas'] else (
                                            0.9, 0.999),
-                                           eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-8)
-        if self.optimizerParams['name'] == 'Adamax':
+                                           eps=optimizerParams['eps'] if optimizerParams['eps'] else 1e-8)
+        if optimizerParams['name'] == 'Adamax':
             self.optimizer = optim.Adam(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.002,
-                                           betas=self.optimizerParams['betas'] if self.optimizerParams['betas'] else (
+                                           lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.002,
+                                           betas=optimizerParams['betas'] if optimizerParams['betas'] else (
                                            0.9, 0.999),
-                                           eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-08,
-                                           weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams[
+                                           eps=optimizerParams['eps'] if optimizerParams['eps'] else 1e-08,
+                                           weight_decay=optimizerParams['weight_decay'] if optimizerParams[
                                                'weight_decay'] else 0)
-        if self.optimizerParams['name'] == 'ASGD':
+        if optimizerParams['name'] == 'ASGD':
             self.optimizer = optim.ASGD(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
-                                           lambd=self.optimizerParams['lambd'] if self.optimizerParams['lambd'] else 1e-4,
-                                           alpha=self.optimizerParams['alpha'] if self.optimizerParams['alpha'] else 0.75,
-                                           t0=self.optimizerParams['t0'] if self.optimizerParams['t0'] else 1e6,
-                                           weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams[
+                                           lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.01,
+                                           lambd=optimizerParams['lambd'] if optimizerParams['lambd'] else 1e-4,
+                                           alpha=optimizerParams['alpha'] if optimizerParams['alpha'] else 0.75,
+                                           t0=optimizerParams['t0'] if optimizerParams['t0'] else 1e6,
+                                           weight_decay=optimizerParams['weight_decay'] if optimizerParams[
                                                'weight_decay'] else 0)
         # ignoring LBFGS as it is not well supported in pyTorch, they are working on it though. TODO: Revise at a later date
 
-        if self.optimizerParams['name'] == 'RMSprop':
+        if optimizerParams['name'] == 'RMSprop':
             self.optimizer = optim.RMSprop(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
-                                           momentum=self.optimizerParams['momentum'] if self.optimizerParams['momentum'] else 0,
-                                           alpha=self.optimizerParams['alpha'] if self.optimizerParams['alpha'] else 0.99,
-                                           eps=self.optimizerParams['eps'] if self.optimizerParams['eps'] else 1e-08,
-                                           centered=self.optimizerParams['centered'] if self.optimizerParams['centered'] else False,
-                                           weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams[
+                                           lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.01,
+                                           momentum=optimizerParams['momentum'] if optimizerParams['momentum'] else 0,
+                                           alpha=optimizerParams['alpha'] if optimizerParams['alpha'] else 0.99,
+                                           eps=optimizerParams['eps'] if optimizerParams['eps'] else 1e-08,
+                                           centered=optimizerParams['centered'] if optimizerParams['centered'] else False,
+                                           weight_decay=optimizerParams['weight_decay'] if optimizerParams[
                                                'weight_decay'] else 0)
 
-        if self.optimizerParams['name'] == 'Rprop':
+        if optimizerParams['name'] == 'Rprop':
             self.optimizer = optim.Rprop(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                              lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
-                                              etas=self.optimizerParams['etas'] if self.optimizerParams[
+                                              lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.01,
+                                              etas=optimizerParams['etas'] if optimizerParams[
                                                   'etas'] else (0.5,1.2),
-                                              step_sizes=self.optimizerParams['step_sizes'] if self.optimizerParams[
+                                              step_sizes=optimizerParams['step_sizes'] if optimizerParams[
                                                   'step_sizes'] else (1e-6,50))
 
-        if self.optimizerParams['name'] == 'SGD':
+        if optimizerParams['name'] == 'SGD':
             self.optimizer = optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                              lr=self.optimizerParams['lr'] if self.optimizerParams['lr'] else 0.01,
-                                              momentum=self.optimizerParams['momentum'] if self.optimizerParams[
-                                                  'momentum'] else 0,
-                                              dampening=self.optimizerParams['dampening'] if self.optimizerParams[
-                                                  'dampening'] else 0.0,
-                                              weight_decay=self.optimizerParams['weight_decay'] if self.optimizerParams[
-                                                  'weight_decay'] else 0)
+                                              lr=optimizerParams.get('lr',0.01),
+                                              momentum=optimizerParams.get('momentum',0),
+                                              dampening=optimizerParams.get('dampening', 0.0),
+                                              weight_decay=optimizerParams.get('weight_decay', 0))
 
     # no longer need write the batch loop in c - we can do that later
-    def get_batch(self, count, iteration):
+    def get_batch(self, count, iteration=None):
         '''
         This function gathers one batch of data, either from a pre-generated data source
         or generates the data on the fly, if there is no pre-generated data.
@@ -202,8 +200,10 @@ class Inference():
                 outR* :type torch.tensor The output data from the rejection sampling block. 
                 count :type int Updated count
         '''
-        if self.self.loadData is None:
-            data = th.stack([amortized_rs.f() for _ in range(self.batchSize)])
+        if self.loadData is None:
+            print('{0} Generating data {0}'.format(5*'='))
+            data = th.stack([self.amortized_rs.f() for _ in range(self.batchSize)])
+            print('{0} Generating completed {0}'.format(5 * '='))
             if self.saveData:
                 fname = self.dataPath + str(iteration)+'_samples_.th'
                 th.save(data,fname)
@@ -231,7 +231,7 @@ class Inference():
             return inR2.to(self.device), outR2.to(self.device), count
 
 
-    def train(self, process, saveModel=True, saveName=None, checkpoint=True):
+    def train(self, process=1, saveModel=True, saveName=None, checkpoint=True):
         '''
         Method to train model
 
@@ -243,18 +243,19 @@ class Inference():
         '''
 
         #TODO: Add device option to transfer to the preset device.
+        print('{0} Training initiated {0}'.format(5*'='))
         self.model.train()
-
-
         self.optimizer.zero_grad()
         count = 0
         _outLoss = 0
 
         # The network needs to learn z1 -> z2 and z2,z3 -> z4
         for i in range(self.nIterations):
-            inData, outData, count = self.get_batch(count)
-
+            print('Debug statement : self.train()  Interation number {}'.format(i))
+            inData, outData, count = self.get_batch(count, iteration=i)
+            print('Debug statement : self.train()  data generated for iteration '.format(i))
             proposal = getattr(self.proposalClass,self.proposalMethod)(inData=inData, batchSize=self.batchSize, model=self.model)
+            print('Debug statement : self.train()  proposal generated for iteration '.format(i))
             self.optimizer.zero_grad()
             _loss = -proposal.log_prob(outData)
 
@@ -299,7 +300,7 @@ class Inference():
             print(' Model is saved at : {}'.format(fname))
             self.modelName = fname
 
-    def save_checkpoint(self, state, bestFlag,saveName, process, address):
+    def save_checkpoint(self, state, bestFlag, saveName, process, address):
         """
         Saves model and training parameters at checkpoint + '<name>.pth.tar'. If the loss is the lowest,
         it saves the model as 'bestModel_<name>.pth.tar' and will overwrite any best models before it.
@@ -313,14 +314,14 @@ class Inference():
         if not os.path.exists('../checkpoints/'):
             os.mkdir('../checkpoints/')
         if saveName:
-           name = '{}_{}_{}'.format(saveName,process,address)
+           name ='{}_{}_{}'.format(saveName,process,address)
         else:
            name = strftime("%Y-%m-%d_%H-%M") + '_{}_{}'.format(process,address)
         if bestFlag and saveName:
-           name =  'bestModel_{}_{}_{}'.format(saveName,process,address)
+           name ='bestModel_{}_{}_{}'.format(saveName,process,address)
         elif bestFlag:
            # assuming jobs will take less than 1 day to run
-           name = 'bestModel_{}_{}_{}'.format(strftime("%Y-%m-%d"), process, address)
+           name ='bestModel_{}_{}_{}'.format(strftime("%Y-%m-%d"), process, address)
 
         fName = '../checkpoints/' + os.path.join(name, '.pth.tar')
         th.save(state, fName)
@@ -351,7 +352,6 @@ class Inference():
         :param modelName: :type str model name which to load.
         :return:
         '''
-
         self.modelTest = self.model.load_state_dict(th.load(self.modelName))
         self.modelTest.eval()
         totalKL = 0
@@ -368,9 +368,36 @@ class Inference():
                 totalKL += kl
                 if i % 100 == 0:
                     print('{} Iteration , Test avg KL: {}\n'.format(i + 1, totalKL / (i + 1)))
+                    self.plot(pred=learntProposal,generatedData=outData,iteration=i,rank=self.processes)
 
 
-    def run(self, *args, **kwargs):
+
+    def plot(self, pred=None, generatedData=None, iteration=None, rank=1):
+        '''
+        Plot the predicted density agaisnt the simulated data
+        :param pred:
+        :param generatedData:
+        :param iteration:
+        :param rank:
+        :return:
+        '''
+
+        ax= sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r',label='pred')
+        ax = sns.distplot(generatedData[0, :].detach().numpy(), kde=True, color='b', label='ground truth')
+        ax.legend()
+        ax.set_title('Iteration_{}_Rejection_block_{}'.format(iteration,self.address))
+        fig = ax.get_figure()
+        if os.path.exists('../plots/'):
+            os.makedirs('../plots/')
+        fname= '../plots/{}_compare_pred_vs_gt_iteration_rejection_block_{}.png'.format(strftime("%M:%S"),self.address)
+        fig.savefig(fname=fname)
+
+        plot_pred = sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
+        plot_true = sns.distplot(generatedData[0, :].detach().numpy(), kde=True, color='b')
+        fnamePred = '../plot/' + 'predicted_iteration_{}_process_{}_rejectionBlock_{}'.format(iteration, rank, self.address)
+        fnameTrue = '../plot/' + 'true_iteration_{}_process_{}_rejectionBlock_{}'.format(iteration, rank, self.address)
+        plot_pred.savefig()
+    def run(self,*args, **kwargs):
         '''
         Runs the methods
         :param args:
@@ -379,16 +406,20 @@ class Inference():
         '''
 
         if self.trainOn:
-            self.model.share_memory()
-            processes = []
-            keywords =  {'saveModel':kwargs['saveModel'], 'saveName':kwargs['saveName'],
-                         'checkpoint':kwargs['checkpoint'], 'loadCheckpoint':kwargs['loadCheckpoint'] if kwargs['loadCheckpoint'] else None}
-            for process in range(self.processes):
-                p = mp.Process(target=self.train, args=process, kwargs=keywords)
-                p.start()
-                processes.append(p)
-            for p in self.processes:
-                p.join()
+            keywords = {'saveModel': kwargs['saveModel'],
+                        'saveName': kwargs['saveName'],
+                        'checkpoint': kwargs['checkpoint']}
+            if self.processes == 1:
+                self.train(self.processes, keywords)
+            else:
+                self.model.share_memory()
+                processes = []
+                for process in range(self.processes):
+                    p = mp.Process(target=self.train, args=(process), kwargs=keywords)
+                    p.start()
+                    processes.append(p)
+                for p in self.processes:
+                    p.join()
 
 
         if self.testOn:
@@ -403,12 +434,15 @@ def main():
         parser.add_argument('--seed', help='Random number seed', default=None, type=int)
         parser.add_argument('--address', '--a', help='Addreess to be amortized', default=None, type=str)
         parser.add_argument('--batchsize', '--bs', help='Number of samples to pass into trainer', default=128, type=int)
+        parser.add_argument('--optimparams', '--op', type=str)
         parser.add_argument('--model', '--m', help='The name of the model to import from a local directory',
                             default='density_estimator', choices=['density_estimator'], type=str)
-        parser.add_argument('--inputsize', '--is', help='size of inputs into model', default=128, type=int)
-        parser.add_argument('--outputsize', '--os', help='size of outputs of model', default=128, type=int)
+        # parser.add_argument('--inputsize', '--is', help='size of inputs into model', default=128, type=int)
+        # parser.add_argument('--outputsize', '--os', help='size of outputs of model', default=128, type=int)
         parser.add_argument('--trainon', help='If you want to perform amortized inference training, default True"', default=True,
                             type=bool)
+        parser.add_argument('--trainiterations', '--ntr', help='The number of train iterations. Default 1000',
+                            default=1000, type=int)
         parser.add_argument('--teston', help='If you want to test your model. Default False', default=False, type=bool)
         parser.add_argument('--testiterations', '--nti', help='The number of test iterations. Default 1000', default=1000, type=int)
         parser.add_argument('--loadcheckpoint', '--lp', help='PATH to load checkpoint "../checkpoints/"', default=None,
@@ -416,30 +450,21 @@ def main():
 
         parser.add_argument('--modelname', '--mn', help='PATH to existing model "../mdoel/<modelname>"', default=None,
                             type=str)
-        parser.add_argument('--ncores', help='N cores to utilize. The default is all cores', default=math.inf,type=int )
-        parser.add_argument('--optimizerparams' '--op',
-                            help='A dict of params for optimizer {"name": <optim_name>, <optim_kwargs>}',
-                            choices=['Adadelta', 'Adagrad', 'Adam', 'AdamW', 'SparseAdam', 'Adamax', 'ASGD', 'RMSprop',
-                                     'Rprop', 'SGD'], default={'name': 'Adam', 'lr': 0.001, 'betas': (0.9, 0.999)},
-                            type=dir)
+        parser.add_argument('--ncores', help='N cores to utilize. The default is all cores', default=math.inf,type=int)
         parser.add_argument('--proposal', '--pr', help='the name of the objective to use deault NormalApproximator', type=str)
-        parser.add_arugment('--loss', '--l', help='The name of the loss function to use', default=None, type=str)
-        parser.add_argument('--niterations', '--n', help='The number of iterations (epochs) to run the learning for',
-                            default=1000, type=str)
+        # parser.add_argument('--loss', '--l', help='The name of the loss function to use', default=None, type=str)
         parser.add_argument('--loaddata', '--ld', help='PATH to load data from', default=None, type=str)
         parser.add_argument('--logpath', help='PATH to save log', default=None, type=str)
-        parser.add_argument('--loadcheckpoint', '--lp', help='PATH to load checkpoint "../checkpoints/"', default=None,
-                            type=str)
         parser.add_argument('--savename', '--sn', help='File name to save model to "../model/<savename>"', default=None,
                             type=str)
         parser.add_argument('--savemodel', '--sm', help='If you want the model saved, set to True, default True', default=True,
                             type=bool)
-        parser.add_argument('--checkpoint', '--chk', help='If you want to save checkpoints. Default is True.  ', default= True, type=bool)
+        parser.add_argument('--checkpoint', '--chk', help='Ifmain you want to save checkpoints. Default is True.  ', default= True, type=bool)
         parser.add_argument('--savedata', '--sd', help='True if you want to save data, else False. Default True',default=True, type=bool )
         opt = parser.parse_args()
 
-        inference=Inference(opt)
-        inference.run(saveModel=opt.savemodel, saveName=opt.savename, loadCheckpoint=opt.loadcheckpoint, checkpoint=opt.checkpoint)
+        inference =Inference(opt)
+        inference.run(saveModel=opt.savemodel, saveName=opt.savename, checkpoint=opt.checkpoint)
 
 
     except KeyboardInterrupt:
