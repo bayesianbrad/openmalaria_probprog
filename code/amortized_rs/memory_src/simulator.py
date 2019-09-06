@@ -14,11 +14,11 @@ from torch.distributions import Normal, Uniform
 
 def s():
     ''' In this simple simulator we care about the input output sets:
-    {z1, z2}
-    {(z2,z3), z4}
-    {z5
+    {z1, z2, nIter3}
+    {(z2,z3), z4, nIter2}
+    {z5, nIter3}
     '''
-    z1 = Normal(0,0.1).sample()
+    z1 = Normal(0, 0.1).sample()
     nIterR1 = 0
     z2, i = R1(z1)
     nIterR1 += i
@@ -31,34 +31,35 @@ def s():
         z2,i = R1(z1)
         nIterR1 += i
 
-    z3 = Uniform(0,2).sample()
-    z4, nIterR2 = R2(z2,z3)
-    z5 = Normal(50,30).sample()
-    M = torch.tensor(3.0337) # determined via x = torch.linsapce(-50.0,151.0, nsamples); torch.max(f(x)/g(x))
-    nIterR3= 0
-    z6,i = R3(z5,M)
-    nIterR3 += i
-    while z6 == math.inf:
-        # we resample again to increase chance of acceptance.
-        # This does not change acceptance probabilities. This is just for
-        # computational efficiency we generating samples.
+    z3 = Uniform(0, 2).sample()
+    z4, nIterR2 = R2(z2, z3)
+    # z5 = Normal(50,30).sample()
+    # M = torch.tensor(3.0337) # determined via x = torch.linsapce(-50.0,151.0, nsamples); torch.max(f(x)/g(x))
+    # nIterR3= 0
+    # z6,i = R3(z5,M)
+    # nIterR3 += i
+    # while z6 == math.inf:
+    #     # we resample again to increase chance of acceptance.
+    #     # This does not change acceptance probabilities. This is just for
+    #     # computational efficiency we generating samples.
+    #
+    #     # This rejection sampler is very inefficient.
+    #     # print(' Debug printing nIterR3: {}'.format(nIterR3))
+    #     z5 = Normal(50, 30).sample()
+    #     z6, i = R3(z5, M)
+    #     nIterR3 += i
 
-        # This rejection sampler is very inefficient.
-        # print(' Debug printing nIterR3: {}'.format(nIterR3))
-        z5 = Normal(50,30).sample()
-        z6,i = R3(z5, M)
-        nIterR3 += i
+    # return torch.tensor([z1, z2, z3, z4, z5, z6, nIterR1, nIterR2, nIterR3])
+    return torch.tensor([z1, z2, z3, z4, nIterR1, nIterR2])
 
-
-    return torch.tensor([z1,z2,z3,z4,z5,z6, nIterR1, nIterR2, nIterR3])
 
 def f(x, mu1, sigma1, mu2, sigma2):
     ' PDF of Mixture of gaussian that we want to sample from: N(mu1,sigma1) + N(mu2,sigma2)'
-    const1 =  1 / (2 * np.pi * sigma1 ** 2 *torch.ones(x.shape)) ** 0.5
-    const2 =  1 / (2 * np.pi * sigma2 ** 2 *torch.ones(x.shape)) ** 0.5
-    body1 =  torch.exp(-(x - mu1*torch.ones(x.shape)) ** 2 / (2 * sigma1 ** 2 *torch.ones(x.shape)))
-    body2 =  torch.exp(-(x - mu2*torch.ones(x.shape)) ** 2 / (2 * sigma2 ** 2 *torch.ones(x.shape)))
-    return  const1*body1 + const2*body2
+    const1 = 1 / (2 * np.pi * sigma1 ** 2 *torch.ones(x.shape)) ** 0.5
+    const2 = 1 / (2 * np.pi * sigma2 ** 2 *torch.ones(x.shape)) ** 0.5
+    body1 = torch.exp(-(x - mu1*torch.ones(x.shape)) ** 2 / (2 * sigma1 ** 2 *torch.ones(x.shape)))
+    body2 = torch.exp(-(x - mu2*torch.ones(x.shape)) ** 2 / (2 * sigma2 ** 2 *torch.ones(x.shape)))
+    return const1*body1 + const2*body2
 
 def g(x,mu1, sigma1):
     ' PDF of simple normal proposal N(mu1, sigma1)'
@@ -66,19 +67,19 @@ def g(x,mu1, sigma1):
     body = torch.exp(-(x - mu1) *torch.ones(x.shape) ** 2 / (2 * sigma1 ** 2 *torch.ones(x.shape)))
     return const * body
 
-def R3(z,M):
-    ' This fucntion will always return z back, eventually'
-    tempg = g(z, 50,30)
-    tempf = f(z,49.5,1,51.5,1)
-    u = Uniform(0,M*tempg).sample()
-    i = 1
-    bs = 1
-    while True:
-        if u <= tempf:
-            return z, i
-        if i>=10000:
-            return math.inf,i
-        i += bs
+# def R3(z,M):
+#     ' This fucntion will always return z back, eventually'
+#     tempg = g(z, 50, 30)
+#     tempf = f(z, 49.5, 1, 51.5, 1)
+#     u = Uniform(0, M*tempg).sample()
+#     i = 1
+#     bs = 1
+#     while True:
+#         if u <= tempf:
+#             return z, i
+#         if i >= 10000:
+#             return math.inf, i
+#         i += bs
 
 
 def R2(z2,z3):

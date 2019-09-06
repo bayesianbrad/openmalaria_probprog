@@ -18,9 +18,10 @@ import sys
 import datetime
 import ast
 import seaborn as sns
+import simulator as sim
 
-amortized_rs = load(name="amortized_rs",
-                            sources=["amortized_rs.cpp"])
+# amortized_rs = load(name="amortized_rs",
+#                             sources=["amortized_rs.cpp"])
 
 class Inference():
     """
@@ -47,7 +48,15 @@ class Inference():
         :param modelname :type str PATH to existing model
         :param testiterations :type int Number of test epochs
         :param savedata :type bool Save data
+        :param datestr :type str The data and time of the experiment that needs restoring.
         '''
+        if parameters.datestr:
+            dateStr = parameters.datestr
+        else:
+            dateStr = str(datetime.datetime.now())
+        self.BASEPATH = '../experiments/{}/'.format(dateStr)
+        if os.path.exists(self.BASEPATH):
+            os.makedirs(self.BASEPATH)
         self.address = parameters.address
         self.batchSize = parameters.batchsize
         self.model = parameters.model
@@ -64,7 +73,7 @@ class Inference():
         self.trainOn = parameters.trainon
         # self.optimizer = optimizer
         if parameters.proposal:
-            self.proposalModule =  importlib.import_module('proposal')
+            self.proposalModule = importlib.import_module('proposal')
             self.proposalClass = getattr(self.proposalModule, 'Proposal')()
             self.proposalMethod = parameters.proposal
         # self.loss = parameters.loss
@@ -74,7 +83,7 @@ class Inference():
         self.logPath = parameters.logpath
         self.saveData = parameters.savedata
         if parameters.loadcheckpoint:
-           logging.info("Restoring parameters from {}".format('../checkpoint/'+parameters.loadCheckpoint))
+           logging.info("Restoring parameters from {}".format(self.BASEPATH+'checkpoint/'+parameters.loadCheckpoint))
            self.loadCheckpoint(parameters.loadCheckpoint)
         if parameters.ncores == math.inf:
             self.processes = mp.cpu_count()
@@ -87,18 +96,18 @@ class Inference():
             self.inputsize = self.batchSize
             self.outputsize = self.batchSize
         if parameters.model:
+            self.modelImport = parameters.model
             self.modelModule = importlib.import_module('model')
             self.model = getattr(self.modelModule, parameters.model)(self.inputsize, self.outputsize, self.batchSize)
-        elif parameters.modelname:
-            self.modelName = '../model/' + parameters.modelName
+        elif parameters.modelname and self.testOn:
+            self.modelName = self.BASEPATH + 'model/' + parameters.modelName
             self.model = self.model.load_state_dict(th.load(self.modelName))
         else:
             warnings.warn('*****Model must be specified*****')
 
         # intialize optimizer
         self.optimizer_Fn(self.optimizerParams)
-        dateStr = str(datetime.datetime.now())
-        self.dataPath = '../data/{}/'.format(dateStr)
+        self.dataPath = self.BASEPATH + 'data/'
         if self.saveData:
             if not os.path.exists(self.dataPath):
                 os.makedirs(self.dataPath)
@@ -112,10 +121,10 @@ class Inference():
         '''
         if optimizerParams['name'] == 'Adadelta':
             self.optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                               lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.01,
-                                               rho=optimizerParams['rho'] if optimizerParams['rho'] else 0.9,
-                                               eps=optimizerParams['eps'] if optimizerParams['eps'] else 1e-6,
-                                               weight_decay=optimizerParams['weight_decay'] if optimizerParams['weight_decay'] else 0)
+                                               lr=optimizerParams.get('lr', 0.01),
+                                               rho=optimizerParams.get('rho', 0.9),
+                                               eps=optimizerParams.get('eps',1e-6),
+                                               weight_decay=optimizerParams('weight_decay', 0))
         if optimizerParams['name'] == 'Adagrad':
             self.optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, self.model.parameters()),
                                                lr=optimizerParams.get('lr', 0.01),
@@ -139,45 +148,38 @@ class Inference():
         #TODO change everything to <dict_name>.get
         if optimizerParams['name'] == 'SparseAdam':
             self.optimizer = optim.SparseAdam(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.001,
-                                           betas=optimizerParams['betas'] if optimizerParams['betas'] else (
-                                           0.9, 0.999),
-                                           eps=optimizerParams['eps'] if optimizerParams['eps'] else 1e-8)
+                                           lr=optimizerParams.get('lr', 0.001),
+                                           betas=optimizerParams.get('betas',(0.9, 0.999)),
+                                           eps=optimizerParams.get('eps', 1e-8))
         if optimizerParams['name'] == 'Adamax':
             self.optimizer = optim.Adam(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.002,
-                                           betas=optimizerParams['betas'] if optimizerParams['betas'] else (
-                                           0.9, 0.999),
-                                           eps=optimizerParams['eps'] if optimizerParams['eps'] else 1e-08,
-                                           weight_decay=optimizerParams['weight_decay'] if optimizerParams[
-                                               'weight_decay'] else 0)
+                                           lr=optimizerParams.get('lr',0.002),
+                                           betas=optimizerParams('betas', (0.9, 0.999)),
+                                           eps=optimizerParams.get('eps', 1e-08),
+                                           weight_decay=optimizerParams.get('weight_decay', 0))
         if optimizerParams['name'] == 'ASGD':
             self.optimizer = optim.ASGD(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.01,
-                                           lambd=optimizerParams['lambd'] if optimizerParams['lambd'] else 1e-4,
-                                           alpha=optimizerParams['alpha'] if optimizerParams['alpha'] else 0.75,
-                                           t0=optimizerParams['t0'] if optimizerParams['t0'] else 1e6,
-                                           weight_decay=optimizerParams['weight_decay'] if optimizerParams[
-                                               'weight_decay'] else 0)
+                                           lr=optimizerParams.get('lr',0.01),
+                                           lambd=optimizerParams.get('lambda', 1e-4),
+                                           alpha=optimizerParams.get('alpha',0.75),
+                                           t0=optimizerParams.get('t0', 1e6),
+                                           weight_decay=optimizerParams.get('weight_decay', 0))
         # ignoring LBFGS as it is not well supported in pyTorch, they are working on it though. TODO: Revise at a later date
 
         if optimizerParams['name'] == 'RMSprop':
             self.optimizer = optim.RMSprop(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                           lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.01,
-                                           momentum=optimizerParams['momentum'] if optimizerParams['momentum'] else 0,
-                                           alpha=optimizerParams['alpha'] if optimizerParams['alpha'] else 0.99,
-                                           eps=optimizerParams['eps'] if optimizerParams['eps'] else 1e-08,
-                                           centered=optimizerParams['centered'] if optimizerParams['centered'] else False,
-                                           weight_decay=optimizerParams['weight_decay'] if optimizerParams[
-                                               'weight_decay'] else 0)
+                                           lr=optimizerParams.get('lr', 0.01),
+                                           momentum=optimizerParams.get('momentum', 0),
+                                           alpha=optimizerParams.get('alpha', 0.99),
+                                           eps=optimizerParams.get('eps', 1e-08),
+                                           centered=optimizerParams.get('centered', False),
+                                           weight_decay=optimizerParams.get('weight_decay', 0))
 
         if optimizerParams['name'] == 'Rprop':
             self.optimizer = optim.Rprop(filter(lambda p: p.requires_grad, self.model.parameters()),
-                                              lr=optimizerParams['lr'] if optimizerParams['lr'] else 0.01,
-                                              etas=optimizerParams['etas'] if optimizerParams[
-                                                  'etas'] else (0.5,1.2),
-                                              step_sizes=optimizerParams['step_sizes'] if optimizerParams[
-                                                  'step_sizes'] else (1e-6,50))
+                                              lr=optimizerParams.get('lr', 0.01),
+                                              etas=optimizerParams.get('etas',(0.5,1.2)),
+                                              step_sizes=optimizerParams.get('step_sizes', (1e-6,50)))
 
         if optimizerParams['name'] == 'SGD':
             self.optimizer = optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()),
@@ -200,11 +202,9 @@ class Inference():
                 count :type int Updated count
         '''
         if self.loadData is None:
-            print('{0} Generating data {0}'.format(5*'='))
-            data = th.stack([self.amortized_rs.f() for _ in range(self.batchSize)])
-            print('{0} Generating completed {0}'.format(5 * '='))
+            data = th.stack([sim.s() for _ in range(self.batchSize)])
             if self.saveData:
-                fname = self.dataPath + str(iteration)+'_samples_.th'
+                fname = self.dataPath + str(float(iteration))+'_samples_.th'
                 th.save(data,fname)
 
         if self.address == 'R1' and not self.loadData:
@@ -250,16 +250,13 @@ class Inference():
 
         # The network needs to learn z1 -> z2 and z2,z3 -> z4
         for i in range(self.nIterations):
-            print('Debug statement : self.train()  Interation number {}'.format(i))
             inData, outData, count = self.get_batch(count, iteration=i)
-            print('Debug statement : self.train()  data generated for iteration '.format(i))
             proposal = getattr(self.proposalClass,self.proposalMethod)(inData=inData, batchSize=self.batchSize, model=self.model)
-            print('Debug statement : self.train()  proposal generated for iteration '.format(i))
             self.optimizer.zero_grad()
             _loss = -proposal.log_prob(outData)
 
             # calculate the SVI update sum of log(prob..) / 'batchsize'
-            totalLoss = _loss.sum() / len(self.batchSize)
+            totalLoss = _loss.sum() / len(inData)
             totalLoss.backward()
             self.optimizer.step()
             # if using a a learning rate scheduler place below optimizer.step() (if pytorch version >= 1.1.0
@@ -278,23 +275,24 @@ class Inference():
                 avgLoss = _outLoss / (i + 1)
                 print("iteration {}: Average loss: {} Iteration loss: {}".format(i,avgLoss, totalLoss.item()))
                 if checkpoint:
-                    checkpointData = {'model': self.modelModule,
+                    checkpointData = {'model method': self.modelImport,
+                                      'model': self.model,
                                       'state_dict': self.model.state_dict(),
                                       'iteration': i,
                                       'optimizer': self.optimizer.state_dict(),
                                       'addresss': self.address,
                                       'avg_loss': avgLoss,
-                                      'iter_loss':totalLoss.item()
+                                      'iter_loss': totalLoss.item()
                                       }
                     self.save_checkpoint(checkpointData, bestFlag,saveName, process, self.address)
 
-        if not os.path.exists('../model/'):
-            os.makedirs('../model/')
+        if not os.path.exists(self.BASEPATH+'model/'):
+            os.makedirs(self.BASEPATH+'model/')
         if saveModel:
             if saveName:
-                fname = '../model/{}_process_{}_address_{}'.format(saveName, process, self.address)
+                fname = self.BASEPATH+'model/{}_process_{}_address_{}.th'.format(saveName, process, self.address)
             else:
-                fname = '../model/{}_process_{}_address_{}'.format(strftime("%Y-%m-%d_%H-%M"), process, self.address)
+                fname = self.BASEPATH+'model/process_{}_address_{}.th'.format(process, self.address)
             th.save(self.model.state_dict(), fname)
             print(' Model is saved at : {}'.format(fname))
             self.modelName = fname
@@ -310,19 +308,19 @@ class Inference():
         :param: process: :type int Which thread
         :param: address: :type str Which address we are learning a surragote for.
         """
-        if not os.path.exists('../checkpoints/'):
-            os.mkdir('../checkpoints/')
+        if not os.path.exists(self.BASEPATH+'checkpoints/'):
+            os.mkdir(self.BASEPATH+'checkpoints/')
         if saveName:
            name ='{}_{}_{}'.format(saveName,process,address)
         else:
-           name = strftime("%Y-%m-%d_%H-%M") + '_{}_{}'.format(process,address)
+           name = '{}_{}'.format(process,address)
         if bestFlag and saveName:
            name ='bestModel_{}_{}_{}'.format(saveName,process,address)
         elif bestFlag:
            # assuming jobs will take less than 1 day to run
            name ='bestModel_{}_{}_{}'.format(strftime("%Y-%m-%d"), process, address)
 
-        fName = '../checkpoints/' + os.path.join(name, '.pth.tar')
+        fName = self.BASEPATH + 'checkpoints/' + name + '.pth.tar'
         th.save(state, fName)
         print('{0} Saved checkpoint under file name : {1} {0}'.format(5*'*', fName))
     def load_checkpoint(self, checkpoint):
@@ -333,7 +331,7 @@ class Inference():
         :param: optimizer: :type torch.optim  Optional: resume optimizer from checkpoint
         """
         # assumes only file name is passed.
-        checkpoint = '../checkpoints/'+checkpoint+'pth.tar'
+        checkpoint = self.BASEPATH + 'checkpoints/'+checkpoint+'pth.tar'
         if not os.path.exists(checkpoint):
             raise ("File doesn't exist {}".format(checkpoint))
         checkpointData = th.load(checkpoint)
@@ -351,16 +349,17 @@ class Inference():
         :param modelName: :type str model name which to load.
         :return:
         '''
-        self.modelTest = self.model.load_state_dict(th.load(self.modelName))
-        self.modelTest.eval()
+        # self.modelTest = self.model.load_state_dict(th.load(self.modelName))
+        self.model.eval()
         totalKL = 0
         with th.no_grad():
             for i in range(testSamples):
-                inData, outData, count = self.get_batch(self.address, testSamples,cout=0)
+                inData, outData, count = self.get_batch(count=0, iteration=i)
                 # may have to change this api for generating samples from the proposal later on.
                 # An efficient, analytically exact sample method must be implemented
-
-                learntProposal  = self.proposal(*self.modelTest(inData)).sample()
+                proposal = getattr(self.proposalClass, self.proposalMethod)(inData=inData, batchSize=self.batchSize,
+                                                                            model=self.model)
+                learntProposal = proposal.rsample(th.Size([self.batchSize]))
                 # If we have learnt a good proposal then the KL will tend to zero.
                 # I think this is right TODO: Check KL code later
                 kl = F.kl_div(outData, learntProposal, reduction='batchmean')
@@ -386,16 +385,16 @@ class Inference():
         ax.legend()
         ax.set_title('Iteration_{}_Rejection_block_{}'.format(iteration,self.address))
         fig = ax.get_figure()
-        if os.path.exists('../plots/'):
-            os.makedirs('../plots/')
-        fname= '../plots/{}_compare_pred_vs_gt_iteration_rejection_block_{}.png'.format(strftime("%M:%S"),self.address)
+        if os.path.exists(self.BASEPATH + 'plots/'):
+            os.makedirs(self.BASEPATH + 'plots/')
+        fname = self.BASEPATH + 'plots/' + 'compare_pred_vs_gt_iteration_rejection_block_{}.png'.format(self.address)
         fig.savefig(fname=fname)
 
-        plot_pred = sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
-        plot_true = sns.distplot(generatedData[0, :].detach().numpy(), kde=True, color='b')
-        fnamePred = '../plot/' + 'predicted_iteration_{}_process_{}_rejectionBlock_{}'.format(iteration, rank, self.address)
-        fnameTrue = '../plot/' + 'true_iteration_{}_process_{}_rejectionBlock_{}'.format(iteration, rank, self.address)
-        plot_pred.savefig()
+        # plot_pred = sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
+        # plot_true = sns.distplot(generatedData[0, :].detach().numpy(), kde=True, color='b')
+        # fnamePred = self.BASEPATH + 'plots/' + 'predicted_iteration_{}_process_{}_rejectionBlock_{}'.format(iteration, rank, self.address)
+        # fnameTrue = self.BASEPATH + 'plots/' + 'true_iteration_{}_process_{}_rejectionBlock_{}'.format(iteration, rank, self.address)
+        # plot_pred.savefig()
     def run(self,*args, **kwargs):
         '''
         Runs the methods
@@ -434,18 +433,19 @@ def main(test=False):
             model = 'density_estimator'
             trainon = True
             teston= True
-            trainiterations = 200
-            testiterations =200
+            trainiterations = 2
+            testiterations =2
             loadcheckpoint = False
             modelname = None
             ncores = 1
-            proposal = 'NormalApproximator'
+            proposal = 'Normalapproximator'
             loaddata =None
             logpath = None
             savename = None
             savemodel = True
             checkpoint = True
             savedata = True
+            datestr=None
 
         opt = Params()
         inference = Inference(opt)
@@ -486,6 +486,10 @@ def main(test=False):
                                 type=bool)
             parser.add_argument('--checkpoint', '--chk', help='Ifmain you want to save checkpoints. Default is True.  ', default= True, type=bool)
             parser.add_argument('--savedata', '--sd', help='True if you want to save data, else False. Default True',default=True, type=bool )
+            parser.add_argument('--datastr', help='The date str of the experiment to load',
+                                default=None, type=str)
+
+
             opt = parser.parse_args()
 
             inference =Inference(opt)
