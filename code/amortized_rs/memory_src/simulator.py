@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 '''
 Author: Bradley Gram-Hansen
 Time created:  13:51
@@ -115,21 +113,22 @@ def forward(nIterations):
     '''
     accept1 = 0
     accept2 = 0
-    accept3 = 0
+    # accept3 = 0
     print('Running model')
     for i in range(nIterations):
         data = s()
-        accept1 += data[6]
-        accept2 += data[7]
-        accept3 += data[8]
+        accept1 += data[4]
+        accept2 += data[5]
+        # accept3 += data[8]
         if i % 100 == 0:
             print('{} iterations have been completed'.format(i))
-    print(' Expected acceptance ratios \nfor R1: {} \n R2:{} \n R3:{}'.format(torch.sum(accept1)/nIterations, torch.sum(accept2)/nIterations, torch.sum(accept3)/nIterations))
-
+    # print(' Expected acceptance ratios \nfor R1: {} \n R2:{} \n R3:{}'.format(torch.sum(accept1)/nIterations, torch.sum(accept2)/nIterations, torch.sum(accept3)/nIterations))
+    print(' Expected acceptance ratios \nfor R1: {} \n R2:{} \n R3:{}'.format(torch.sum(accept1) / nIterations,
+                                                                              torch.sum(accept2) / nIterations))
     return data
 
-nIterations = 200
-data = forward(nIterations)
-fname = '../data/{}_samples.sh'.format(nIterations)
-torch.save(data, fname)
-print('Data saved at : {}'.format(fname))
+# nIterations = 200
+# data = forward(nIterations)
+# fname = '../data/{}_samples.sh'.format(nIterations)
+# torch.save(data, fname)
+# print('Data saved at : {}'.format(fname))
