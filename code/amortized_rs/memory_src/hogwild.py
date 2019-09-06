@@ -143,21 +143,22 @@ if __name__ == '__main__':
     num_processes = mp.cpu_count() - 2
     N =  1000
     trainOn = True
+    testOn = False
     # loss_fn = th.nn.CosineEmbeddingLoss()
     loss_fn = th.nn.MSELoss()
     optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr, amsgrad=True)
     # optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=0.01)
-    # train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
+    train(model, optimizer, loss_fn, N, data_flag, batch_size, rank=0, load_data=False)
     # NOTE: this is required for the ``fork`` method to work
-    if trainOn:
-        model.share_memory()
-        processes = []
-        for rank in range(num_processes):
-            p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
-            p.start()
-            processes.append(p)
-        for p in processes:
-            p.join()
+    # if trainOn:
+    #     model.share_memory()
+    #     processes = []
+    #     for rank in range(num_processes):
+    #         p = mp.Process(target=train, args=(model,optimizer,loss_fn, N,data_flag, batch_size, rank))
+    #         p.start()
+    #         processes.append(p)
+    #     for p in processes:
+    #         p.join()
     # testOn = False
     if testOn:
         model_name = 'model_2019-08-12_09-35_rejectionBlock_R2_process_8'

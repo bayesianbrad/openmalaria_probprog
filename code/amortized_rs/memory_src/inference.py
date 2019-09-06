@@ -19,7 +19,8 @@ import datetime
 import ast
 import seaborn as sns
 
-
+amortized_rs = load(name="amortized_rs",
+                            sources=["amortized_rs.cpp"])
 
 class Inference():
     """
@@ -47,8 +48,6 @@ class Inference():
         :param testiterations :type int Number of test epochs
         :param savedata :type bool Save data
         '''
-        self.amortized_rs = load(name="amortized_rs",
-                            sources=["amortized_rs.cpp"])
         self.address = parameters.address
         self.batchSize = parameters.batchsize
         self.model = parameters.model
@@ -425,55 +424,81 @@ class Inference():
         if self.testOn:
             self.test(self.testIterations)
 
-def main():
-    try:
-        parser = argparse.ArgumentParser(description='Amortized sub-programs ',
-                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        parser.add_argument('--device', '--d', help='Set the compute device (cpu, cuda:0, cuda:1, etc.)', default='cpu',
-                            type=str)
-        parser.add_argument('--seed', help='Random number seed', default=None, type=int)
-        parser.add_argument('--address', '--a', help='Addreess to be amortized', default=None, type=str)
-        parser.add_argument('--batchsize', '--bs', help='Number of samples to pass into trainer', default=128, type=int)
-        parser.add_argument('--optimparams', '--op', type=str)
-        parser.add_argument('--model', '--m', help='The name of the model to import from a local directory',
-                            default='density_estimator', choices=['density_estimator'], type=str)
-        # parser.add_argument('--inputsize', '--is', help='size of inputs into model', default=128, type=int)
-        # parser.add_argument('--outputsize', '--os', help='size of outputs of model', default=128, type=int)
-        parser.add_argument('--trainon', help='If you want to perform amortized inference training, default True"', default=True,
-                            type=bool)
-        parser.add_argument('--trainiterations', '--ntr', help='The number of train iterations. Default 1000',
-                            default=1000, type=int)
-        parser.add_argument('--teston', help='If you want to test your model. Default False', default=False, type=bool)
-        parser.add_argument('--testiterations', '--nti', help='The number of test iterations. Default 1000', default=1000, type=int)
-        parser.add_argument('--loadcheckpoint', '--lp', help='PATH to load checkpoint "../checkpoints/"', default=None,
-                            type=str)
+def main(test=False):
+    if test:
+        class Params():
+            device = 'cpu'
+            address = 'R1'
+            batchsize = 1024
+            optimparams= '{"name": "Adam", "lr": 0.001, "betas": (0.9, 0.999)}'
+            model = 'density_estimator'
+            trainon = True
+            teston= True
+            trainiterations = 200
+            testiterations =200
+            loadcheckpoint = False
+            modelname = None
+            ncores = 1
+            proposal = 'NormalApproximator'
+            loaddata =None
+            logpath = None
+            savename = None
+            savemodel = True
+            checkpoint = True
+            savedata = True
 
-        parser.add_argument('--modelname', '--mn', help='PATH to existing model "../mdoel/<modelname>"', default=None,
-                            type=str)
-        parser.add_argument('--ncores', help='N cores to utilize. The default is all cores', default=math.inf,type=int)
-        parser.add_argument('--proposal', '--pr', help='the name of the objective to use deault NormalApproximator', type=str)
-        # parser.add_argument('--loss', '--l', help='The name of the loss function to use', default=None, type=str)
-        parser.add_argument('--loaddata', '--ld', help='PATH to load data from', default=None, type=str)
-        parser.add_argument('--logpath', help='PATH to save log', default=None, type=str)
-        parser.add_argument('--savename', '--sn', help='File name to save model to "../model/<savename>"', default=None,
-                            type=str)
-        parser.add_argument('--savemodel', '--sm', help='If you want the model saved, set to True, default True', default=True,
-                            type=bool)
-        parser.add_argument('--checkpoint', '--chk', help='Ifmain you want to save checkpoints. Default is True.  ', default= True, type=bool)
-        parser.add_argument('--savedata', '--sd', help='True if you want to save data, else False. Default True',default=True, type=bool )
-        opt = parser.parse_args()
-
-        inference =Inference(opt)
+        opt = Params()
+        inference = Inference(opt)
         inference.run(saveModel=opt.savemodel, saveName=opt.savename, checkpoint=opt.checkpoint)
+    else:
+        try:
+            parser = argparse.ArgumentParser(description='Amortized sub-programs ',
+                                             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+            parser.add_argument('--device', '--d', help='Set the compute device (cpu, cuda:0, cuda:1, etc.)', default='cpu',
+                                type=str)
+            parser.add_argument('--seed', help='Random number seed', default=None, type=int)
+            parser.add_argument('--address', '--a', help='Addreess to be amortized', default=None, type=str)
+            parser.add_argument('--batchsize', '--bs', help='Number of samples to pass into trainer', default=128, type=int)
+            parser.add_argument('--optimparams', '--op', help='The parameters ', default='{"name": "Adam", "lr": 0.001, "betas": (0.9, 0.999)}', type=str)
+            parser.add_argument('--model', '--m', help='The name of the model to import from a local directory',
+                                default='density_estimator', choices=['density_estimator'], type=str)
+            # parser.add_argument('--inputsize', '--is', help='size of inputs into model', default=128, type=int)
+            # parser.add_argument('--outputsize', '--os', help='size of outputs of model', default=128, type=int)
+            parser.add_argument('--trainon', help='If you want to perform amortized inference training, default True"', default=True,
+                                type=bool)
+            parser.add_argument('--trainiterations', '--ntr', help='The number of train iterations. Default 1000',
+                                default=1000, type=int)
+            parser.add_argument('--teston', help='If you want to test your model. Default False', default=False, type=bool)
+            parser.add_argument('--testiterations', '--nti', help='The number of test iterations. Default 1000', default=1000, type=int)
+            parser.add_argument('--loadcheckpoint', '--lp', help='PATH to load checkpoint "../checkpoints/"', default=None,
+                                type=str)
+
+            parser.add_argument('--modelname', '--mn', help='PATH to existing model "../mdoel/<modelname>"', default=None,
+                                type=str)
+            parser.add_argument('--ncores', help='N cores to utilize. The default is all cores', default=math.inf,type=int)
+            parser.add_argument('--proposal', '--pr', help='the name of the objective to use deault NormalApproximator',default='NormalApproximator', type=str)
+            # parser.add_argument('--loss', '--l', help='The name of the loss function to use', default=None, type=str)
+            parser.add_argument('--loaddata', '--ld', help='PATH to load data from', default=None, type=str)
+            parser.add_argument('--logpath', help='PATH to save log', default=None, type=str)
+            parser.add_argument('--savename', '--sn', help='File name to save model to "../model/<savename>"', default=None,
+                                type=str)
+            parser.add_argument('--savemodel', '--sm', help='If you want the model saved, set to True, default True', default=True,
+                                type=bool)
+            parser.add_argument('--checkpoint', '--chk', help='Ifmain you want to save checkpoints. Default is True.  ', default= True, type=bool)
+            parser.add_argument('--savedata', '--sd', help='True if you want to save data, else False. Default True',default=True, type=bool )
+            opt = parser.parse_args()
+
+            inference =Inference(opt)
+            inference.run(saveModel=opt.savemodel, saveName=opt.savename, checkpoint=opt.checkpoint)
 
 
-    except KeyboardInterrupt:
-        print('Stopped.')
+        except KeyboardInterrupt:
+            print('Stopped.')
 
 
 
 if __name__ == '__main__':
-    time_start = time.time()
-    main()
-    print('\nTotal duration: {}'.format((time.time() - time_start)))
-    sys.exit(0)
+    # time_start = time.time()
+    main(test=True)
+    # print('\nTotal duration: {}'.format((time.time() - time_start)))
+    # sys.exit(0)
