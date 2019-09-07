@@ -490,7 +490,7 @@ def main(test=False):
                                 type=bool)
             parser.add_argument('--checkpoint', '--chk', help='Ifmain you want to save checkpoints. Default is True.  ', default= True, type=bool)
             parser.add_argument('--savedata', '--sd', help='True if you want to save data, else False. Default True',default=True, type=bool )
-            parser.add_argument('--datastr', help='The date str of the experiment to load',
+            parser.add_argument('--datestr', help='The date str of the experiment to load',
                                 default=None, type=str)
 
 
@@ -506,7 +506,7 @@ def main(test=False):
 
 
 if __name__ == '__main__':
-    # time_start = time.time()
+    time_start = time.time()
     main(test=False)
-    # print('\nTotal duration: {}'.format((time.time() - time_start)))
-    # sys.exit(0)
+    print('\nTotal duration: {}'.format((time.time() - time_start)))
+    sys.exit(0)
