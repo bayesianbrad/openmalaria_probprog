@@ -55,7 +55,7 @@ class Inference():
         else:
             dateStr = str(datetime.datetime.now())
         self.BASEPATH = '../experiments/{}/'.format(dateStr)
-        if os.path.exists(self.BASEPATH):
+        if not os.path.exists(self.BASEPATH):
             os.makedirs(self.BASEPATH)
         self.address = parameters.address
         self.batchSize = parameters.batchsize
@@ -65,6 +65,9 @@ class Inference():
         # generate optimizer
         self.testOn = parameters.teston
         if self.testOn:
+            self.plotPATH = self.BASEPATH + 'plots/'
+            if not os.path.exists(self.plotPATH):
+                os.makedirs(self.plotPATH)
             try:
                 self.testIterations = parameters.testiterations
             except:
@@ -247,7 +250,7 @@ class Inference():
         self.optimizer.zero_grad()
         count = 0
         _outLoss = 0
-
+        self.allLosses = []
         # The network needs to learn z1 -> z2 and z2,z3 -> z4
         for i in range(self.nIterations):
             inData, outData, count = self.get_batch(count, iteration=i)
@@ -257,8 +260,10 @@ class Inference():
 
             # calculate the SVI update sum of log(prob..) / 'batchsize'
             totalLoss = _loss.sum() / len(inData)
+
             totalLoss.backward()
             self.optimizer.step()
+            self.allLosses.append(totalLoss.item())
             # if using a a learning rate scheduler place below optimizer.step() (if pytorch version >= 1.1.0
             if i == 0:
                 bestLoss = totalLoss.item()
@@ -286,16 +291,6 @@ class Inference():
                                       }
                     self.save_checkpoint(checkpointData, bestFlag,saveName, process, self.address)
 
-        if not os.path.exists(self.BASEPATH+'model/'):
-            os.makedirs(self.BASEPATH+'model/')
-        if saveModel:
-            if saveName:
-                fname = self.BASEPATH+'model/{}_process_{}_address_{}.th'.format(saveName, process, self.address)
-            else:
-                fname = self.BASEPATH+'model/process_{}_address_{}.th'.format(process, self.address)
-            th.save(self.model.state_dict(), fname)
-            print(' Model is saved at : {}'.format(fname))
-            self.modelName = fname
 
     def save_checkpoint(self, state, bestFlag, saveName, process, address):
         """
@@ -385,9 +380,8 @@ class Inference():
         ax.legend()
         ax.set_title('Iteration_{}_Rejection_block_{}'.format(iteration,self.address))
         fig = ax.get_figure()
-        if os.path.exists(self.BASEPATH + 'plots/'):
-            os.makedirs(self.BASEPATH + 'plots/')
-        fname = self.BASEPATH + 'plots/' + 'compare_pred_vs_gt_iteration_rejection_block_{}.png'.format(self.address)
+
+        fname = self.plotPATH + 'compare_pred_vs_gt_iteration_rejection_block_{}'.format(self.address)
         fig.savefig(fname=fname)
 
         # plot_pred = sns.distplot(pred[0, :].detach().numpy(), kde=True, color='r')
@@ -413,12 +407,22 @@ class Inference():
                 self.model.share_memory()
                 processes = []
                 for process in range(self.processes):
-                    p = mp.Process(target=self.train, args=(process), kwargs=keywords)
+                    p = mp.Process(target=self.train, args=(process,), kwargs=keywords)
                     p.start()
                     processes.append(p)
                 for p in self.processes:
                     p.join()
-
+        if not os.path.exists(self.BASEPATH+'model/'):
+            os.makedirs(self.BASEPATH+'model/')
+        if kwargs['saveModel']:
+            if kwargs['saveName']:
+                fname = self.BASEPATH+'model/{}_address_{}.th'.format(kwargs['saveName'], self.address)
+            else:
+                fname = self.BASEPATH+'model/address_{}.th'.format(self.address)
+            th.save(self.model.state_dict(), fname)
+            print(' Model is saved at : {}'.format(fname))
+            self.modelName = fname
+            #TODO create a .txt file or json with end modelName and KL metrics that saves with files
 
         if self.testOn:
             self.test(self.testIterations)
@@ -433,11 +437,11 @@ def main(test=False):
             model = 'density_estimator'
             trainon = True
             teston= True
-            trainiterations = 2
+            trainiterations = 1000
             testiterations =2
             loadcheckpoint = False
             modelname = None
-            ncores = 1
+            ncores = 4
             proposal = 'Normalapproximator'
             loaddata =None
             logpath = None
@@ -503,6 +507,6 @@ def main(test=False):
 
 if __name__ == '__main__':
     # time_start = time.time()
-    main(test=True)
+    main(test=False)
     # print('\nTotal duration: {}'.format((time.time() - time_start)))
     # sys.exit(0)
