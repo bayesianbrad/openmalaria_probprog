@@ -24,7 +24,7 @@ python $script --address $address \
 --trainiterations 1000 \
 --testiterations 1000 \
 --ncores 1 \
---proposal 'NormalApproximator' \
+--proposal 'Normalapproximator' \
 --savemodel True \
 --op "{'name': 'Adam', 'lr': 0.001, 'betas': (0.9, 0.999)}"
 

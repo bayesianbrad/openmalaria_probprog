@@ -58,6 +58,7 @@ class Inference():
         if not os.path.exists(self.BASEPATH):
             os.makedirs(self.BASEPATH)
         self.address = parameters.address
+        print('The address is {}'.format(self.address))
         self.batchSize = parameters.batchsize
         self.model = parameters.model
         self.optimizerParams = parameters.optimparams
@@ -93,9 +94,9 @@ class Inference():
         else:
             self.processes = parameters.ncores
         if self.address == 'R2':
-            self.inputsize = 2*self.batchSize
+            self.inputsize = 2 * self.batchSize
             self.outputsize = self.batchSize
-        if self.address == 'R1' or 'R3':
+        if self.address == 'R1' or self.address == 'R3':
             self.inputsize = self.batchSize
             self.outputsize = self.batchSize
         if parameters.model:
@@ -221,7 +222,7 @@ class Inference():
             count = count + 1
             return inR1.to(self.device), outR1.to(self.device), count
         elif self.address == 'R2' and not self.loadData:
-            inR2 = th.cat([data[0:self.batchSize, 1], data[0:self.batchSize, 2]], dim=0).view(1, 256)
+            inR2 = th.cat([data[0:self.batchSize, 1], data[0:self.batchSize, 2]], dim=0).view(1, self.inputsize)
             outR2 = data[0:self.batchSize, 3].view([1, self.batchSize])
             count = count + 1
             return inR2.to(self.device), outR2.to(self.device), count
@@ -431,7 +432,7 @@ def main(test=False):
     if test:
         class Params():
             device = 'cpu'
-            address = 'R1'
+            address = 'R2'
             batchsize = 1024
             optimparams= '{"name": "Adam", "lr": 0.001, "betas": (0.9, 0.999)}'
             model = 'density_estimator'
@@ -441,7 +442,7 @@ def main(test=False):
             testiterations =2
             loadcheckpoint = False
             modelname = None
-            ncores = 4
+            ncores = 1
             proposal = 'Normalapproximator'
             loaddata =None
             logpath = None
@@ -507,6 +508,6 @@ def main(test=False):
 
 if __name__ == '__main__':
     time_start = time.time()
-    main(test=False)
+    main(test=True)
     print('\nTotal duration: {}'.format((time.time() - time_start)))
     sys.exit(0)
