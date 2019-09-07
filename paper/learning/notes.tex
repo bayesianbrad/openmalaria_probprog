@@ -671,7 +671,7 @@ under the constraint that $\sum^{N}_{i=1}K_{i} = 1$. Maybe $N$ can be treated as
 Or choose particular values.
 \subsection{More complicated: Conditional Density estimation}
 
-\subsection{3rd Baseline}
+% \subsection{3rd Baseline}
  
 Use the variational objective constructed above. 
 
@@ -803,7 +803,90 @@ The training regime would still need to be non-bias.
   matches the true distribution.  }
   \label{fig:tomfig}
 \end{figure}
-\section{ Questions for Tom}
+
+\subsection{Are the samples in Method 3 Unbiased?}
+The short answer is that we seem to be able to do something that will give better per-iteration performance than vanilla LMH, 
+but that we have an extra term to calculate that means we don't also get the speedups in how much each iteration costs that we might have hoped for.
+
+The expected number of cycles through the rejection sampler $\mathbb{E}[N_a | \lambda]$,
+is equal to 1 over the acceptance ratio of the sampler $Z(\lambda)$ as per the proof we did earlier. \textbf{Bradley add proof}
+This means that we can use the $N_a$ to learn a direct approximator for $\frac{1}{Z(\lambda)}$ for method 3.
+
+Let $P^{in}(z)$ denote the density of the rejection sampler with the conditioning statement removed 
+(i.e. the density on the outputs if we just accepted all samples).  
+Let $a(z)=1$ denote the event of acceptance. 
+Let $p(z)$ denote the density of the outputs from running the rejection sampler. 
+
+We now have the following results
+\begin{align}
+   p(z ; \lambda) =& P^{in}(z ; \lambda) \frac{\mathbb{I}(a(z ; \lambda)=1)}{Z(\lambda)} \\
+   \mathbb{E}[P^{in}(z ; \lambda) \mathbb{I}(a(z ; \lambda)=1) N_a | z] =& P^{in}(z ; \lambda) \mathbb{I}(a(z ; \lambda)=1) \mathbb{E}[N_a | z, \lambda]\\
+=& P^{in}(z ; \lambda) \mathbb{I}(a(z ; \lambda)=1) \mathbb{E}[N_a | \lambda] \\ %(see explanation below) 
+=& p(z ; \lambda) = P^{in}(z ; \lambda) \frac{\mathbb{I}(a(z ; \lambda)=1)}{Z(\lambda)}
+\end{align}
+
+The key here, that I was worrying about before, is the second step
+that is does $\mathbb{E}[N_a | z, \lambda] = \mathbb{E}[N_a | \lambda]$?
+The answer is that it does if we think about things from the perspective as $z$
+as the output from the rejection sampler. 
+The exact value of this has no impact on $N_a$, only the fact that it was accepted.
+But, by definition, we know that $z$ has been accepted, so  $\mathbb{E}[N_a | z, \lambda]$
+is the same for all possible $z$ and thus equal to  $\mathbb{E}[N_a | \lambda]$. 
+
+This argument is perhaps easiest to see in reverse: we can think of first sampling $N_a \sim P(N_a)$
+to figure out how long we sample for before acceptance, then we can sample an output using $z \sim p(z ; \lambda)$, which clearly does not depend on $N_a$ so the two must be independent.
+In other words, though the full set of samples that are generated during running $x_{1:N_a}$ is clearly not independent from $N_a$, the final sample we return $z$ definitely is.
+Note that this does not cause any complications with the fact that we never actually evaluate $P^{in}(z)$, but its preimage $P^{in}(x_{N_a})$
+instead, because the result further implies that $x_{N_a}$ and $N_a$ are independent, even though $x_{1:N_a}$ and $N_a$ are not.
+
+In general, it is best to think about pseudo-marginal schemes (i.e. MCMC chains based on unbiased density estimates) as estimating the density by drawing a
+random number seed $\epsilon \sim p(\epsilon)$, then producing a deterministic density for a given parameter value and this random number seed. 
+We can thus think of the density estimate as being constructed through the process
+
+\begin{align}
+  \epsilon &\sim p(\epsilon)\text{(draw a seed)} \\
+  \hat{p}(z) &= p(z;\epsilon)\text{(i.e. the estimate is a deterministic function of $z$ and epsilon)}
+\end{align}
+
+If we now do an MCMC step, our implied proposal on $\{\epsilon,z\}$ space becomes $q(\epsilon',z'|\epsilon,z) = p(\epsilon')q(z'|z)$ for some $q(z'|z)$ that we choose.
+Using our density estimates now gives the pseudo-marginal MH acceptance ratio
+\begin{equation}
+  P_a = \frac{ \hat{p}(z') q(z | z') }{ \hat{p}(z') p(z;\epsilon) q(z' | z) }
+\end{equation}
+and from the previous results we have
+\begin{align}
+&=  \frac{ p(z';\epsilon') q(z | z') }{ p(z;\epsilon) q(z' | z) } \\
+&= \frac{ p(z';\epsilon') q(\epsilon,z|\epsilon',z')/p(\epsilon)  }{ p(z;\epsilon) q(\epsilon',z'|\epsilon,z)/ p(\epsilon')  } \\
+&=  \frac{ p(z';\epsilon') p(\epsilon') q(\epsilon,z|\epsilon',z') }{ p(z;\epsilon) p(\epsilon)  q(\epsilon',z'|\epsilon,z) }
+\end{align}
+which is a valid MH sampler on the unnormalized density $p(\epsilon) p(z;\epsilon)$.
+If our $\hat{p}(z)$ are unbiased, this implies that $\mathbb{E}[ \hat{p}(z) | z] = \int p(epsilon) p(z;\epsilon)  d\epsilon = p(z)$,
+hence $p(z)$ is the marginal distribution of $ p(\epsilon) p(z;\epsilon)$, so drawing samples from  $p(\epsilon) p(z;\epsilon)$  produces the desired distribution on z and the pseudo-marginal MCMC sampler is valid.
+
+We can now view our case in the general pseudo-marginal setting above.  
+Effectively we have $\epsilon \sim p(\epsilon)$ (draw a random number seed for the local rejection sampler)
+$N_a = N_a(\epsilon; \lambda)$, (i.e. $N_a$ is a deterministic function of $\epsilon$ and $\lambda$)
+$\hat{p}(z) = p_in(z ; \lambda) \mathbb{I}(a(z ; \lambda)=1) N_a(\epsilon; \lambda)$
+
+This is perfectly fine to run a pseudo-marginal scheme on, but the problem is that if $\lambda$ changes, so does $N_a$.  
+Thus even though we could theoretically use our trick about $N_a$ to run things in a pseudo marginal manner with, e.g., 
+LMH updates where we keep the $\epsilon$ and $z$ fixed for rejection samplers downstream from the one we are updating, 
+the change in $\lambda$ means not only do we need to recalculate $P^{in}(z ; \lambda) \mathbb{I}(a(z ; \lambda)$ 
+as we would normally do but which only requires a single pass through the rejection sampler, we also have to recalculate $N_a (\epsilon; \lambda)$,
+which requires us to pass through the rejection sampler multiple times, such that our updates remain extremely expensive. 
+Alternatively, we could also just redraw $N_a$ for all downstream rejection samplers (with a bit of care that I haven't not fully gone through),
+which effectively equates to redrawing the epsilons and is thus simply a different MH update.
+However, again this means we need to repass through the rejection sampling loops.
+
+Interestingly, there is still potentially some gain to be had here as we have circumvented the need to redraw the rejection sampler outputs (i.e. $z$) of future draws in the way that we would need to for vanilla LMH.
+As such, this would give us "method 0b" and it should be more efficient than vanilla LMH as even though the updates remain expensive, 
+it does avoid the curse of dimensionality issues we get from having to redraw all the future $z$'s from the prior each time we update an earlier one: 
+we only have to recalculate the number of cycles to acceptance and then use these in the acceptance ratio (and next iteration if they are accepted). 
+
+The per-iteration cost of this will be similar to an iteration of training a regressor to predict $N_a$, but much higher than running inference once we have learned such a regressor.  
+There is also potential to combine the two methods: running pseudo-marginal LMH will generate $(\lambda,N_a)$ sample pairs that can be used for the training so you could initially run 
+pseudo-marginal LMH and at some point switch when you're confident you have learned a good enough regressor switch to relying on that instead.
+
 
 \textbf{New questions to ask Tom}
 
@@ -829,6 +912,7 @@ The training regime would still need to be non-bias.
   \item  For an overview of all variational methods, including the use of different divergence metrics see here ~\cite{8588399} - Answered - Quite finicky to set up. 
 \end{itemize}
 
+\section{ Questions for Tom}
 \section{Additional TODOs}
 
 
