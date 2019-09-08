@@ -227,7 +227,7 @@ We provide both of these in this paper. As to implement this in practice we are 
 % currently not amenable to the current approach.}
 
 \section{Sub-Programs within Simulators}
-
+\label{sec:nested}
 \begin{itemize}
   \item Talk about how within simulators we have nested-structures which are \emph{nested-programs}
   \item Define the notations used to define the processes within the simulator, in terms of the PPL framework
@@ -291,10 +291,23 @@ stochastic simulators into probabilistic programs systems.
 
 \subsection{Rejection Sampling}
 
-Rejection samplers are heavily used when designing simulators [ add SHERPA etc], due to their ease of use and ability to model 
-any arbitrary distribution on $\mathbb{R}^{D}$, with a sufficiently well designed rejection sampling scheme~\cite{MEYER20083408,martino2012improved,casella} 
+Rejection samplers allow from sampling from densities $p(X=x)$ by constructing an upper bound to $p(X=x)$
+specified by some predicate expression that determines whether we accept or reject samples from a density proportional to the bounding envelope. 
+The functions we choose to define the envelope are much simpler than $p(X=x)$ and easy to sample from. 
+When designing rejection samplers we aim to reduce the rate of rejections and increase the rate of acceptance, for computational purposes.
+However, designing efficient and expressive rejection samplers is challenging, leading to complex and inefficient constructions of 
+rejection samplers in simulators, see appendix~\ref{app:exampleprograms} for examples.
+Due to these inefficiencies, and additional complications that arise in nested structures, as described in Section~\ref{sec:nested}
+we propose a scheme to amortize such processes and learn accurate surragotes for the individual sub-programs, which in many cases are complex rejection
+sampling schemes.
 
-There are two different forms of rejection samplers found with in simulators and program code. 
+
+% are heavily used when designing simulators,
+%  due to their ease of use and ability to model 
+% any arbitrary distribution on $\mathbb{R}^{D}$, with a sufficiently well designed rejection sampling scheme~\cite{MEYER20083408,martino2012improved,casella} 
+\subsection{Types of rejection samplers}
+
+There are essentially two different forms of rejection samplers found with in simulators and program code. 
 In both instances we we have $X$, a random variable whose density is $f(x)$ that we cannot easily 
 sample from, but can evaluate.
 We then define a proposal using a random variable $Z$, whose density is $g(z)$  that we can efficiently

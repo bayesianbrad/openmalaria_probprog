@@ -18,10 +18,7 @@ import sys
 import datetime
 import ast
 import seaborn as sns
-import simulator as sim
-
-# amortized_rs = load(name="amortized_rs",
-#                             sources=["amortized_rs.cpp"])
+# import simulator as sim
 
 class Inference():
     """
@@ -58,7 +55,6 @@ class Inference():
         if not os.path.exists(self.BASEPATH):
             os.makedirs(self.BASEPATH)
         self.address = parameters.address
-        print('The address is {}'.format(self.address))
         self.batchSize = parameters.batchsize
         self.model = parameters.model
         self.optimizerParams = parameters.optimparams
@@ -116,6 +112,8 @@ class Inference():
             if not os.path.exists(self.dataPath):
                 os.makedirs(self.dataPath)
 
+        self.amortized_rs = load(name="amortized_rs",
+                            sources=["amortized_rs_std.cpp"])
 
 
     def optimizer_Fn(self,optimizerParams):
@@ -206,7 +204,8 @@ class Inference():
                 count :type int Updated count
         '''
         if self.loadData is None:
-            data = th.stack([sim.s() for _ in range(self.batchSize)])
+            # data = th.stack([sim.s() for _ in range(self.batchSize)])
+            data = th.stack([self.amortized_rs.f() for _ in range(self.batchSize)])
             if self.saveData:
                 fname = self.dataPath + str(float(iteration))+'_samples_.th'
                 th.save(data,fname)
@@ -260,7 +259,7 @@ class Inference():
             _loss = -proposal.log_prob(outData)
 
             # calculate the SVI update sum of log(prob..) / 'batchsize'
-            totalLoss = _loss.sum() / len(inData)
+            totalLoss = _loss.sum() / inData.size()[1]
 
             totalLoss.backward()
             self.optimizer.step()
@@ -438,7 +437,7 @@ def main(test=False):
             model = 'density_estimator'
             trainon = True
             teston= True
-            trainiterations = 1000
+            trainiterations = 2
             testiterations =2
             loadcheckpoint = False
             modelname = None

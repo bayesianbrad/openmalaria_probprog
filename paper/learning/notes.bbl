@@ -1,4 +1,4 @@
-\begin{thebibliography}{27}
+\begin{thebibliography}{23}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -45,14 +45,6 @@ Johann Brehmer, Gilles Louppe, Juan Pavez, and Kyle Cranmer.
 \newblock Mining gold from implicit models to improve likelihood-free
   inference.
 \newblock \emph{arXiv preprint arXiv:1805.12244}, 2018.
-
-\bibitem[Casella et~al.(2004)Casella, Robert, and Wells]{casella}
-George Casella, Christian~P. Robert, and Martin~T. Wells.
-\newblock \emph{Generalized Accept-Reject sampling schemes}, volume Volume 45
-  of \emph{Lecture Notes--Monograph Series}, pp.\  342--347.
-\newblock Institute of Mathematical Statistics, Beachwood, Ohio, USA, 2004.
-\newblock \doi{10.1214/lnms/1196285403}.
-\newblock URL \url{https://doi.org/10.1214/lnms/1196285403}.
 
 \bibitem[Dinh et~al.(2016)Dinh, Sohl-Dickstein, and Bengio]{dinh2016density}
 Laurent Dinh, Jascha Sohl-Dickstein, and Samy Bengio.
@@ -108,20 +100,6 @@ Nicolas Maire, Thomas Smith, Amanda Ross, Seth Owusu-Agyei, Klaus Dietz, and
 \newblock \emph{The American journal of tropical medicine and hygiene},
   75\penalty0 (2\_suppl):\penalty0 19--31, 2006.
 
-\bibitem[Martino et~al.(2012)Martino, Read, and Luengo]{martino2012improved}
-Luca Martino, Jesse Read, and David Luengo.
-\newblock Improved adaptive rejection metropolis sampling algorithms.
-\newblock \emph{arXiv preprint arXiv:1205.5494}, 2012.
-
-\bibitem[Meyer et~al.(2008)Meyer, Cai, and Perron]{MEYER20083408}
-Renate Meyer, Bo~Cai, and François Perron.
-\newblock Adaptive rejection metropolis sampling using lagrange interpolation
-  polynomials of degree 2.
-\newblock \emph{Computational Statistics and Data Analysis}, 52\penalty0
-  (7):\penalty0 3408 -- 3423, 2008.
-\newblock ISSN 0167-9473.
-\newblock \doi{https://doi.org/10.1016/j.csda.2008.01.005}.
-
 \bibitem[Mohamed \& Lakshminarayanan(2016)Mohamed and
   Lakshminarayanan]{mohamed2016learning}
 Shakir Mohamed and Balaji Lakshminarayanan.
@@ -134,12 +112,6 @@ George Papamakarios, David~C Sterratt, and Iain Murray.
 \newblock Sequential neural likelihood: Fast likelihood-free inference with
   autoregressive flows.
 \newblock \emph{arXiv preprint arXiv:1805.07226}, 2018.
-
-\bibitem[Rainforth(2017)]{rainforth2017automating}
-Thomas William~Gamlen Rainforth.
-\newblock \emph{Automating inference, learning, and design using probabilistic
-  programming}.
-\newblock PhD thesis, University of Oxford, 2017.
 
 \bibitem[Rainforth(2018)]{rainforth2018nesting}
 Tom Rainforth.

@@ -1,53 +1,46 @@
-This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
+This is BibTeX, Version 0.99d (TeX Live 2018)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: notes.aux
 The style file: iclr2020_conference.bst
 Database file #1: refs.bib
-Repeated entry---line 397 of file refs.bib
- : @article{rainforth2018nesting
- :                              ,
-I'm skipping whatever remains of this entry
-Warning--I didn't find a database entry for ""
-Warning--can't use both author and editor fields in casella
-You've used 27 entries,
+You've used 23 entries,
             2773 wiz_defined-function locations,
-            759 strings with 10816 characters,
-and the built_in function-call counts, 14718 in all, are:
-= -- 1222
-> -- 1183
-< -- 10
-+ -- 400
-- -- 372
-* -- 1334
-:= -- 2368
-add.period$ -- 87
-call.type$ -- 27
-change.case$ -- 199
-chr.to.int$ -- 26
-cite$ -- 55
-duplicate$ -- 569
-empty$ -- 979
-format.name$ -- 403
-if$ -- 2976
+            728 strings with 9915 characters,
+and the built_in function-call counts, 12819 in all, are:
+= -- 1046
+> -- 1083
+< -- 7
++ -- 366
+- -- 342
+* -- 1170
+:= -- 2074
+add.period$ -- 71
+call.type$ -- 23
+change.case$ -- 179
+chr.to.int$ -- 22
+cite$ -- 46
+duplicate$ -- 480
+empty$ -- 831
+format.name$ -- 369
+if$ -- 2577
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 27
-newline$ -- 149
-num.names$ -- 108
-pop$ -- 378
+missing$ -- 23
+newline$ -- 125
+num.names$ -- 92
+pop$ -- 339
 preamble$ -- 1
-purify$ -- 174
+purify$ -- 156
 quote$ -- 0
-skip$ -- 473
+skip$ -- 407
 stack$ -- 0
-substring$ -- 379
-swap$ -- 54
-text.length$ -- 3
+substring$ -- 306
+swap$ -- 38
+text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 292
-warning$ -- 1
-while$ -- 106
+type$ -- 253
+warning$ -- 0
+while$ -- 90
 width$ -- 0
-write$ -- 360
-(There was 1 error message)
+write$ -- 299

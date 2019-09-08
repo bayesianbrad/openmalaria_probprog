@@ -32,5 +32,6 @@
         "typescriptreact",
         "yaml",
         "yml"
-    ]
+    ],
+    "latex-workshop.latex.autoBuild.run": "never"
 }
